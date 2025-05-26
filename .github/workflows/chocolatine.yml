@@ -18,7 +18,7 @@ on:
 
 env:
   MIRROR_URL: "git@github.com:EpitechPromo2028/B-YEP-400-NAN-4-1-zappy-tom.feldkamp.git"
-  EXECUTABLES: "zappy_server:zappy_client:zappy_gui"
+  EXECUTABLES: "zappy_server:zappy_gui:zappy_gui"
 
 jobs:
   check_coding_style:
