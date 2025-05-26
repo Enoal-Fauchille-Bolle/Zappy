@@ -1,0 +1,140 @@
+name: Chocolatine
+
+# Todo:
+# - Check coding style (cppcheck ? cmake-format ? clang-format ?)
+# - Check CMake
+# - Check commit message
+# - Check banned functions
+
+on:
+  push:
+    branches:
+      - "*"
+      - "!**ga-ignore-*"
+  pull_request:
+    branches:
+      - "*"
+      - "!**ga-ignore-*"
+
+env:
+  MIRROR_URL: "git@github.com:EpitechPromo2028/B-YEP-400-NAN-4-1-zappy-tom.feldkamp.git"
+  EXECUTABLES: "zappy_server:zappy_client:zappy_gui"
+
+jobs:
+  check_coding_style:
+    name: Check Coding Style
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.full_name != 'EpitechPromo2028/B-YEP-400-NAN-4-1-zappy-tom.feldkamp' }}
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - name: Checking Out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run coding style checker
+        id: check
+        run: check.sh $(pwd) $(pwd)
+
+      - name: Getting result
+        id: result
+        shell: bash
+        run: |
+          if [ -s "coding-style-reports.log" ]; then
+            echo "There are coding style errors."
+            while IFS= read -r line; do
+              file=$(echo "$line" | cut -d ' ' -f 1 | cut -d ':' -f 1)
+              line_number=$(echo "$line" | cut -d ' ' -f 1 | cut -d ':' -f 2)
+              severity=$(echo "$line" | cut -d ' ' -f 2 | cut -d ':' -f 1)
+              code=$(echo "$line" | cut -d ' ' -f 2 | cut -d ':' -f 2)
+              echo "::error file=$(echo "$file" | cut -c 3-),line=${line_number},title=${severity} coding style error::${code}"
+            done < coding-style-reports.log
+            exit 1
+          else
+            echo "No coding style errors found."
+          fi
+
+  check_program_compilation:
+    name: Check Program Compilation
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.full_name != 'EpitechPromo2028/B-YEP-400-NAN-4-1-zappy-tom.feldkamp' }}
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Checking Out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Building Project
+        run: make
+        timeout-minutes: 2
+
+      - name: Cleaning Project
+        run: make clean
+
+      - name: Verifying Compilation
+        shell: bash
+        run: |
+          executables=()
+          for executable in $(echo "${{ env.EXECUTABLES }}" | tr ':' '\n'); do
+            executables+=("$executable")
+          done
+          failed=false
+          for executable in "${executables[@]}"; do
+            if [ ! -x "$executable" ]; then
+                echo "Executable '$executable' does not exist or is not executable."
+                echo "::error file=${executable},title=Executable does not exist or is not executable::Executable '$executable' does not exist or is not executable."
+                failed=true
+            fi
+          done
+          if [ "$failed" = true ]; then
+              exit 1
+          fi
+
+  check_tests:
+    name: Check Tests
+    runs-on: ubuntu-latest
+    needs: [check_program_compilation]
+    if: ${{ github.event.repository.full_name != 'EpitechPromo2028/B-YEP-400-NAN-4-1-zappy-tom.feldkamp' }}
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Checking Out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Running Tests
+        run: make tests_run
+        timeout-minutes: 2
+
+      - name: Checking Coverage
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          coverage=$(gcovr --exclude tests/ --json-summary -o coverage.json && grep -o '"line_percent": [0-9.]*' coverage.json | tail -n 1 | grep -o '[0-9.]*')
+          rm -f coverage.json
+          if (( $(awk "BEGIN {print ($coverage < 70)}") )); then
+              rounded_coverage=${coverage%.*}
+              echo "::error::Coverage is below 70% (Current coverage: ${rounded_coverage}%)"
+              exit 1
+          fi
+
+  repository_mirroring:
+    name: Repository Mirroring
+    runs-on: ubuntu-latest
+    needs: [check_coding_style, check_tests]
+    if: ${{ github.event.repository.full_name != 'EpitechPromo2028/B-YEP-400-NAN-4-1-zappy-tom.feldkamp' }}
+    steps:
+      - name: Checking Out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirroring
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ env.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }} # valid-secret

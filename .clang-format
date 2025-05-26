@@ -1,0 +1,72 @@
+# .clang-format
+BasedOnStyle: Google
+
+# -------------------------------------------------------------------
+# Indentation
+# -------------------------------------------------------------------
+IndentWidth:                   4
+TabWidth:                      4
+UseTab:                        Never
+ContinuationIndentWidth:       4
+
+# -------------------------------------------------------------------
+# Column limit
+# -------------------------------------------------------------------
+ColumnLimit:                   80
+
+# -------------------------------------------------------------------
+# Brace wrapping (K&R style)
+# -------------------------------------------------------------------
+BreakBeforeBraces:             Custom
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BraceWrapping:
+  AfterClass:                  false
+  AfterControlStatement:       false
+  AfterExternBlock:            true
+  AfterFunction:               true
+  AfterNamespace:              false
+  AfterStruct:                 false
+  AfterUnion:                  false
+  AfterEnum:                   false
+  BeforeCatch:                 false
+  BeforeElse:                  false
+  BeforeWhile:                 false
+
+# -------------------------------------------------------------------
+# Spaces & parentheses
+# -------------------------------------------------------------------
+SpaceBeforeParens:            ControlStatements  # `if (`, `for (`
+SpacesInParentheses:          false              # no extra space inside (…)
+SpaceBeforeAssignmentOperators: true             # `a = b;`
+SpacesInContainerLiterals:    true               # `{ 1, 2, 3 }` (JS style)
+
+# -------------------------------------------------------------------
+# Pointer/reference alignment
+# -------------------------------------------------------------------
+PointerAlignment:      Right   # `char *ptr;`  and `std::string &str;`
+
+# -------------------------------------------------------------------
+# Constructor initializer lists (Google style)
+# -------------------------------------------------------------------
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 8     # colon indented 2×IndentWidth
+# ContinuationIndentWidth already set to 4
+
+# -------------------------------------------------------------------
+# Access‑modifier & namespace indentation
+# -------------------------------------------------------------------
+IndentAccessModifiers:         true
+AccessModifierOffset:          -2      # 4 + (-2) = 2 spaces for 'public:'
+NamespaceIndentation:          None    # no extra indent inside namespaces
+
+# -------------------------------------------------------------------
+# Misc formatting
+# -------------------------------------------------------------------
+AlignConsecutiveAssignments:   false
+AlignConsecutiveDeclarations:  false
+AlignTrailingComments:         true
+ReflowComments:                true    # wrap comments at ColumnLimit
+SortIncludes:                  false   # keep manual include order
+Language:                      Cpp
