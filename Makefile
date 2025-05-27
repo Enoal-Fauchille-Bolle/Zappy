@@ -63,7 +63,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
 $(SRCDIR_SERVER)%.o: $(SRCDIR_SERVER)%.c
-	$(CC_SERVER) -c $< -o $@ -MMD -MF $*.d -MT $@ $(CFLAGS_SERVER)
+	$(CC_SERVER) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_SERVER)
 
 # Compilation Flags
 CFLAGS_SERVER += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
@@ -89,7 +89,7 @@ SRC_CLIENT = $(SRCDIR_CLIENT)main.cpp	\
 # Objects
 OBJ_CLIENT = $(SRC_CLIENT:.cpp=.o)
 $(SRCDIR_CLIENT)%.o: $(SRCDIR_CLIENT)%.cpp
-	$(CC_CLIENT) -c $< -o $@ -MMD -MF $*.d -MT $@ $(CFLAGS_CLIENT)
+	$(CC_CLIENT) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_CLIENT)
 
 # Compilation Flags
 CFLAGS_CLIENT += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
@@ -116,7 +116,7 @@ SRC_AI = $(SRCDIR_AI)main.c	\
 # Objects
 OBJ_AI = $(SRC_AI:.c=.o)
 $(SRCDIR_AI)%.o: $(SRCDIR_AI)%.c
-	$(CC_AI) -c $< -o $@ -MMD -MF $*.d -MT $@ $(CFLAGS_AI)
+	$(CC_AI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_AI)
 
 # Compilation Flags
 CFLAGS_AI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
