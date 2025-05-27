@@ -59,6 +59,15 @@ SRCDIR_SERVER = ${SRCDIR}server/
 
 # Sources
 SRC_SERVER = $(SRCDIR_SERVER)main.c	\
+			 $(SRCDIR_SERVER)option_parser.c	\
+			 $(SRCDIR_SERVER)options/port.c	\
+			 $(SRCDIR_SERVER)options/width.c	\
+			 $(SRCDIR_SERVER)options/height.c	\
+			 $(SRCDIR_SERVER)options/teams.c	\
+			 $(SRCDIR_SERVER)options/clients.c	\
+			 $(SRCDIR_SERVER)options/frequency.c	\
+			 $(SRCDIR_SERVER)options/help.c	\
+			 $(SRCDIR_SERVER)options/debug.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
