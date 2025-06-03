@@ -52,7 +52,7 @@ void Parser::handlePortArgument(int argc, char **argv, int &i)
     if (i + 1 < argc && isValidPort(std::stoi(argv[++i]))) {
         port_ = std::stoi(argv[i]);
     } else {
-        printError("Invalid host name.");
+        printError("Invalid port number.");
     }
 }
 
