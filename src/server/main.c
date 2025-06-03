@@ -16,7 +16,7 @@
  * for the Zappy server. It is called when the user requests help
  * or when mandatory options are missing.
  */
-static void help_page(void)
+static void print_help_page(void)
 {
     printf(
         "USAGE: ./zappy_server -p port -x width -y height -n team1 team2 ... "
@@ -85,7 +85,7 @@ static int handle_options_error(void)
 static int handle_help_request(server_options_t *options)
 {
     if (options->help) {
-        help_page();
+        print_help_page();
         free(options);
         return 0;
     }
@@ -106,7 +106,7 @@ static int handle_help_request(server_options_t *options)
 static int handle_error_case(server_options_t *options)
 {
     if (options->error) {
-        help_page();
+        print_help_page();
         free(options);
         return 84;
     }
