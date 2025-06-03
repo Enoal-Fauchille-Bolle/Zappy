@@ -6,8 +6,8 @@
 */
 
 #include "options.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Handle the frequency option parsing from command line arguments.
@@ -31,13 +31,12 @@ void handle_frequency(server_options_t *options, int *i, int ac, char **av)
         *i += 1;
         options->frequency = atoi(av[*i]);
         if (options->frequency <= 10 || options->frequency > 10000) {
-            dprintf(
-                fileno(stderr),
-                "Error: Frequency must be a number between 10 and 10000\n");
+            fputs("Error: Frequency must be a number between 1 and 10000\n",
+                stderr);
             options->error = true;
         }
     } else {
-        dprintf(fileno(stderr), "Error: Missing frequency value\n");
+        fputs("Error: Missing frequency value\n", stderr);
         options->error = true;
     }
 }

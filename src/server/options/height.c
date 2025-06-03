@@ -6,8 +6,8 @@
 */
 
 #include "options.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Handle the height option parsing from command line arguments.
@@ -29,12 +29,12 @@ void handle_height(server_options_t *options, int *i, int ac, char **av)
         *i += 1;
         options->height = atoi(av[*i]);
         if (options->height <= 0 || options->height > 1000) {
-            dprintf(fileno(stderr),
-                    "Error: Height must be a number between 1 and 1000\n");
+            fputs(
+                "Error: Height must be a number between 1 and 1000\n", stderr);
             options->error = true;
         }
     } else {
-        dprintf(fileno(stderr), "Error: Missing height value\n");
+        fputs("Error: Missing height value\n", stderr);
         options->error = true;
     }
 }

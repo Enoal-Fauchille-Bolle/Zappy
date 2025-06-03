@@ -5,11 +5,10 @@
 ** Teams Option
 */
 
+#include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "options.h"
 
 /**
  * @brief Initialize the teams array in server options structure.
@@ -177,7 +176,7 @@ void handle_teams(server_options_t *options, int *i, int ac, char **av)
 
     go_to_end_of_option(i, ac, av, &teams_count);
     if (*i <= start) {
-        dprintf(fileno(stderr), "Error: No teams provided.\n");
+        fputs("Error: No teams provided.\n", stderr);
         options->error = true;
         return;
     }

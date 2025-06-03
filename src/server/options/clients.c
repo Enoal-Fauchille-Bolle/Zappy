@@ -30,12 +30,11 @@ void handle_clients(server_options_t *opts, int *i, int ac, char **av)
         *i += 1;
         opts->clients_nb = atoi(av[*i]);
         if (opts->clients_nb <= 0) {
-            dprintf(fileno(stderr),
-                    "Error: Clients number must be positive\n");
+            fputs("Error: Clients number must be positive\n", stderr);
             opts->error = true;
         }
     } else {
-        dprintf(fileno(stderr), "Error: Missing clients number\n");
+        fputs("Error: Missing clients number\n", stderr);
         opts->error = true;
     }
 }

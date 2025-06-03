@@ -6,8 +6,8 @@
 */
 
 #include "options.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Handle the width option parsing from command line arguments.
@@ -29,12 +29,12 @@ void handle_width(server_options_t *options, int *i, int ac, char **av)
         *i += 1;
         options->width = atoi(av[*i]);
         if (options->width <= 0 || options->width > 1000) {
-            dprintf(fileno(stderr),
-                "Error: Width must be a number between 1 and 1000\n");
+            fputs(
+                "Error: Width must be a number between 1 and 1000\n", stderr);
             options->error = true;
         }
     } else {
-        dprintf(fileno(stderr), "Error: Missing width value\n");
+        fputs("Error: Missing width value\n", stderr);
         options->error = true;
     }
 }
