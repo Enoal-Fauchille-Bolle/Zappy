@@ -33,6 +33,8 @@ def validate_name_and_machine(arg_type, value, flags):
             return False, None
         return True, value
     else:
+        if value == "localhost":
+            return True, value
         parts = value.split('.')
         if len(parts) != 4:
             print("ERROR: IP address must have exactly 4 parts (e.g., 192.168.1.1).")
@@ -66,6 +68,7 @@ def check_value(args, port, name, machine, flags):
 
 def check_good_args(args, port, name, machine):
     if len(args) != 7 and len(args) != 5:
+        print("USAGE: ./zappy_ai -p port -n name -h machine")
         return False, port, name, machine
     flags = {"p": False, "n": False, "h": False}
     for i in range(1, len(args), 2):
