@@ -159,8 +159,8 @@ CC_TESTS := gcc
 $(TESTS)%.o: $(TESTS)%.cpp
 	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
 
-unit_tests: $(OBJ_SERVER) $(TESTS_SRC:.cpp=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(OBJ_SERVER) $(TESTS_SRC:.cpp=.o)	\
+unit_tests: $(TESTS_SRC:.cpp=.o)
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.cpp=.o)	\
 		$(UNIT_FLAGS)
 
 tests_run: unit_tests
