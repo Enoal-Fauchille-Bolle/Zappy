@@ -18,6 +18,9 @@ Parser::Parser(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     parseArgs(argc, argv);
+    if (!isValidPort(port_)) {
+        printError("Port must be specified");
+    }
 }
 
 int Parser::getPort()
@@ -72,7 +75,28 @@ bool Parser::isValidPort(const int &port)
 
 bool Parser::isValidHost(const std::string &host)
 {
-    return !host.empty() && host.find_first_not_of("0123456789.") == std::string::npos;
+    if (host == "localhost") {
+        return true;
+    }
+
+    size_t pos = 0;
+    int count = 0;
+    std::string token;
+    std::string tempHost = host + ".";
+    while ((pos = tempHost.find('.')) != std::string::npos) {
+        token = tempHost.substr(0, pos);
+        tempHost.erase(0, pos + 1);
+        try {
+            int num = std::stoi(token);
+            if (num < 0 || num > 255) {
+                return false;
+            }
+        } catch (...) {
+            return false;
+        }
+        ++count;
+    }
+    return count == 4;
 }
 
 void Parser::printUsage() const
