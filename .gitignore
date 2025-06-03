@@ -58,3 +58,6 @@ Thumbs.db
 
 # Doxygen
 docs/doxygen
+
+# Python cache
+__pycache__/
