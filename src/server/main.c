@@ -150,6 +150,6 @@ int main(int ac, char **av)
     if (result != 0) {
         return result;
     }
-    free(options);
+    destroy_server_options(options);
     return 0;
 }

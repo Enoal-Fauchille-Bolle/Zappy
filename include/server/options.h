@@ -42,5 +42,6 @@ void handle_help(server_options_t *options, int *i, int ac, char **av);
 void handle_debug(server_options_t *options, int *i, int ac, char **av);
 
 server_options_t *get_server_options(int ac, char **av);
+void destroy_server_options(server_options_t *options);
 
 #endif /* !OPTIONS_H_ */

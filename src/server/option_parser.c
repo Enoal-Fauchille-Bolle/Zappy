@@ -158,3 +158,16 @@ server_options_t *get_server_options(int ac, char **av)
     }
     return options;
 }
+
+void destroy_server_options(server_options_t *options)
+{
+    if (options == NULL)
+        return;
+    if (options->teams != NULL) {
+        for (size_t i = 0; options->teams[i] != NULL; i++) {
+            free(options->teams[i]);
+        }
+        free(options->teams);
+    }
+    free(options);
+}

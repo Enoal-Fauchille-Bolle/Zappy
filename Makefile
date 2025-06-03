@@ -160,8 +160,8 @@ TESTS_SRC =	\
 UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
 
 # Compilation Flags
-CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT) -I$(INCLUDES_AI)	\
-				-I$(SRC_INCLUDE) -g
+CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
+				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g
 
 # Pre Compilation
 CC_TESTS := gcc
