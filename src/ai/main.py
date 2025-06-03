@@ -72,7 +72,6 @@ def check_good_args(args, port, name, machine):
         return False, port, name, machine
     flags = {"p": False, "n": False, "h": False}
     for i in range(1, len(args), 2):
-        print(f"Checking argument {i}: {args[i]}")
         if i + 1 >= len(args):
             return False, port, name, machine
         if args[i] not in ["-p", "-n", "-h"]:
@@ -87,11 +86,9 @@ def main(argc, argv):
     if argc == 2 and argv[1] == "--help":
         print("USAGE: ./zappy_ai -p port -n name -h machine")
         return 0
-    print(f"Arguments received: {argv}")
     valid_args, port, name, machine = check_good_args(argv, port, name, machine)
     if not valid_args:
         return 84
-    print(f"Connecting to server {machine} on port {port} with name {name}")
     return 0
 
 if __name__ == "__main__":
