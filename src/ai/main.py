@@ -21,7 +21,7 @@ def main(argc, argv):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("ERROR: Not enough arguments.")
+        print("USAGE: ./zappy_ai -p port -n name -h machine")
         sys.exit(84)
     exit_code = main(len(sys.argv), sys.argv)
     sys.exit(exit_code)
