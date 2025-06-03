@@ -49,8 +49,8 @@ void Parser::parseArgs(int argc, char **argv)
 
 void Parser::handlePortArgument(int argc, char **argv, int &i)
 {
-    if (i + 1 < argc && isValidHost(argv[++i])) {
-        host_ = argv[i];
+    if (i + 1 < argc && isValidPort(std::stoi(argv[++i]))) {
+        port_ = std::stoi(argv[i]);
     } else {
         printError("Invalid host name.");
     }
