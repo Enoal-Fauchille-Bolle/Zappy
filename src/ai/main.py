@@ -8,47 +8,63 @@
 
 import sys
 
-def check_value(args, port, name, machine, flags):
-    if args[0] == "-p":
-        if flags["p"]:
-            print("ERROR: Port already set.")
-            return False, port, name, machine
-        flags["p"] = True
-        try:
-            if not (1024 <= int(args[1]) <= 65535):
-                print("ERROR: Port must be between 1024 and 65535.")
-                return False, port, name, machine
-            port = int(args[1])
-        except ValueError:
-            print("ERROR: Port must be a number.")
-            return False, port, name, machine
-    elif args[0] == "-n":
-        if flags["n"]:
-            print("ERROR: Name already set.")
-            return False, port, name, machine
-        flags["n"] = True
-        if len(args[1]) < 3 or len(args[1]) > 20:
+def validate_port(port_str, flags):
+    if flags["p"]:
+        print("ERROR: Port already set.")
+        return False, None
+    flags["p"] = True
+    try:
+        port = int(port_str)
+        if not (1024 <= port <= 65535):
+            print("ERROR: Port must be between 1024 and 65535.")
+            return False, None
+        return True, port
+    except ValueError:
+        print("ERROR: Port must be a number.")
+        return False, None
+
+def validate_name_and_machine(arg_type, value, flags):
+    key = "n" if arg_type == "-n" else "h"
+    error_msg = "Name" if arg_type == "-n" else "Machine"
+    if flags[key]:
+        print(f"ERROR: {error_msg} already set.")
+        return False, None
+    flags[key] = True
+    if arg_type == "-n":
+        if len(value) < 3 or len(value) > 20:
             print("ERROR: Name must be between 3 and 20 characters long.")
-            return False, port, name, machine
-        name = args[1]
-    elif args[0] == "-h":
-        if flags["h"]:
-            print("ERROR: Machine already set.")
-            return False, port, name, machine
-        flags["h"] = True
-        parts = args[1].split('.')
+            return False, None
+        return True, value
+    else:
+        parts = value.split('.')
         if len(parts) != 4:
             print("ERROR: IP address must have exactly 4 parts (e.g., 192.168.1.1).")
-            return False, port, name, machine
+            return False, None
         try:
             for part in parts:
                 if not part.isdigit() or not (0 <= int(part) <= 255):
                     print("ERROR: IP address parts must be between 0 and 255.")
-                    return False, port, name, machine
+                    return False, None
+            return True, value
         except ValueError:
             print("ERROR: Invalid IP address format.")
+            return False, None
+
+def check_value(args, port, name, machine, flags):
+    flag, value = args[0], args[1]
+    if flag == "-p":
+        success, valid_port = validate_port(value, flags)
+        if not success:
             return False, port, name, machine
-        machine = args[1]
+        port = valid_port
+    elif flag in ["-n", "-h"]:
+        success, valid_value = validate_name_and_machine(flag, value, flags)
+        if not success:
+            return False, port, name, machine
+        if flag == "-n":
+            name = valid_value
+        else:
+            machine = valid_value
     return True, port, name, machine
 
 def check_good_args(args, port, name, machine):
