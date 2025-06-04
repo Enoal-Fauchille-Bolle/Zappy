@@ -30,8 +30,8 @@ void handle_frequency(server_options_t *options, int *i, int ac, char **av)
     if (*i + 1 < ac) {
         *i += 1;
         options->frequency = atoi(av[*i]);
-        if (options->frequency <= 10 || options->frequency > 10000) {
-            fputs("Error: Frequency must be a number between 1 and 10000\n",
+        if (options->frequency < 10 || options->frequency > 10000) {
+            fputs("Error: Frequency must be a number between 10 and 10000\n",
                 stderr);
             options->error = true;
         }
