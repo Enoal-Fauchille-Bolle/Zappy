@@ -7,8 +7,25 @@
 
 #include "options.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+
+static const option_map_t options_map[] = {{"-p", handle_port},
+    {"-x", handle_width}, {"-y", handle_height}, {"-n", handle_teams},
+    {"-c", handle_clients}, {"-f", handle_frequency}, {"-h", handle_help},
+    {"--help", handle_help}, {"-d", handle_debug}, {"--debug", handle_debug},
+    {NULL, NULL}};
+static const server_options_t default_options = {
+    .port = 0,
+    .width = 0,
+    .height = 0,
+    .teams = NULL,
+    .clients_nb = 0,
+    .frequency = 100,
+    .help = false,
+    .debug = false,
+    .error = false
+};
 
 /**
  * @brief Initialize server options structure with default values.
@@ -31,15 +48,7 @@ server_options_t *init_options(void)
         perror("Failed to allocate memory for server options");
         return NULL;
     }
-    options->port = 0;
-    options->width = 0;
-    options->height = 0;
-    options->teams = NULL;
-    options->clients_nb = 0;
-    options->frequency = 100;
-    options->help = false;
-    options->debug = false;
-    options->error = false;
+    memcpy(options, &default_options, sizeof(default_options));
     return options;
 }
 
@@ -58,15 +67,7 @@ server_options_t *init_options(void)
  */
 static const option_map_t *find_option(const char *arg)
 {
-    static const option_map_t option_map[] = {
-        {"-p", handle_port}, {"-x", handle_width},
-        {"-y", handle_height}, {"-n", handle_teams},
-        {"-c", handle_clients}, {"-f", handle_frequency},
-        {"-h", handle_help}, {"--help", handle_help},
-        {"-d", handle_debug}, {"--debug", handle_debug},
-        {NULL, NULL}};
-
-    for (const option_map_t *entry = option_map; entry->option != NULL;
+    for (const option_map_t *entry = options_map; entry->option != NULL;
         entry++) {
         if (strcmp(arg, entry->option) == 0)
             return entry;

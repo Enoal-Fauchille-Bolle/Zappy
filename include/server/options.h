@@ -11,8 +11,10 @@
     #include <stdbool.h>
     #include <stddef.h>
 
+typedef unsigned int port_t;
+
 typedef struct server_options_s {
-    int port;
+    port_t port;
     size_t width;
     size_t height;
     char **teams;

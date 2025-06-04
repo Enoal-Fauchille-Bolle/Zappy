@@ -80,17 +80,16 @@ static int handle_options_error(void)
  * structure, and returns 0 to terminate the program successfully.
  *
  * @param options The server options structure containing the parsed options.
- * @return 0 if help was requested (program should exit), -1 to continue
- * execution.
+ * @return true if help was requested
+ * @return false if help was not requested
  */
-static int handle_help_request(server_options_t *options)
+static bool handle_help_request(server_options_t *options)
 {
     if (options->help) {
         print_help_page();
         return true;
-        return 0;
     }
-    return -1;
+    return false;
 }
 
 /**
@@ -101,17 +100,16 @@ static int handle_help_request(server_options_t *options)
  * structure, and returns the error code to terminate the program.
  *
  * @param options The server options structure containing the parsed options.
- * @return 84 if an error was detected (program should exit), -1 to continue
- * execution.
+ * @return true if an error was detected (program should exit)
+ * @return false if no error was detected (program should continue)
  */
-static int handle_error_case(server_options_t *options)
+static bool handle_error_case(server_options_t *options)
 {
     if (options->error) {
         print_help_page();
         return true;
-        return 84;
     }
-    return -1;
+    return false;
 }
 
 /**
@@ -123,21 +121,19 @@ static int handle_error_case(server_options_t *options)
  * this function returns the appropriate exit code.
  *
  * @param options The server options structure containing the parsed options.
- * @return 0 for normal execution, positive value for error exit codes.
+ * @return true if processing was successful
+ * @return false if processing failed (e.g., help requested or error detected)
  */
-static int process_options(server_options_t *options)
+static bool process_options(server_options_t *options)
 {
-    int result;
 
     if (options->debug)
         option_debug(options);
-    result = handle_help_request(options);
-    if (result != -1)
-        return result;
-    result = handle_error_case(options);
-    if (result != -1)
-        return result;
-    return 0;
+    if (handle_help_request(options))
+        return false;
+    if (handle_error_case(options))
+        return false;
+    return true;
 }
 
 int main(int ac, char **av)
