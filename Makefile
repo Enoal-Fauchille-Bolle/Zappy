@@ -10,10 +10,10 @@
 # Source folder
 SRCDIR = ./src/
 
+SRC_INCLUDE = ./src/
+
 # Headers folder
 INCLUDES = ./include/
-
-SRC_INCLUDE = ./src/
 
 # GCC Flags
 ERROR = -Werror -Wall -Wextra -Wshadow
@@ -57,8 +57,21 @@ NAME_SERVER = zappy_server
 # Folder name
 SRCDIR_SERVER = ${SRCDIR}server/
 
+# Headers folder
+INCLUDES_SERVER = ${INCLUDES}server/
+
 # Sources
 SRC_SERVER = $(SRCDIR_SERVER)main.c	\
+			 $(SRCDIR_SERVER)options_parser/parser.c	\
+			 $(SRCDIR_SERVER)options_parser/processor.c	\
+			 $(SRCDIR_SERVER)options_parser/options/port.c	\
+			 $(SRCDIR_SERVER)options_parser/options/width.c	\
+			 $(SRCDIR_SERVER)options_parser/options/height.c	\
+			 $(SRCDIR_SERVER)options_parser/options/teams.c	\
+			 $(SRCDIR_SERVER)options_parser/options/clients.c	\
+			 $(SRCDIR_SERVER)options_parser/options/frequency.c	\
+			 $(SRCDIR_SERVER)options_parser/options/help.c	\
+			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -66,7 +79,7 @@ $(SRCDIR_SERVER)%.o: $(SRCDIR_SERVER)%.c
 	$(CC_SERVER) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_SERVER)
 
 # Compilation Flags
-CFLAGS_SERVER += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_SERVER += $(ERROR) -I$(INCLUDES_SERVER) -I$(SRC_INCLUDE) -g	\
 
 # Pre Compilation
 CC_SERVER := gcc
@@ -83,6 +96,9 @@ NAME_CLIENT = zappy_gui
 # Folder name
 SRCDIR_CLIENT = ${SRCDIR}client/
 
+# Headers folder
+INCLUDES_CLIENT = ${INCLUDES}client/
+
 # Sources
 SRC_CLIENT = $(SRCDIR_CLIENT)main.cpp	\
 
@@ -92,7 +108,7 @@ $(SRCDIR_CLIENT)%.o: $(SRCDIR_CLIENT)%.cpp
 	$(CC_CLIENT) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_CLIENT)
 
 # Compilation Flags
-CFLAGS_CLIENT += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_CLIENT += $(ERROR) -I$(INCLUDES_CLIENT) -I$(SRC_INCLUDE) -g	\
 			-std=c++23
 
 # Pre Compilation
@@ -110,6 +126,9 @@ NAME_AI = zappy_ai
 # Folder name
 SRCDIR_AI = ${SRCDIR}ai/
 
+# Headers folder
+INCLUDES_AI = ${INCLUDES}ai/
+
 # Sources
 SRC_AI = $(SRCDIR_AI)main.c	\
 
@@ -119,7 +138,7 @@ $(SRCDIR_AI)%.o: $(SRCDIR_AI)%.c
 	$(CC_AI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_AI)
 
 # Compilation Flags
-CFLAGS_AI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_AI += $(ERROR) -I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g	\
 
 # Pre Compilation
 CC_AI := gcc
@@ -142,7 +161,8 @@ TESTS_SRC =	\
 UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
 
 # Compilation Flags
-CFLAGS_TESTS += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
+				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g
 
 # Pre Compilation
 CC_TESTS := gcc

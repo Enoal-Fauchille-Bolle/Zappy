@@ -6,9 +6,21 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include "options_parser/parser.h"
+#include "options_parser/processor.h"
+#include "constants.h"
 
-int main(void)
+int main(int ac, char **av)
 {
-    printf("Hello world! (server)\n");
+    server_options_t *options = get_server_options(ac, av);
+
+    if (options == NULL)
+        return handle_options_error();
+    if (process_options(options) == FAILURE) {
+        destroy_server_options(options);
+        return 84;
+    }
+    destroy_server_options(options);
     return 0;
 }
