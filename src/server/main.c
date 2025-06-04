@@ -43,6 +43,7 @@ static void print_help_page(void)
  */
 static void option_debug(server_options_t *options)
 {
+    puts("Debugging server options:");
     printf("Port: %d\n", options->port);
     printf("Width: %zu\n", options->width);
     printf("Height: %zu\n", options->height);
