@@ -8,7 +8,7 @@
 #ifndef CONSTANTS_H_
     #define CONSTANTS_H_
 
-const bool SUCCESS = true;
-const bool FAILURE = false;
+    #define SUCCESS true
+    #define FAILURE false
 
 #endif /* !CONSTANTS_H_ */
