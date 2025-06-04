@@ -2,18 +2,18 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Debug Option
+** Help Option
 */
 
-#include "options.h"
+#include "options_parser/parser.h"
 #include <stdbool.h>
 
 /**
- * @brief Handle the debug option parsing from command line arguments.
+ * @brief Handle the help option parsing from command line arguments.
  *
- * This function processes the "-d" or "--debug" options to enable
- * debug mode. When debug mode is enabled, the server will output
- * additional diagnostic information during execution.
+ * This function processes the "-h" or "--help" options to enable
+ * help mode. When help is requested, the program will display
+ * usage information and exit without starting the server.
  *
  * @param options Pointer to the server options structure to modify
  * @param i Pointer to the current argument index (unused)
@@ -22,10 +22,10 @@
  *
  * @note This is a flag option that doesn't consume additional arguments
  */
-void handle_debug(server_options_t *options, int *i, int ac, char **av)
+void handle_help(server_options_t *options, int *i, int ac, char **av)
 {
     (void)i;
     (void)ac;
     (void)av;
-    options->debug = true;
+    options->help = true;
 }

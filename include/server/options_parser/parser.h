@@ -5,8 +5,8 @@
 ** Server Options
 */
 
-#ifndef OPTIONS_H_
-    #define OPTIONS_H_
+#ifndef OPTIONS_PARSER_H_
+    #define OPTIONS_PARSER_H_
 
     #include <stdbool.h>
     #include <stddef.h>
@@ -46,4 +46,4 @@ void handle_debug(server_options_t *options, int *i, int ac, char **av);
 server_options_t *get_server_options(int ac, char **av);
 void destroy_server_options(server_options_t *options);
 
-#endif /* !OPTIONS_H_ */
+#endif /* !OPTIONS_PARSER_H_ */
