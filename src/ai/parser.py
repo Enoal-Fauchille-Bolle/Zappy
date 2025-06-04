@@ -5,6 +5,9 @@
 ## parser for ai
 ##
 
+"""@brief This module provides functions to parse command line arguments for the Zappy AI client.
+It validates the port, name, and machine arguments, ensuring they meet the required criteria.
+"""
 def validate_port(port_str, flags):
     if flags["p"]:
         print("ERROR: Port already set.")
@@ -20,6 +23,10 @@ def validate_port(port_str, flags):
         print("ERROR: Port must be a number.")
         return False, None
 
+"""@brief Validates the name and machine arguments.
+Checks if the name is between 3 and 20 characters long, and if the machine is a valid IP address or 'localhost'.
+Returns a tuple indicating success and the validated value.
+"""
 def validate_name_and_machine(arg_type, value, flags):
     key = "n" if arg_type == "-n" else "h"
     error_msg = "Name" if arg_type == "-n" else "Machine"
@@ -49,6 +56,10 @@ def validate_name_and_machine(arg_type, value, flags):
             print("ERROR: Invalid IP address format.")
             return False, None
 
+"""@brief Checks the validity of command line arguments for the Zappy AI client.
+Validates the port, name, and machine arguments based on the provided flags.
+Returns a tuple indicating success and the validated port, name, and machine.
+"""
 def check_value(args, port, name, machine, flags):
     flag, value = args[0], args[1]
     if flag == "-p":
@@ -66,6 +77,10 @@ def check_value(args, port, name, machine, flags):
             machine = valid_value
     return True, port, name, machine
 
+"""@brief Checks the command line arguments for the Zappy AI client.
+Validates the number of arguments and checks each argument for correctness.
+Returns a tuple indicating success and the validated port, name, and machine.
+"""
 def check_good_args(args, port, name, machine):
     if len(args) != 7 and len(args) != 5:
         print("USAGE: ./zappy_ai -p port -n name -h machine")

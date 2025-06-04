@@ -9,6 +9,9 @@
 import sys
 from parser import check_good_args
 
+"""@brief Main function for the Zappy AI client.
+This function processes command line arguments, validates them, and initializes the AI client.
+It returns 0 on success and 84 on failure."""
 def main(argc, argv):
     port, name, machine = None, None, "localhost"
     if argc == 2 and argv[1] == "--help":
