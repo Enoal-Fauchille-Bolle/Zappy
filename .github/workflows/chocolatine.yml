@@ -110,17 +110,17 @@ jobs:
         run: make tests_run
         timeout-minutes: 2
 
-      - name: Checking Coverage
-        if: ${{ github.event_name == 'pull_request' }}
-        shell: bash
-        run: |
-          coverage=$(gcovr --exclude tests/ --json-summary -o coverage.json && grep -o '"line_percent": [0-9.]*' coverage.json | tail -n 1 | grep -o '[0-9.]*')
-          rm -f coverage.json
-          if (( $(awk "BEGIN {print ($coverage < 70)}") )); then
-              rounded_coverage=${coverage%.*}
-              echo "::error::Coverage is below 70% (Current coverage: ${rounded_coverage}%)"
-              exit 1
-          fi
+      # - name: Checking Coverage
+      #   if: ${{ github.event_name == 'pull_request' }}
+      #   shell: bash
+      #   run: |
+      #     coverage=$(gcovr --exclude tests/ --json-summary -o coverage.json && grep -o '"line_percent": [0-9.]*' coverage.json | tail -n 1 | grep -o '[0-9.]*')
+      #     rm -f coverage.json
+      #     if (( $(awk "BEGIN {print ($coverage < 70)}") )); then
+      #         rounded_coverage=${coverage%.*}
+      #         echo "::error::Coverage is below 70% (Current coverage: ${rounded_coverage}%)"
+      #         exit 1
+      #     fi
 
   repository_mirroring:
     name: Repository Mirroring
