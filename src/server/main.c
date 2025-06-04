@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "options.h"
+#include "constants.h"
 
 /**
  * @brief Display the help page for the server.
@@ -87,9 +88,9 @@ static bool handle_help_request(server_options_t *options)
 {
     if (options->help) {
         print_help_page();
-        return true;
+        return SUCCESS;
     }
-    return false;
+    return FAILURE;
 }
 
 /**
@@ -107,9 +108,9 @@ static bool handle_error_case(server_options_t *options)
 {
     if (options->error) {
         print_help_page();
-        return true;
+        return SUCCESS;
     }
-    return false;
+    return FAILURE;
 }
 
 /**
@@ -130,10 +131,10 @@ static bool process_options(server_options_t *options)
     if (options->debug)
         option_debug(options);
     if (handle_help_request(options))
-        return false;
+        return FAILURE;
     if (handle_error_case(options))
-        return false;
-    return true;
+        return FAILURE;
+    return SUCCESS;
 }
 
 int main(int ac, char **av)
@@ -142,7 +143,7 @@ int main(int ac, char **av)
 
     if (options == NULL)
         return handle_options_error();
-    if (!process_options(options)) {
+    if (process_options(options) == FAILURE) {
         destroy_server_options(options);
         return 84;
     }
