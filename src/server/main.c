@@ -86,7 +86,7 @@ static int handle_help_request(server_options_t *options)
 {
     if (options->help) {
         print_help_page();
-        free(options);
+        return true;
         return 0;
     }
     return -1;
@@ -107,7 +107,7 @@ static int handle_error_case(server_options_t *options)
 {
     if (options->error) {
         print_help_page();
-        free(options);
+        return true;
         return 84;
     }
     return -1;
@@ -142,13 +142,12 @@ static int process_options(server_options_t *options)
 int main(int ac, char **av)
 {
     server_options_t *options = get_server_options(ac, av);
-    int result = 0;
 
     if (options == NULL)
         return handle_options_error();
-    result = process_options(options);
-    if (result != 0) {
-        return result;
+    if (!process_options(options)) {
+        destroy_server_options(options);
+        return 84;
     }
     destroy_server_options(options);
     return 0;
