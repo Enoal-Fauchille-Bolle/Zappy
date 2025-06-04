@@ -30,7 +30,7 @@ class Connexion:
         if self.connected:
             try:
                 self.socket.getpeername()
-                print("Already connected.")
+                #print("Already connected.")
                 return True
             except socket.error:
                 print("Connection lost. Trying to reconnect.")
@@ -62,16 +62,36 @@ class Connexion:
             print(f"Send error: {e}")
             return False
 
+    """@brief Receives a message from the server.
+        Checks if the connection is established before attempting to receive a message.
+        If the connection is lost, it returns None.
+        @param buffer_size: The size of the buffer to read data from the socket.
+        @return The received message as a string, or None if an error occurs.
+        """
+    def receive(self, buffer_size=1024):
+        if not self.connected:
+            print("Not connected to the server.")
+            return None
+        try:
+            data = self.socket.recv(buffer_size)
+            return data.decode('utf-8')
+        except socket.error as e:
+            print(f"Receive error: {e}")
+            return None
+
 # def main():
 #     port = 4444
 #     name = "AI_Bot"
 #     machine = "localhost"
 #     connexion = Connexion(port, name, machine)
 #     while connexion.connect():
-#         if connexion.send("Hello, server!"):
-#             print("Message sent successfully.")
-#         else:
-#             print("Failed to send message.")
+#         # if connexion.send("Hello, server!"):
+#             # print("Message sent successfully.")
+#         # else:
+#             # print("Failed to send message.")
+#         response = connexion.receive()
+#         if response:
+#             print(f"Received from server: {response}")
 #     else:
 #         print("Failed to connect.")
 
