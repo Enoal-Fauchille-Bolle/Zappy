@@ -21,14 +21,14 @@ ERROR = -Werror -Wall -Wextra -Wshadow
 all: zappy_server zappy_gui zappy_ai
 
 DEP	=	$(SRC_SERVER:.c=.d)	\
-		$(SRC_CLIENT:.cpp=.d)	\
+		$(SRC_GUI:.cpp=.d)	\
 		$(SRC_AI:.c=.d)		\
 
 -include $(DEP)
 
 clean:
 	rm -f $(OBJ_SERVER)
-	rm -f $(OBJ_CLIENT)
+	rm -f $(OBJ_GUI)
 	rm -f $(OBJ_AI)
 	rm -f $(TESTS_SRC:.c=.o)
 	rm -f $(DEP)
@@ -37,7 +37,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME_SERVER)
-	rm -f $(NAME_CLIENT)
+	rm -f $(NAME_GUI)
 	rm -f $(NAME_AI)
 	rm -f $(TESTS_NAME)
 
@@ -88,35 +88,35 @@ CC_SERVER := gcc
 zappy_server: $(OBJ_SERVER)
 	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)
 
-################################### Client ###################################
+#################################### GUI ####################################
 
 # Executable name
-NAME_CLIENT = zappy_gui
+NAME_GUI = zappy_gui
 
 # Folder name
-SRCDIR_CLIENT = ${SRCDIR}client/
+SRCDIR_GUI = ${SRCDIR}gui/
 
 # Headers folder
 INCLUDES_CLIENT = ${INCLUDES}client/
 
 # Sources
-SRC_CLIENT = $(SRCDIR_CLIENT)main.cpp	\
+SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 
 # Objects
-OBJ_CLIENT = $(SRC_CLIENT:.cpp=.o)
-$(SRCDIR_CLIENT)%.o: $(SRCDIR_CLIENT)%.cpp
-	$(CC_CLIENT) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_CLIENT)
+OBJ_GUI = $(SRC_GUI:.cpp=.o)
+$(SRCDIR_GUI)%.o: $(SRCDIR_GUI)%.cpp
+	$(CC_GUI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_GUI)
 
 # Compilation Flags
-CFLAGS_CLIENT += $(ERROR) -I$(INCLUDES_CLIENT) -I$(SRC_INCLUDE) -g	\
+CFLAGS_GUI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
 			-std=c++23
 
 # Pre Compilation
-CC_CLIENT := g++
+CC_GUI := g++
 
 # Rule
-zappy_gui: $(OBJ_CLIENT)
-	$(CC_CLIENT) -o $(NAME_CLIENT) $(OBJ_CLIENT) $(CFLAGS_CLIENT)
+zappy_gui: $(OBJ_GUI)
+	$(CC_GUI) -o $(NAME_GUI) $(OBJ_GUI) $(CFLAGS_GUI)
 
 ##################################### AI #####################################
 
