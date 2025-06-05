@@ -7,9 +7,9 @@
 // clang-format Language: C
 
 #ifndef MAP_H_
-#define MAP_H_
+    #define MAP_H_
 
-#include <unistd.h>
+    #include <unistd.h>
 
 typedef struct tile_s {
     size_t food;
