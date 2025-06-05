@@ -56,6 +56,7 @@ class Connexion:
             print("Not connected to the server.")
             return False
         try:
+            message = message.strip() + "\n"
             self.socket.sendall(message.encode('utf-8'))
             return True
         except socket.error as e:
