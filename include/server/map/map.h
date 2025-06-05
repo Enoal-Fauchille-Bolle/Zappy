@@ -29,5 +29,6 @@ typedef struct map_s {
 
 map_t *create_map(size_t width, size_t height);
 void destroy_map(map_t *map);
+tile_t *get_tile(map_t *map, size_t x, size_t y);
 
 #endif /* !MAP_H_ */
