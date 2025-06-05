@@ -93,7 +93,7 @@ class AIGenerator:
                 self.re_fork(port, name, machine, connexion)
                 while True:
                     is_dead = connexion.receive()
-                    if is_dead == "dead\n":
+                    if is_dead == "dead":
                         print(f"AI {name} on {machine}:{port} is dead.")
                         break
             else:
@@ -111,14 +111,8 @@ class AIGenerator:
         """Wait for all child processes to finish"""
         print("Cleaning up child processes...")
         for pid in self.child_pids[:]:
-            try:
-                pid_result, status = os.waitpid(pid, os.WNOHANG)
-                if pid_result == 0:
-                    print(f"Waiting for child {pid} to exit...")
-                    os.waitpid(pid, 0)
-                self.child_pids.remove(pid)
-                print(f"Child process {pid} cleaned up")
-            except ChildProcessError:
-                self.child_pids.remove(pid)
-                pass
+            print(f"Waiting for child {pid} to exit...")
+            os.waitpid(pid, 0)
+            self.child_pids.remove(pid)
+            print(f"Child process {pid} cleaned up")
         print("All child processes cleaned up.")
