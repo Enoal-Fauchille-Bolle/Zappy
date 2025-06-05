@@ -79,22 +79,3 @@ class Connexion:
         except socket.error as e:
             print(f"Receive error: {e}")
             return None
-
-# def main():
-#     port = 4444
-#     name = "AI_Bot"
-#     machine = "localhost"
-#     connexion = Connexion(port, name, machine)
-#     while connexion.connect():
-#         # if connexion.send("Hello, server!"):
-#             # print("Message sent successfully.")
-#         # else:
-#             # print("Failed to send message.")
-#         response = connexion.receive()
-#         if response:
-#             print(f"Received from server: {response}")
-#     else:
-#         print("Failed to connect.")
-
-# if __name__ == "__main__":
-#     main()
