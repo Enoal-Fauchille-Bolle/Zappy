@@ -26,7 +26,6 @@ class Connexion:
         @return True if connection is successful, False otherwise.
         """
     def connect(self):
-        import socket
         if self.connected:
             try:
                 self.socket.getpeername()
