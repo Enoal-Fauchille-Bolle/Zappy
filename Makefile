@@ -72,6 +72,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)options_parser/options/frequency.c	\
 			 $(SRCDIR_SERVER)options_parser/options/help.c	\
 			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
+			 $(SRCDIR_SERVER)map/map.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
