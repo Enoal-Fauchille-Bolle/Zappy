@@ -39,6 +39,7 @@ class Connexion:
             self.socket.connect((self.machine, self.port))
             self.connected = True
             print(f"Connected to {self.machine}:{self.port} as {self.name}")
+            self.buffer = ""
         except socket.error as e:
             print(f"Connection error: {e}")
             self.connected = False
@@ -52,29 +53,37 @@ class Connexion:
         """
     def send(self, message):
         if not self.connected:
-            print("Not connected to the server.")
-            return False
+            if not self.connect():
+                print("Not connected to the server.")
+                return False
+            return self.send(message)
         try:
             message = message.strip() + "\n"
-            self.socket.sendall(message.encode('utf-8'))
+            self.socket.sendall(message.encode('ascii'))
             return True
         except socket.error as e:
             print(f"Send error: {e}")
             return False
 
-    """@brief Receives a message from the server.
-        Checks if the connection is established before attempting to receive a message.
-        If the connection is lost, it returns None.
+    """@brief Receives a complete message from the server.
+        Uses a buffer to handle partial messages and returns complete lines.
         @param buffer_size: The size of the buffer to read data from the socket.
-        @return The received message as a string, or None if an error occurs.
+        @return The received complete message as a string, or None if an error occurs.
         """
     def receive(self, buffer_size=1024):
         if not self.connected:
             print("Not connected to the server.")
             return None
         try:
-            data = self.socket.recv(buffer_size)
-            return data.decode('utf-8')
+            while '\n' not in self.buffer:
+                data = self.socket.recv(buffer_size)
+                if not data:
+                    return None
+                self.buffer += data.decode('ascii')
+            lines = self.buffer.split('\n', 1)
+            message = lines[0]
+            self.buffer = lines[1] if len(lines) > 1 else ""
+            return message
         except socket.error as e:
             print(f"Receive error: {e}")
             return None
