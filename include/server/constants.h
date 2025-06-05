@@ -8,7 +8,12 @@
 #ifndef CONSTANTS_H_
     #define CONSTANTS_H_
 
-    #define SUCCESS true
-    #define FAILURE false
+    #include <stdbool.h>
+
+extern const bool SUCCESS;
+extern const bool FAILURE;
+
+extern const int EXIT_SUCCESS_CODE;
+extern const int EXIT_ERROR_CODE;
 
 #endif /* !CONSTANTS_H_ */

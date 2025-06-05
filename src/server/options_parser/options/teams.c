@@ -6,6 +6,7 @@
 */
 
 #include "options_parser/parser.h"
+#include "constants.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -140,16 +141,16 @@ static bool fill_teams(
             dprintf(
                 fileno(stderr), "Error: Team '%s' already exists.\n", av[j]);
             destroy_teams(options);
-            return false;
+            return FAILURE;
         }
         options->teams[j - start - 1] = strdup(av[j]);
         if (options->teams[j - start - 1] == NULL) {
             perror("Failed to allocate memory for team name");
             destroy_teams(options);
-            return false;
+            return FAILURE;
         }
     }
-    return true;
+    return SUCCESS;
 }
 
 /**

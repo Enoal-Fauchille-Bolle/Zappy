@@ -71,7 +71,7 @@ static void option_debug(server_options_t *options)
 int handle_options_error(void)
 {
     fprintf(stderr, "Error: Failed to parse options.\n");
-    return 84;
+    return EXIT_ERROR_CODE;
 }
 
 /**
