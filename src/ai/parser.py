@@ -28,9 +28,6 @@ def validate_name_and_machine(arg_type, value, flags):
         return False, None
     flags[key] = True
     if arg_type == "-n":
-        if len(value) < 3 or len(value) > 20:
-            print("ERROR: Name must be between 3 and 20 characters long.")
-            return False, None
         return True, value
     else:
         if value == "localhost":
