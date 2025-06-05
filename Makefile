@@ -156,7 +156,8 @@ TESTS_NAME = unit_tests.out
 TESTS = ./tests/
 
 # Sources
-TESTS_SRC =	\
+TESTS_SRC =	${TESTS}map_tests.c	\
+			$(SRCDIR_SERVER)map/map.c	\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
@@ -168,11 +169,11 @@ CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
 # Pre Compilation
 CC_TESTS := gcc
 
-$(TESTS)%.o: $(TESTS)%.cpp
+$(TESTS)%.o: $(TESTS)%.c
 	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
 
-unit_tests: $(TESTS_SRC:.cpp=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.cpp=.o)	\
+unit_tests: $(TESTS_SRC:.c=.o)
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.c=.o)	\
 		$(UNIT_FLAGS)
 
 tests_run: unit_tests
