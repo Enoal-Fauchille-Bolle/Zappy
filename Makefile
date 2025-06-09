@@ -162,6 +162,8 @@ TESTS = ./tests/
 TESTS_SRC =	${TESTS}map_tests.c	\
 			$(SRCDIR_SERVER)map/map.c	\
 			$(SRCDIR_SERVER)map/coordinates.c	\
+			$(SRCDIR_SERVER)player/player.c	\
+			${TESTS}player_tests.c	\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
