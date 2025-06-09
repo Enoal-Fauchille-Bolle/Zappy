@@ -10,6 +10,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * @brief Create a new map with specified dimensions.
+ *
+ * This function allocates memory for a map structure and initializes its
+ * dimensions and tiles. Each tile is initialized to zero.
+ *
+ * @param width Width of the map
+ * @param height Height of the map
+ * @return Pointer to the initialized map_t structure on success,
+ *         NULL if memory allocation fails
+ *
+ * @note Caller is responsible for freeing the returned structure using
+ *       destroy_map() when it is no longer needed.
+ */
 map_t *create_map(size_t width, size_t height)
 {
     map_t *map = malloc(sizeof(map_t) + sizeof(tile_t) * width * height);
@@ -25,6 +39,17 @@ map_t *create_map(size_t width, size_t height)
     return map;
 }
 
+/**
+ * @brief Free the memory allocated for the map.
+ *
+ * This function deallocates the memory used by the map structure.
+ * It should be called when the map is no longer needed to prevent memory
+ * leaks.
+ *
+ * @param map Pointer to the map structure to be destroyed
+ *
+ * @note If the map pointer is NULL, this function does nothing.
+ */
 void destroy_map(map_t *map)
 {
     if (map == NULL)
@@ -32,6 +57,18 @@ void destroy_map(map_t *map)
     free(map);
 }
 
+/**
+ * @brief Get a tile from the map at specified coordinates.
+ *
+ * This function retrieves a tile from the map based on the provided
+ * coordinates (x, y). If the coordinates are outside the map's dimensions,
+ * they are wrapped around using modulo operation to ensure valid access.
+ *
+ * @return Pointer to the initialized tile_t structure on success,
+ *         NULL if the given map is NULL.
+ *
+ * @note Caller is NOT responsible for freeing the returned structure
+ */
 tile_t *get_tile(map_t *map, size_t x, size_t y)
 {
     size_t true_x = x % map->width;
