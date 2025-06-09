@@ -32,8 +32,8 @@ clean:
 	rm -f $(OBJ_AI)
 	rm -f $(TESTS_SRC:.c=.o)
 	rm -f $(DEP)
-	rm -f *.gcno
-	rm -f *.gcda
+	find . -name "*.gcda" -delete
+	find . -name "*.gcno" -delete
 
 fclean: clean
 	rm -f $(NAME_SERVER)
@@ -160,21 +160,20 @@ TESTS_SRC =	${TESTS}map_tests.c	\
 			$(SRCDIR_SERVER)map/map.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
+UNIT_FLAGS = $(FLAGS) -lcriterion -g --coverage
 
 # Compilation Flags
 CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
-				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g
+				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g --coverage
 
 # Pre Compilation
 CC_TESTS := gcc
 
-$(TESTS)%.o: $(TESTS)%.c
+$(SRCDIR_SERVER)%.o: $(SRCDIR_SERVER)%.c
 	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
 
 unit_tests: $(TESTS_SRC:.c=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.c=.o)	\
-		$(UNIT_FLAGS)
+	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC:.c=.o)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
