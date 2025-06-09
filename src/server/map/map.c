@@ -6,6 +6,7 @@
 */
 
 #include "map/map.h"
+#include "map/coordinates.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,15 +76,35 @@ void destroy_map(map_t *map)
  *
  * @note Caller is NOT responsible for freeing the returned structure
  */
-tile_t *get_tile(map_t *map, size_t x, size_t y)
+tile_t *get_tile(map_t *map, const pos_t pos)
 {
-    size_t true_x = x % map->width;
-    size_t true_y = y % map->height;
-    size_t index = true_y * map->width + true_x;
+    pos_t wrapped_pos = wrap_coordinates(pos, map->width, map->height);
+    size_t index = wrapped_pos.y * map->width + wrapped_pos.x;
 
     if (map == NULL) {
         fprintf(stderr, "Invalid map\n");
         return NULL;
     }
     return &map->tiles[index];
+}
+
+/**
+ * @brief Move the player forward in the direction they are facing.
+ *
+ * This function updates the player's position based on their current
+ * orientation and the map's dimensions. If the player or map pointer is NULL,
+ * it prints an error message and returns without making any changes.
+ *
+ * @param player Pointer to the player structure to be moved
+ * @param map Pointer to the map structure where the player is located
+ */
+// TODO: Remove player pointer from the tile at the current position
+//       Add player pointer to the tile at the new position
+void move_player_forward(player_t *player, map_t *map)
+{
+    if (player == NULL || map == NULL) {
+        fprintf(stderr, "Invalid player or map pointer\n");
+        return;
+    }
+    player->pos = get_forward_position(player->pos, player->orientation, map);
 }

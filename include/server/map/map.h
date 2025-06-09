@@ -9,16 +9,13 @@
 #ifndef MAP_H_
     #define MAP_H_
 
+    #include "map/coordinates.h"
+    #include "player/player.h"
     #include <unistd.h>
 
 typedef struct tile_s {
-    size_t food;
-    size_t linemate;
-    size_t deraumere;
-    size_t sibur;
-    size_t mendiane;
-    size_t phiras;
-    size_t thystame;
+    inventory_t inventory;      // Items on the tile
+    player_t *players[];        // Array of pointers to players on the tile
 } tile_t;
 
 typedef struct map_s {
@@ -29,6 +26,7 @@ typedef struct map_s {
 
 map_t *create_map(size_t width, size_t height);
 void destroy_map(map_t *map);
-tile_t *get_tile(map_t *map, size_t x, size_t y);
+tile_t *get_tile(map_t *map, const pos_t pos);
+void move_player_forward(player_t *player, map_t *map);
 
 #endif /* !MAP_H_ */
