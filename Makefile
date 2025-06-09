@@ -160,20 +160,21 @@ TESTS_SRC =	${TESTS}map_tests.c	\
 			$(SRCDIR_SERVER)map/map.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(FLAGS) -lcriterion -g --coverage
+UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
 
 # Compilation Flags
 CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
-				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g --coverage
+				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g
 
 # Pre Compilation
 CC_TESTS := gcc
 
-$(SRCDIR_SERVER)%.o: $(SRCDIR_SERVER)%.c
+$(TESTS)%.o: $(TESTS)%.c
 	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
 
 unit_tests: $(TESTS_SRC:.c=.o)
-	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC:.c=.o)
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.c=.o)	\
+		$(UNIT_FLAGS)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
