@@ -19,8 +19,8 @@ int main(int ac, char **av)
         return handle_options_error();
     if (process_options(options) == FAILURE) {
         destroy_server_options(options);
-        return 84;
+        return EXIT_ERROR_CODE;
     }
     destroy_server_options(options);
-    return 0;
+    return EXIT_SUCCESS_CODE;
 }
