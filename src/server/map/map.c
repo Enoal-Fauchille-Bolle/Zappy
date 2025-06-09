@@ -32,6 +32,12 @@ map_t *create_map(size_t width, size_t height)
         perror("Failed to allocate memory for map");
         return NULL;
     }
+    if (width == 0 || height == 0) {
+        fprintf(
+            stderr, "Invalid map dimensions: width and height must be > 0\n");
+        free(map);
+        return NULL;
+    }
     map->width = width;
     map->height = height;
     for (size_t i = 0; i < width * height; i++)
