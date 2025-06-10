@@ -161,17 +161,17 @@ TESTS_NAME = unit_tests.out
 TESTS = ./tests/
 
 # Sources
-TESTS_SRC =	${TESTS}map_tests.c	\
-			$(SRCDIR_SERVER)map/map.c	\
+TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			$(SRCDIR_SERVER)map/coordinates.c	\
+			${SRCDIR_SERVER}map/resources.c	\
 			$(SRCDIR_SERVER)player/player.c	\
 			$(SRCDIR_SERVER)player/movement.c	\
 			${TESTS}player_tests.c	\
 			${TESTS}resources_tests.c	\
-			${SRCDIR_SERVER}map/resources.c	\
+			${TESTS}map_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
+UNIT_FLAGS = $(CFLAGS_SERVER) -lcriterion --coverage
 
 # Compilation Flags
 CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
@@ -180,12 +180,8 @@ CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
 # Pre Compilation
 CC_TESTS := gcc
 
-$(TESTS)%.o: $(TESTS)%.c
-	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
-
-unit_tests: $(TESTS_SRC:.c=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.c=.o)	\
-		$(UNIT_FLAGS)
+unit_tests:
+	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
