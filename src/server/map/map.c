@@ -78,13 +78,15 @@ void destroy_map(map_t *map)
  */
 tile_t *get_tile(map_t *map, const pos_t pos)
 {
-    pos_t wrapped_pos = wrap_coordinates(pos, map->width, map->height);
-    size_t index = wrapped_pos.y * map->width + wrapped_pos.x;
+    pos_t wrapped_pos;
+    size_t index;
 
     if (map == NULL) {
         fprintf(stderr, "Invalid map\n");
         return NULL;
     }
+    wrapped_pos = wrap_coordinates(pos, map->width, map->height);
+    index = wrapped_pos.y * map->width + wrapped_pos.x;
     return &map->tiles[index];
 }
 
