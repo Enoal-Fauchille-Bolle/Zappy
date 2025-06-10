@@ -39,9 +39,11 @@ void destroy_player(player_t *player)
 void turn_player_left(player_t *player)
 {
     player->orientation = turn_left(player->orientation);
+    player->tick_cooldown = 7;
 }
 
 void turn_player_right(player_t *player)
 {
     player->orientation = turn_right(player->orientation);
+    player->tick_cooldown = 7;
 }

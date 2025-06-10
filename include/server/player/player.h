@@ -30,6 +30,7 @@ typedef struct player_s {
     size_t level;
     inventory_t inventory;
     size_t team_id;
+    size_t tick_cooldown;      // If 0, player can act
 } player_t;
 
 player_t *create_player(size_t id, const pos_t pos, size_t team_id);

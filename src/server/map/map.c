@@ -107,4 +107,5 @@ void move_player_forward(player_t *player, map_t *map)
         return;
     }
     player->pos = get_forward_position(player->pos, player->orientation, map);
+    player->tick_cooldown = 7;
 }
