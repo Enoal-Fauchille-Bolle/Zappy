@@ -9,6 +9,7 @@
 #include "map/map.h"
 #include "player/player.h"
 #include <criterion/criterion.h>
+#include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 #include <criterion/redirect.h>
 
@@ -126,6 +127,34 @@ Test(player, move_player_forward_wrap)
         "Player X position should wrap to 9 after moving left from (0,9)");
     cr_assert_eq(player->pos.y, 9,
         "Player Y position should remain 9 after moving left from (0,9)");
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(player, move_player_on_map)
+{
+    pos_t pos = {5, 5};
+    player_t *player = create_player(1, pos, 1);
+    map_t *map = create_map(10, 10);
+    tile_t *prev_tile;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    add_player_to_map(map, player);
+    prev_tile = get_tile(map, player->pos);
+    cr_assert_eq(prev_tile->players[0], player,
+        "Player should be on the tile at (5,5) before moving");
+    player->orientation = EAST;
+    move_player_forward(player, map);
+    cr_assert_eq(player->pos.x, 6,
+        "Player X position should be 6 after moving east from (5,5)");
+    cr_assert_eq(player->pos.y, 5,
+        "Player Y position should remain 5 after moving east from (5,5)");
+    cr_assert_eq(get_tile(map, player->pos)->players[0], player,
+        "Player should still be on the tile at (6,5) after moving");
+    cr_assert_eq(prev_tile->players[0], NULL,
+        "Player should no longer be on the previous tile at (5,5) after "
+        "moving");
     destroy_player(player);
     destroy_map(map);
 }

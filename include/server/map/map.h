@@ -27,6 +27,7 @@ typedef struct map_s {
 map_t *create_map(size_t width, size_t height);
 void destroy_map(map_t *map);
 tile_t *get_tile(map_t *map, const pos_t pos);
-void move_player_forward(player_t *player, map_t *map);
+void add_player_to_map(map_t *map, player_t *player);
+void remove_player_from_map(map_t *map, player_t *player);
 
 #endif /* !MAP_H_ */

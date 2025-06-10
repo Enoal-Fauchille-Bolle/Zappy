@@ -88,24 +88,31 @@ tile_t *get_tile(map_t *map, const pos_t pos)
     return &map->tiles[index];
 }
 
-/**
- * @brief Move the player forward in the direction they are facing.
- *
- * This function updates the player's position based on their current
- * orientation and the map's dimensions. If the player or map pointer is NULL,
- * it prints an error message and returns without making any changes.
- *
- * @param player Pointer to the player structure to be moved
- * @param map Pointer to the map structure where the player is located
- */
-// TODO: Remove player pointer from the tile at the current position
-//       Add player pointer to the tile at the new position
-void move_player_forward(player_t *player, map_t *map)
+void add_player_to_map(map_t *map, player_t *player)
 {
-    if (player == NULL || map == NULL) {
-        fprintf(stderr, "Invalid player or map pointer\n");
+    tile_t *tile;
+
+    if (map == NULL || player == NULL) {
+        fprintf(stderr, "Invalid map or player pointer\n");
         return;
     }
-    player->pos = get_forward_position(player->pos, player->orientation, map);
-    player->tick_cooldown = 7;
+    tile = get_tile(map, player->pos);
+    tile->players[0] = player;
+}
+
+void remove_player_from_map(map_t *map, player_t *player)
+{
+    tile_t *tile;
+
+    if (map == NULL || player == NULL) {
+        fprintf(stderr, "Invalid tile or player pointer\n");
+        return;
+    }
+    tile = get_tile(map, player->pos);
+    if (tile == NULL) {
+        fprintf(stderr, "Tile not found for player at position (%zu, %zu)\n",
+            player->pos.x, player->pos.y);
+        return;
+    }
+    tile->players[0] = NULL;
 }

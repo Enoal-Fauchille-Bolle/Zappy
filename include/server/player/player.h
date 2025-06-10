@@ -37,5 +37,6 @@ player_t *create_player(size_t id, const pos_t pos, size_t team_id);
 void destroy_player(player_t *player);
 void turn_player_left(player_t *player);
 void turn_player_right(player_t *player);
+void move_player_forward(player_t *player, map_t *map);
 
 #endif /* !PLAYER_H_ */
