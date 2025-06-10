@@ -5,11 +5,13 @@
 ** map_tests
 */
 
+#include "map/coordinates.h"
 #include "map/map.h"
 #include "map/resources.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/test.h>
 #include <criterion/redirect.h>
+#include <stdio.h>
 
 // void redirect_stdout(void)
 // {
@@ -92,4 +94,66 @@ Test(map, destroy_map_null)
 
     destroy_map(map);      // Should not crash or do anything
     cr_assert(true, "Destroying NULL map should not cause any issues");
+}
+
+Test(map, create_0_size)
+{
+    map_t *map = create_map(0, 10);
+
+    cr_assert_null(map, "Map should be NULL for zero width");
+    map = create_map(10, 0);
+    cr_assert_null(map, "Map should be NULL for zero height");
+    destroy_map(map);
+}
+
+Test(wrap_coordinates, invalid_coordinates)
+{
+    pos_t pos = {5, 5};
+    pos_t wrapped_pos = wrap_coordinates(pos, 0, 2);
+
+    cr_assert_eq(wrapped_pos.x, 0, "Wrapped X should be 0 for zero width");
+    cr_assert_eq(wrapped_pos.y, 0, "Wrapped Y should be 0 for zero height");
+    wrapped_pos = wrap_coordinates(pos, 2, 0);
+    cr_assert_eq(wrapped_pos.x, 0, "Wrapped X should be 0 for zero height");
+    cr_assert_eq(wrapped_pos.y, 0, "Wrapped Y should be 0 for zero width");
+}
+
+Test(get_forward_position, invalid_coordinates)
+{
+    pos_t pos = {5, 6};
+    pos_t new_pos = get_forward_position(pos, NORTH, NULL);
+
+    cr_assert_eq(new_pos.x, 5, "X should remain unchanged for zero size map");
+    cr_assert_eq(new_pos.y, 6, "Y should remain unchanged for zero size map");
+}
+
+Test(get_tile, null)
+{
+    tile_t *tile = get_tile(NULL, (pos_t){0, 0});
+
+    cr_assert_null(tile, "Tile should be NULL for NULL map");
+}
+
+Test(add_player_to_map, null)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    map_t *map = create_map(1, 1);
+
+    add_player_to_map(map, NULL);
+    add_player_to_map(NULL, player);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(remove_player_from_map, null)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    map_t *map = create_map(1, 1);
+
+    remove_player_from_map(map, NULL);
+    remove_player_from_map(NULL, player);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
 }
