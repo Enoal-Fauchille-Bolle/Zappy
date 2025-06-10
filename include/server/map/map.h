@@ -7,12 +7,12 @@
 // clang-format Language: C
 
 #ifndef MAP_H_
-#define MAP_H_
+    #define MAP_H_
 
-#include "map/coordinates.h"
-#include "map/resources.h"
-#include "player/player.h"
-#include <unistd.h>
+    #include "map/coordinates.h"
+    #include "map/resources.h"
+    #include "player/player.h"
+    #include <unistd.h>
 
 typedef struct tile_s {
     resources_t resources;      // Items on the tile

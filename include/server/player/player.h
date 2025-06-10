@@ -7,12 +7,12 @@
 // clang-format Language: C
 
 #ifndef PLAYER_H_
-#define PLAYER_H_
+    #define PLAYER_H_
 
-#include "map/coordinates.h"
-#include "map/resources.h"
-#include <stddef.h>
-#include <unistd.h>
+    #include "map/coordinates.h"
+    #include "map/resources.h"
+    #include <stddef.h>
+    #include <unistd.h>
 
 typedef struct player_s {
     size_t id;
