@@ -10,12 +10,13 @@
     #define MAP_H_
 
     #include "map/coordinates.h"
+    #include "map/ressources.h"
     #include "player/player.h"
     #include <unistd.h>
 
 typedef struct tile_s {
-    inventory_t inventory;      // Items on the tile
-    player_t *players[];        // Array of pointers to players on the tile
+    ressources_t ressources;      // Items on the tile
+    player_t *players[];          // Array of pointers to players on the tile
 } tile_t;
 
 typedef struct map_s {

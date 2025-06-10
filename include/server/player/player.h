@@ -10,18 +10,9 @@
     #define PLAYER_H_
 
     #include "map/coordinates.h"
+    #include "map/ressources.h"
     #include <stddef.h>
     #include <unistd.h>
-
-typedef struct inventory_s {
-    size_t food;
-    size_t linemate;
-    size_t deraumere;
-    size_t sibur;
-    size_t mendiane;
-    size_t phiras;
-    size_t thystame;
-} inventory_t;
 
 typedef struct player_s {
     size_t id;
