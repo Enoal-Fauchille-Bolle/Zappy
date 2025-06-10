@@ -112,3 +112,39 @@ Test(resources, spread_resources_count_all)
         "Thystame count should match minimum resource count for 0.05 density");
     destroy_map(map);
 }
+
+Test(resources, get_minimum_resource_count_null)
+{
+    size_t count = get_minimum_resource_count(NULL, FOOD_DENSITY);
+
+    cr_assert_eq(count, 0, "Count should be 0 for NULL map");
+}
+
+Test(resources, count_resource_null)
+{
+    size_t count = count_resource(NULL, FOOD);
+
+    cr_assert_eq(count, 0, "Count should be 0 for NULL map");
+}
+
+Test(resources, spread_resource_null)
+{
+    spread_resource(NULL, FOOD);
+}
+
+Test(resources, spread_resource_enough)
+{
+    map_t *map = create_map(10, 10);
+
+    cr_assert_not_null(map, "Map should not be NULL");
+    map->tiles[0].resources[FOOD] = 1000;
+    spread_resource(map, FOOD);
+    cr_assert_eq(count_resource(map, FOOD), 1000,
+        "Food count should not increase if already above minimum");
+    destroy_map(map);
+}
+
+Test(resources, spread_resources_null)
+{
+    spread_resources(NULL);
+}

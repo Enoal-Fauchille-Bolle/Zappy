@@ -215,3 +215,26 @@ Test(player, west_wraps_correctly)
     cr_assert_eq(new_pos.y, 5, "Y should remain unchanged");
     destroy_map(map);
 }
+
+Test(player, move_forward_null)
+{
+    player_t *player = create_player(1, (pos_t){5, 5}, 1);
+    map_t *map = create_map(10, 10);
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    move_player_forward(NULL, map);
+    move_player_forward(player, NULL);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(player, destroy_player_null)
+{
+    player_t *player = create_player(1, (pos_t){5, 5}, 1);
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    destroy_player(NULL);      // Should not crash
+    destroy_player(player);
+}
