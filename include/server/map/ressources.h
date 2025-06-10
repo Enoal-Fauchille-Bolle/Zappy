@@ -39,7 +39,7 @@ typedef ressources_t inventory_t;
 
 size_t get_minimum_ressource_count(const map_t *map, const float density);
 size_t count_ressource(const map_t *map, const ressource_t ressource);
-// void spread_ressource(map_t *map, const ressource_t ressource);
+void spread_ressource(map_t *map, const ressource_t ressource);
 void spread_ressources(map_t *map);
 
 #endif /* !RESSOURCES_H_ */
