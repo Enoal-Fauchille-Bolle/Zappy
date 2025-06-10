@@ -18,6 +18,18 @@ size_t get_minimum_ressource_count(const map_t *map, const float density)
     }
     return map->width * map->height * density;
 }
+size_t count_ressource(const map_t *map, const ressource_t ressource)
+{
+    size_t count = 0;
+
+    if (map == NULL) {
+        fprintf(stderr, "Invalid map pointer\n");
+        return 0;
+    }
+    for (size_t i = 0; i < map->width * map->height; i++)
+        count += map->tiles[i].ressources[ressource];
+    return count;
+}
 
 // static void spread_ressource(map_t *map, const ressource_t ressource)
 // {
