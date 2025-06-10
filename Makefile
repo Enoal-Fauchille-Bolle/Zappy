@@ -76,6 +76,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)map/map.c	\
 			 $(SRCDIR_SERVER)map/coordinates.c	\
 			 $(SRCDIR_SERVER)player/player.c	\
+			 $(SRCDIR_SERVER)player/movement.c	\
 			 $(SRCDIR_SERVER)map/ressources.c	\
 
 # Objects
@@ -164,6 +165,7 @@ TESTS_SRC =	${TESTS}map_tests.c	\
 			$(SRCDIR_SERVER)map/map.c	\
 			$(SRCDIR_SERVER)map/coordinates.c	\
 			$(SRCDIR_SERVER)player/player.c	\
+			$(SRCDIR_SERVER)player/movement.c	\
 			${TESTS}player_tests.c	\
 
 # Test Compilation Flags
