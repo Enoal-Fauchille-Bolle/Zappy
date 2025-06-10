@@ -82,7 +82,7 @@ void spread_resource(map_t *map, const resource_t resource)
     size_t target_count = min - current_count;
     tile_t *current_tile;
 
-    if (current_count > min)
+    if (map == NULL || current_count > min)
         return;
     for (size_t i = 0; i < target_count; i++) {
         current_tile = &map->tiles[rand() % (map->width * map->height)];
