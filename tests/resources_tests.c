@@ -28,6 +28,17 @@ Test(resources, get_minimum_resource_count)
     destroy_map(map);
 }
 
+Test(resources, get_minimum_resource_count_not_whole)
+{
+    map_t *map = create_map(5, 5);
+    size_t count = get_minimum_resource_count(map, THYSTAME_DENSITY);
+
+    cr_assert_not_null(map, "Map should not be NULL");
+    cr_assert_eq(
+        count, 1, "Minimum resource count should be 1(.25) for 0.05 density");
+    destroy_map(map);
+}
+
 Test(resources, count_resource)
 {
     map_t *map = create_map(10, 10);
@@ -55,5 +66,49 @@ Test(resources, spread_resource)
 
     cr_assert_gt(new_count, initial_count,
         "Food count should increase after spreading resources");
+    destroy_map(map);
+}
+
+Test(resources, spread_resources_count_all)
+{
+    map_t *map = create_map(10, 10);
+    size_t food_count, linemate_count, deraumere_count, sibur_count,
+        mendiane_count, phiras_count, thystame_count;
+    cr_assert_not_null(map, "Map should not be NULL");
+    spread_resources(map);
+    food_count = count_resource(map, FOOD);
+    linemate_count = count_resource(map, LINEMATE);
+    deraumere_count = count_resource(map, DERAUMERE);
+    sibur_count = count_resource(map, SIBUR);
+    mendiane_count = count_resource(map, MENDIANE);
+    phiras_count = count_resource(map, PHIRAS);
+    thystame_count = count_resource(map, THYSTAME);
+    cr_assert_gt(food_count, 0, "Food count should be greater than 0");
+    cr_assert_gt(linemate_count, 0, "Linemate count should be greater than 0");
+    cr_assert_gt(
+        deraumere_count, 0, "Deraumere count should be greater than 0");
+    cr_assert_gt(sibur_count, 0, "Sibur count should be greater than 0");
+    cr_assert_gt(mendiane_count, 0, "Mendiane count should be greater than 0");
+    cr_assert_gt(phiras_count, 0, "Phiras count should be greater than 0");
+    cr_assert_gt(thystame_count, 0, "Thystame count should be greater than 0");
+    cr_assert_eq(food_count, get_minimum_resource_count(map, FOOD_DENSITY),
+        "Food count should match minimum resource count for 0.5 density");
+    cr_assert_eq(linemate_count,
+        get_minimum_resource_count(map, LINEMATE_DENSITY),
+        "Linemate count should match minimum resource count for 0.3 density");
+    cr_assert_eq(deraumere_count,
+        get_minimum_resource_count(map, DERAUMERE_DENSITY),
+        "Deraumere count should match minimum resource count for 0.15 "
+        "density");
+    cr_assert_eq(sibur_count, get_minimum_resource_count(map, SIBUR_DENSITY),
+        "Sibur count should match minimum resource count for 0.1 density");
+    cr_assert_eq(mendiane_count,
+        get_minimum_resource_count(map, MENDIANE_DENSITY),
+        "Mendiane count should match minimum resource count for 0.1 density");
+    cr_assert_eq(phiras_count, get_minimum_resource_count(map, PHIRAS_DENSITY),
+        "Phiras count should match minimum resource count for 0.08 density");
+    cr_assert_eq(thystame_count,
+        get_minimum_resource_count(map, THYSTAME_DENSITY),
+        "Thystame count should match minimum resource count for 0.05 density");
     destroy_map(map);
 }
