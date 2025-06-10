@@ -125,17 +125,9 @@ void add_player_to_map(map_t *map, player_t *player)
  */
 void remove_player_from_map(map_t *map, player_t *player)
 {
-    tile_t *tile;
-
     if (map == NULL || player == NULL) {
         fprintf(stderr, "Invalid tile or player pointer\n");
         return;
     }
-    tile = get_tile(map, player->pos);
-    if (tile == NULL) {
-        fprintf(stderr, "Tile not found for player at position (%zu, %zu)\n",
-            player->pos.x, player->pos.y);
-        return;
-    }
-    tile->players[0] = NULL;
+    get_tile(map, player->pos)->players[0] = NULL;
 }
