@@ -55,7 +55,7 @@ void move_player_forward(player_t *player, map_t *map)
 {
     tile_t *current_tile = get_tile(map, player->pos);
 
-    if (player == NULL || map == NULL || current_tile == NULL) {
+    if (player == NULL || current_tile == NULL) {
         fprintf(stderr, "Invalid player or map pointer\n");
         return;
     }
