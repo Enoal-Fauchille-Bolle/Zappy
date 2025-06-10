@@ -100,6 +100,7 @@ tile_t *get_tile(map_t *map, const pos_t pos)
  * @param map Pointer to the map structure where the player will be added
  * @param player Pointer to the player structure to be added to the map
  */
+// TODO: Handle multiple players on the same tile
 void add_player_to_map(map_t *map, player_t *player)
 {
     tile_t *tile;
@@ -123,6 +124,7 @@ void add_player_to_map(map_t *map, player_t *player)
  * @param map Pointer to the map structure where the player will be removed
  * @param player Pointer to the player structure to be removed from the map
  */
+// TODO: Handle multiple players on the same tile
 void remove_player_from_map(map_t *map, player_t *player)
 {
     if (map == NULL || player == NULL) {
