@@ -47,7 +47,7 @@ re_clean: fclean all clean
 
 .PHONY: all clean \
 	fclean re \
-	tests_run unit_tests coverage
+	tests_run unit_tests coverage cs
 
 ################################### Server ###################################
 
@@ -191,3 +191,8 @@ tests_run: unit_tests
 coverage: tests_run
 	gcovr --exclude tests/
 	gcovr --exclude tests/ --txt-metric branch
+
+cs:	clean
+	@coding-style . .
+	@cat coding-style-reports.log
+	@rm -f coding-style-reports.log
