@@ -5,7 +5,7 @@
 ** Frequency Option
 */
 
-#include "options_parser/parser.h"
+#include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
 
