@@ -55,10 +55,11 @@ re_clean: fclean all clean
 NAME_SERVER = zappy_server
 
 # Folder name
-SRCDIR_SERVER = ${SRCDIR}server/
+SRCDIR_SERVER = $(SRCDIR)server/
+LIB_SERVER	=	$(SRCDIR_SERVER)utils/
 
 # Headers folder
-INCLUDES_SERVER = ${INCLUDES}server/
+INCLUDES_SERVER = $(INCLUDES)server/
 
 # Sources
 SRC_SERVER = $(SRCDIR_SERVER)main.c	\
@@ -86,8 +87,16 @@ CFLAGS_SERVER += $(ERROR) -I$(INCLUDES_SERVER) -I$(SRC_INCLUDE) -g	\
 CC_SERVER := gcc
 
 # Rule
-zappy_server: $(OBJ_SERVER)
-	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)
+
+$(LIB_SERVER)libvector.a:
+		make -C $(LIB_SERVER)
+
+libclean: fclean
+		make -C $(LIB_SERVER) fclean
+
+zappy_server: $(OBJ_SERVER) $(LIB_SERVER)libvector.a
+	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)	\
+	-L$(LIB_SERVER) -lvector
 
 #################################### GUI ####################################
 
