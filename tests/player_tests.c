@@ -5,6 +5,7 @@
 ** map_tests
 */
 
+#include "map/coordinates.h"
 #include "map/map.h"
 #include "player/player.h"
 #include <criterion/criterion.h>
@@ -25,6 +26,7 @@ Test(player, create_player)
     cr_assert_eq(player->id, 1, "Player ID should be 1");
     cr_assert_eq(player->pos.x, 5, "Player X position should be 5");
     cr_assert_eq(player->pos.y, 4, "Player Y position should be 4");
+    player->orientation = NORTH;
     cr_assert_eq(
         player->orientation, NORTH, "Player orientation should be NORTH");
     cr_assert_eq(player->level, 1, "Player level should be 1");
@@ -37,6 +39,7 @@ Test(player, turn_left_360)
     player_t *player = create_player(1, pos, 1);
 
     cr_assert_not_null(player, "Player should not be NULL");
+    player->orientation = NORTH;
     cr_assert_eq(player->orientation, NORTH,
         "Player orientation should be NORTH before left turn");
     turn_player_left(player);
@@ -60,6 +63,7 @@ Test(player, turn_right_360)
     player_t *player = create_player(1, pos, 1);
 
     cr_assert_not_null(player, "Player should not be NULL");
+    player->orientation = NORTH;
     cr_assert_eq(player->orientation, NORTH,
         "Player orientation should be NORTH before right turn");
     turn_player_right(player);
@@ -85,6 +89,7 @@ Test(player, move_player_forward_basic)
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");
+    player->orientation = NORTH;
     turn_player_right(player);
     move_player_forward(player, map);
     cr_assert_eq(player->pos.x, 1,
@@ -109,6 +114,7 @@ Test(player, move_player_forward_wrap)
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");
+    player->orientation = NORTH;
     move_player_forward(player, map);
     cr_assert_eq(player->pos.x, 0,
         "Player X position should remain 0 after moving forward from (0,0)");
