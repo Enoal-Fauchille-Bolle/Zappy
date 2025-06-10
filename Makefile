@@ -76,6 +76,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)map/map.c	\
 			 $(SRCDIR_SERVER)map/coordinates.c	\
 			 $(SRCDIR_SERVER)player/player.c	\
+			 $(SRCDIR_SERVER)map/ressources.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)

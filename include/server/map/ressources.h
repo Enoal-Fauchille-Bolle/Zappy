@@ -18,18 +18,27 @@
     #define PHIRAS_DENSITY 0.08f
     #define THYSTAME_DENSITY 0.05f
 
+typedef enum ressource_e {
+    FOOD,
+    LINEMATE,
+    DERAUMERE,
+    SIBUR,
+    MENDIANE,
+    PHIRAS,
+    THYSTAME
+} ressource_t;
+
+static const float ressource_densities[7] = {FOOD_DENSITY, LINEMATE_DENSITY,
+    DERAUMERE_DENSITY, SIBUR_DENSITY, MENDIANE_DENSITY, PHIRAS_DENSITY,
+    THYSTAME_DENSITY};
+
 typedef struct map_s map_t;
 
-typedef struct inventory_s {
-    size_t food;
-    size_t linemate;
-    size_t deraumere;
-    size_t sibur;
-    size_t mendiane;
-    size_t phiras;
-    size_t thystame;
-} inventory_t, ressources_t;
+typedef size_t ressources_t[7];
+typedef ressources_t inventory_t;
 
-size_t get_ressource_count(const map_t *map, const float density);
+size_t get_minimum_ressource_count(const map_t *map, const float density);
+// void spread_ressource(map_t *map, const ressource_t ressource);
+void spread_ressources(map_t *map);
 
 #endif /* !RESSOURCES_H_ */

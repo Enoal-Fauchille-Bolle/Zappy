@@ -5,11 +5,11 @@
 ** Server Main File
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "constants.h"
 #include "options_parser/parser.h"
 #include "options_parser/processor.h"
-#include "constants.h"
+#include <stdlib.h>
+#include <time.h>
 
 int main(int ac, char **av)
 {
@@ -21,6 +21,7 @@ int main(int ac, char **av)
         destroy_server_options(options);
         return EXIT_ERROR_CODE;
     }
+    srand(time(NULL));
     destroy_server_options(options);
     return EXIT_SUCCESS_CODE;
 }
