@@ -171,11 +171,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			${TESTS}map_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(CFLAGS_SERVER) -lcriterion --coverage
-
-# Compilation Flags
-CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
-				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g
+UNIT_FLAGS = $(CFLAGS_SERVER) -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
