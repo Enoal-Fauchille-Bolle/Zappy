@@ -49,8 +49,6 @@ void turn_player_right(player_t *player)
  * @param player Pointer to the player structure to be moved
  * @param map Pointer to the map structure where the player is located
  */
-// TODO: Remove player pointer from the tile at the current position
-//       Add player pointer to the tile at the new position
 void move_player_forward(player_t *player, map_t *map)
 {
     if (player == NULL || map == NULL) {
