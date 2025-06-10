@@ -88,6 +88,16 @@ tile_t *get_tile(map_t *map, const pos_t pos)
     return &map->tiles[index];
 }
 
+/**
+ * @brief Add a player to the map at their current position.
+ *
+ * This function places a player on the tile corresponding to their current
+ * position in the map. If the map or player pointer is NULL, it prints an
+ * error message and returns without making any changes.
+ *
+ * @param map Pointer to the map structure where the player will be added
+ * @param player Pointer to the player structure to be added to the map
+ */
 void add_player_to_map(map_t *map, player_t *player)
 {
     tile_t *tile;
@@ -100,6 +110,17 @@ void add_player_to_map(map_t *map, player_t *player)
     tile->players[0] = player;
 }
 
+/**
+ * @brief Remove a player from the map at their current position.
+ *
+ * This function removes a player from the tile corresponding to their current
+ * position in the map. If the map or player pointer is NULL, it prints an
+ * error message and returns without making any changes. If the tile is not
+ * found, it also prints an error message.
+ *
+ * @param map Pointer to the map structure where the player will be removed
+ * @param player Pointer to the player structure to be removed from the map
+ */
 void remove_player_from_map(map_t *map, player_t *player)
 {
     tile_t *tile;

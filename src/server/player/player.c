@@ -12,6 +12,26 @@
 #include <stdlib.h>
 #include <time.h>
 
+/**
+ * @brief Create a new player with specified attributes.
+ *
+ * This function allocates memory for a player structure, initializes its
+ * attributes, and sets a random orientation. The player starts at the given
+ * position and belongs to the specified team.
+ *
+ * @param id Unique identifier for the player
+ * @param pos Initial position of the player on the map
+ * @param team_id Identifier for the team the player belongs to
+ * @return Pointer to the initialized player_t structure on success,
+ *         NULL if memory allocation fails
+ *
+ * @note Caller is responsible for freeing the returned structure using
+ *       destroy_player() when it is no longer needed.
+ * @note The player's orientation is randomly set to one of the four possible
+ *       directions (NORTH, EAST, SOUTH, WEST) upon creation.
+ * @note The player needs to be added to the map after creation using
+ *       add_player_to_map() to be visible in the game world.
+ */
 player_t *create_player(size_t id, pos_t pos, size_t team_id)
 {
     player_t *player = malloc(sizeof(player_t));
@@ -30,6 +50,17 @@ player_t *create_player(size_t id, pos_t pos, size_t team_id)
     return player;
 }
 
+/**
+ * @brief Free the memory allocated for a player.
+ *
+ * This function deallocates the memory used by the player structure.
+ * It should be called when the player is no longer needed to prevent memory
+ * leaks.
+ *
+ * @param player Pointer to the player structure to be destroyed
+ *
+ * @note If the player pointer is NULL, this function does nothing.
+ */
 void destroy_player(player_t *player)
 {
     if (player == NULL)
@@ -37,12 +68,30 @@ void destroy_player(player_t *player)
     free(player);
 }
 
+/**
+ * @brief Turn the player to the left.
+ *
+ * This function updates the player's orientation to the left
+ * (counter-clockwise) and sets a cooldown for the next action.
+ *
+ * @param player Pointer to the player structure whose orientation will be
+ * changed
+ */
 void turn_player_left(player_t *player)
 {
     player->orientation = turn_left(player->orientation);
     player->tick_cooldown = 7;
 }
 
+/**
+ * @brief Turn the player to the right.
+ *
+ * This function updates the player's orientation to the right
+ * (clockwise) and sets a cooldown for the next action.
+ *
+ * @param player Pointer to the player structure whose orientation will be
+ * changed
+ */
 void turn_player_right(player_t *player)
 {
     player->orientation = turn_right(player->orientation);
