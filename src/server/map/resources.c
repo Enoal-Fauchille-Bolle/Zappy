@@ -2,11 +2,11 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** ressources
+** resources
 */
 
-#include "map/ressources.h"
 #include "map/map.h"
+#include "map/resources.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +29,7 @@
  * density of 0.1 means that 10% of the map should be filled with the specified
  * resource.
  */
-size_t get_minimum_ressource_count(const map_t *map, const float density)
+size_t get_minimum_resource_count(const map_t *map, const float density)
 {
     if (map == NULL) {
         fprintf(stderr, "Invalid map pointer\n");
@@ -46,11 +46,11 @@ size_t get_minimum_ressource_count(const map_t *map, const float density)
  * resource across the entire map.
  *
  * @param map Pointer to the map structure to be searched
- * @param ressource The type of resource to count (e.g., FOOD, LINEMATE, etc.)
+ * @param resource The type of resource to count (e.g., FOOD, LINEMATE, etc.)
  * @return The total count of the specified resource in the map
  * @note If the map pointer is NULL, it prints an error message and returns 0.
  */
-size_t count_ressource(const map_t *map, const ressource_t ressource)
+size_t count_resource(const map_t *map, const resource_t resource)
 {
     size_t count = 0;
 
@@ -59,7 +59,7 @@ size_t count_ressource(const map_t *map, const ressource_t ressource)
         return 0;
     }
     for (size_t i = 0; i < map->width * map->height; i++)
-        count += map->tiles[i].ressources[ressource];
+        count += map->tiles[i].resources[resource];
     return count;
 }
 
@@ -72,14 +72,13 @@ size_t count_ressource(const map_t *map, const ressource_t ressource)
  * exceeds the minimum.
  *
  * @param map Pointer to the map structure where resources will be spread
- * @param ressource The type of resource to spread (e.g., FOOD, LINEMATE, etc.)
+ * @param resource The type of resource to spread (e.g., FOOD, LINEMATE, etc.)
  * @note If the map pointer is NULL, it prints an error message and returns
  */
-void spread_ressource(map_t *map, const ressource_t ressource)
+void spread_resource(map_t *map, const resource_t resource)
 {
-    size_t min =
-        get_minimum_ressource_count(map, ressource_densities[ressource]);
-    size_t current_count = count_ressource(map, ressource);
+    size_t min = get_minimum_resource_count(map, resource_densities[resource]);
+    size_t current_count = count_resource(map, resource);
     size_t target_count = min - current_count;
     tile_t *current_tile;
 
@@ -87,7 +86,7 @@ void spread_ressource(map_t *map, const ressource_t ressource)
         return;
     for (size_t i = 0; i < target_count; i++) {
         current_tile = &map->tiles[rand() % (map->width * map->height)];
-        current_tile->ressources[ressource]++;
+        current_tile->resources[resource]++;
     }
 }
 
@@ -96,18 +95,18 @@ void spread_ressource(map_t *map, const ressource_t ressource)
  * densities.
  *
  * This function iterates through all defined resource types and calls
- * `spread_ressource` for each type to ensure that the map has the required
+ * `spread_resource` for each type to ensure that the map has the required
  * minimum number of each resource based on their defined densities.
  *
  * @param map Pointer to the map structure where resources will be spread
  * @note If the map pointer is NULL, it prints an error message and returns
  */
-void spread_ressources(map_t *map)
+void spread_resources(map_t *map)
 {
     if (map == NULL) {
         fprintf(stderr, "Invalid map pointer\n");
         return;
     }
-    for (ressource_t ressource = FOOD; ressource <= THYSTAME; ressource++)
-        spread_ressource(map, ressource);
+    for (resource_t resource = FOOD; resource <= THYSTAME; resource++)
+        spread_resource(map, resource);
 }

@@ -77,7 +77,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)map/coordinates.c	\
 			 $(SRCDIR_SERVER)player/player.c	\
 			 $(SRCDIR_SERVER)player/movement.c	\
-			 $(SRCDIR_SERVER)map/ressources.c	\
+			 $(SRCDIR_SERVER)map/resources.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -167,6 +167,8 @@ TESTS_SRC =	${TESTS}map_tests.c	\
 			$(SRCDIR_SERVER)player/player.c	\
 			$(SRCDIR_SERVER)player/movement.c	\
 			${TESTS}player_tests.c	\
+			${TESTS}resources_tests.c	\
+			${SRCDIR_SERVER}map/resources.c	\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(FLAGS) -lcriterion --coverage

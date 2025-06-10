@@ -7,16 +7,16 @@
 // clang-format Language: C
 
 #ifndef MAP_H_
-    #define MAP_H_
+#define MAP_H_
 
-    #include "map/coordinates.h"
-    #include "map/ressources.h"
-    #include "player/player.h"
-    #include <unistd.h>
+#include "map/coordinates.h"
+#include "map/resources.h"
+#include "player/player.h"
+#include <unistd.h>
 
 typedef struct tile_s {
-    ressources_t ressources;      // Items on the tile
-    player_t *players[];          // Array of pointers to players on the tile
+    resources_t resources;      // Items on the tile
+    player_t *players[];        // Array of pointers to players on the tile
 } tile_t;
 
 typedef struct map_s {

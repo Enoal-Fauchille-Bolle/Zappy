@@ -6,7 +6,7 @@
 */
 
 #include "map/map.h"
-#include "map/ressources.h"
+#include "map/resources.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/test.h>
 #include <criterion/redirect.h>
@@ -22,9 +22,9 @@ Test(map, get_tile_inside_size)
     tile_t *tile = get_tile(map, (pos_t){5, 5});
 
     cr_assert_not_null(tile, "Tile should not be NULL");
-    cr_assert_eq(tile->ressources[FOOD], 0, "Food should be initialized to 0");
+    cr_assert_eq(tile->resources[FOOD], 0, "Food should be initialized to 0");
     cr_assert_eq(
-        tile->ressources[LINEMATE], 0, "Linemate should be initialized to 0");
+        tile->resources[LINEMATE], 0, "Linemate should be initialized to 0");
     destroy_map(map);
 }
 
@@ -40,9 +40,9 @@ Test(map, get_tile_outside_size)
         tile, "Tile should not be NULL for out of bounds access");
     cr_assert_eq(tile, alternate_tile,
         "Tile should be the same for wrapped coordinates");
-    cr_assert_eq(tile->ressources[FOOD], 0, "Food should be initialized to 0");
+    cr_assert_eq(tile->resources[FOOD], 0, "Food should be initialized to 0");
     cr_assert_eq(
-        tile->ressources[LINEMATE], 0, "Linemate should be initialized to 0");
+        tile->resources[LINEMATE], 0, "Linemate should be initialized to 0");
     destroy_map(map);
 }
 
@@ -52,14 +52,14 @@ Test(map, modify_tile)
     tile_t *tile = get_tile(map, (pos_t){5, 5});
 
     cr_assert_not_null(tile, "Tile should not be NULL");
-    tile->ressources[FOOD] = 10;
-    tile->ressources[LINEMATE] = 5;
+    tile->resources[FOOD] = 10;
+    tile->resources[LINEMATE] = 5;
 
     tile_t *tile_new_ptr = get_tile(map, (pos_t){5, 5});
     cr_assert_eq(
-        tile_new_ptr->ressources[FOOD], 10, "Food should be set to 10");
+        tile_new_ptr->resources[FOOD], 10, "Food should be set to 10");
     cr_assert_eq(
-        tile_new_ptr->ressources[LINEMATE], 5, "Linemate should be set to 5");
+        tile_new_ptr->resources[LINEMATE], 5, "Linemate should be set to 5");
     destroy_map(map);
 }
 
@@ -78,9 +78,9 @@ Test(map, create_map_valid)
     cr_assert_eq(map->width, 10, "Map width should be 10");
     cr_assert_eq(map->height, 10, "Map height should be 10");
     for (size_t i = 0; i < 100; i++) {
-        cr_assert_eq(map->tiles[i].ressources[FOOD], 0,
+        cr_assert_eq(map->tiles[i].resources[FOOD], 0,
             "Food should be initialized to 0");
-        cr_assert_eq(map->tiles[i].ressources[LINEMATE], 0,
+        cr_assert_eq(map->tiles[i].resources[LINEMATE], 0,
             "Linemate should be initialized to 0");
     }
     destroy_map(map);

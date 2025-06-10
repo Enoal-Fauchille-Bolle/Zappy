@@ -2,12 +2,12 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** ressources
+** resources
 */
 // clang-format Language: C
 
-#ifndef RESSOURCES_H_
-    #define RESSOURCES_H_
+#ifndef RESOURCES_H_
+    #define RESOURCES_H_
     #include <stddef.h>
 
     #define FOOD_DENSITY 0.5f
@@ -18,7 +18,7 @@
     #define PHIRAS_DENSITY 0.08f
     #define THYSTAME_DENSITY 0.05f
 
-typedef enum ressource_e {
+typedef enum resource_e {
     FOOD,
     LINEMATE,
     DERAUMERE,
@@ -26,20 +26,20 @@ typedef enum ressource_e {
     MENDIANE,
     PHIRAS,
     THYSTAME
-} ressource_t;
+} resource_t;
 
-static const float ressource_densities[7] = {FOOD_DENSITY, LINEMATE_DENSITY,
+static const float resource_densities[7] = {FOOD_DENSITY, LINEMATE_DENSITY,
     DERAUMERE_DENSITY, SIBUR_DENSITY, MENDIANE_DENSITY, PHIRAS_DENSITY,
     THYSTAME_DENSITY};
 
 typedef struct map_s map_t;
 
-typedef size_t ressources_t[7];
-typedef ressources_t inventory_t;
+typedef size_t resources_t[7];
+typedef resources_t inventory_t;
 
-size_t get_minimum_ressource_count(const map_t *map, const float density);
-size_t count_ressource(const map_t *map, const ressource_t ressource);
-void spread_ressource(map_t *map, const ressource_t ressource);
-void spread_ressources(map_t *map);
+size_t get_minimum_resource_count(const map_t *map, const float density);
+size_t count_resource(const map_t *map, const resource_t resource);
+void spread_resource(map_t *map, const resource_t resource);
+void spread_resources(map_t *map);
 
-#endif /* !RESSOURCES_H_ */
+#endif /* !RESOURCES_H_ */
