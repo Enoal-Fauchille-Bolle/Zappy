@@ -10,20 +10,7 @@
 
     #include <stdbool.h>
     #include <stddef.h>
-
-typedef unsigned int port_t;
-
-typedef struct server_options_s {
-    port_t port;
-    size_t width;
-    size_t height;
-    char **teams;
-    size_t clients_nb;
-    size_t frequency;
-    bool help;
-    bool debug;
-    bool error;
-} server_options_t;
+    #include "options_parser/options.h"
 
 typedef void (*option_handler_t)(server_options_t *opts, int *i, int ac,
     char **av);

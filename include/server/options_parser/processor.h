@@ -10,7 +10,7 @@
 
     #include <stdbool.h>
     #include <stddef.h>
-    #include "options_parser/parser.h"
+    #include "options_parser/options.h"
 
 bool process_options(server_options_t *options);
 int handle_options_error(void);
