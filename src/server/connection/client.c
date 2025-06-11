@@ -10,6 +10,16 @@
 #include <string.h>
 #include <unistd.h>
 
+/**
+ * @brief Destroys a client structure and releases all associated resources
+ *
+ * This function safely destroys a client by closing its socket file
+ * descriptor, closing its associated stream, freeing its address structure,
+ * and finally freeing the client structure itself. The function performs null
+ * checks to ensure safe cleanup.
+ *
+ * @param client Pointer to the client structure to destroy. Can be NULL.
+ */
 void destroy_client(client_t *client)
 {
     if (!client)
@@ -29,6 +39,23 @@ void process_client_message(struct pollfd *fd, client_t *client)
     (void)client;
 }
 
+/**
+ * @brief Initializes a new client structure and establishes connection
+ *
+ * Creates and configures a client structure with the provided socket file
+ * descriptor and address information. Sets up a file stream for reading from
+ * the client socket and sends a welcome message.
+ *
+ * @param server Pointer to the server structure
+ * @param client_sockfd Socket file descriptor for the client connection
+ * @param client_addr Pointer to the client's socket address structure
+ *
+ * @return Pointer to the initialized client structure on success, NULL on
+ * failure
+ *
+ * @note On failure, the function automatically cleans up allocated resources
+ * @warning The caller is responsible for freeing the returned client structure
+ */
 client_t *init_client(
     server_t *server, int client_sockfd, struct sockaddr_in *client_addr)
 {

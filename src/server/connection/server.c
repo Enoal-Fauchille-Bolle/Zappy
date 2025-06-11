@@ -13,6 +13,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ * @brief Destroys a server instance and cleans up all associated resources
+ *
+ * This function safely deallocates a server structure by closing all client
+ * connections, freeing client memory, closing the server socket, destroying
+ * server options, and finally freeing the server structure itself.
+ *
+ * @param server Pointer to the server structure to destroy. If NULL, the
+ * function returns immediately.
+ */
 void destroy_server(server_t *server)
 {
     if (!server) {
@@ -57,6 +67,16 @@ server_t *create_server(server_options_t *options)
     return server;
 }
 
+/**
+ * @brief Runs the server and starts listening for client connections
+ *
+ * This function initializes the server listening process, optionally prints
+ * debug information about the port being used, and then enters the main
+ * connection processing loop to handle incoming client connections.
+ *
+ * @param server Pointer to the server structure containing configuration and
+ * state
+ */
 void run_server(server_t *server)
 {
     if (server->options->debug) {

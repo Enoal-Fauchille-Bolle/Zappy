@@ -10,6 +10,17 @@
 #include "connection/server.h"
 #include "constants.h"
 
+/**
+ * @brief Processes client events for all connected clients
+ *
+ * Iterates through the file descriptor array and processes incoming messages
+ * from clients that have data ready to be read (POLLIN event).
+ *
+ * @param fds Array of poll file descriptors to monitor
+ * @param max_fds Maximum number of file descriptors in the array
+ * @param clients Array of client structures corresponding to the file
+ * descriptors
+ */
 static void process_client_events(
     struct pollfd *fds, int max_fds, client_t **clients)
 {
@@ -22,6 +33,24 @@ static void process_client_events(
     }
 }
 
+/**
+ * @brief Accepts a new client connection and adds it to the server's client
+ * pool
+ *
+ * This function accepts an incoming connection on the server socket, creates a
+ * new client structure, and assigns it to the first available slot in the
+ * clients array and file descriptor polling array.
+ *
+ * @param server Pointer to the server structure containing socket and client
+ * information
+ * @param fds Array of pollfd structures for monitoring file descriptors
+ *
+ * @note If the accept fails, an error is printed via perror and the function
+ * returns
+ * @note Debug information is printed if server debug mode is enabled
+ * @note The function searches for the first available slot (fd < 0) in the fds
+ * array
+ */
 static void accept_new_connection(server_t *server, struct pollfd *fds)
 {
     struct sockaddr_in client_addr = {0};
@@ -45,6 +74,21 @@ static void accept_new_connection(server_t *server, struct pollfd *fds)
     }
 }
 
+/**
+ * @brief Processes incoming connections and client events using poll()
+ *
+ * This function handles network I/O by polling file descriptors for activity.
+ * It accepts new connections when available and processes events from existing
+ * clients.
+ *
+ * @param server Pointer to the server structure containing game state and
+ * client data
+ * @param fds Array of pollfd structures for monitoring file descriptors
+ * @return true on success, false on failure (poll error)
+ *
+ * @note Uses a timeout defined by POLL_TIMEOUT constant
+ * @note Monitors up to MAX_CLIENTS + 1 file descriptors
+ */
 // TODO: if (fds[0].revents & POLLIN && server->game->game_state == GAME_START)
 static bool process_connection(server_t *server, struct pollfd *fds)
 {
@@ -62,6 +106,17 @@ static bool process_connection(server_t *server, struct pollfd *fds)
     return SUCCESS;
 }
 
+/**
+ * @brief Initialize polling file descriptors array for server connections
+ *
+ * Sets up the pollfd array by initializing all client slots to -1 (unused)
+ * and configuring the server socket at index 0 to listen for incoming
+ * connections.
+ *
+ * @param fds Pointer to array of pollfd structures to initialize
+ * @param server_sockfd Server socket file descriptor to monitor for new
+ * connections
+ */
 static void init_poll_fds(struct pollfd *fds, int server_sockfd)
 {
     for (int i = 0; i < MAX_CLIENTS + 1; i++) {
@@ -71,6 +126,18 @@ static void init_poll_fds(struct pollfd *fds, int server_sockfd)
     fds[0].events = POLLIN;
 }
 
+/**
+ * @brief Processes client connections and handles communication with connected
+ * clients
+ *
+ * This function initializes polling file descriptors and enters a main loop to
+ * continuously process client connections. It handles incoming client requests
+ * and manages the server's connection state until a failure occurs or the
+ * server is stopped.
+ *
+ * @param server Pointer to the server structure containing socket information
+ *               and client management data
+ */
 // TODO: Replace the "while (true)" with the actual game state check
 // TODO:
 // if (game is running)
