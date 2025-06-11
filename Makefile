@@ -77,6 +77,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)player/player.c	\
 			 $(SRCDIR_SERVER)player/movement.c	\
 			 $(SRCDIR_SERVER)map/resources.c	\
+			 $(SRCDIR_SERVER)map/tile.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
