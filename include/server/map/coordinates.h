@@ -14,10 +14,11 @@
 typedef struct map_s map_t;
 
 typedef enum orientation_e {
-    NORTH = 1,
+    NORTH,
     EAST,
     SOUTH,
-    WEST
+    WEST,
+    ORIENTATION_COUNT
 } orientation_t;
 
 typedef struct pos_s {
