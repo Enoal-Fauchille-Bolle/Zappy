@@ -19,7 +19,7 @@ SRC	=	\
 		$(METHOD)any.c						\
 		$(METHOD)assign.c					\
 		$(METHOD)back.c						\
-		$(METHOD)capacity.c				\
+		$(METHOD)capacity.c					\
 		$(METHOD)clear.c					\
 		$(METHOD)count.c					\
 		$(METHOD)data.c						\
@@ -27,16 +27,16 @@ SRC	=	\
 		$(METHOD)erase.c					\
 		$(METHOD)filter.c					\
 		$(METHOD)find.c						\
-		$(METHOD)for_each.c				\
+		$(METHOD)for_each.c					\
 		$(METHOD)insert.c					\
 		$(METHOD)map.c						\
-		$(METHOD)pop_back.c				\
-		$(METHOD)push_back.c			\
+		$(METHOD)pop_back.c					\
+		$(METHOD)push_back.c				\
 		$(METHOD)reduce.c					\
-		$(METHOD)reserve.c				\
+		$(METHOD)reserve.c					\
 		$(METHOD)resize.c					\
-		$(METHOD)reverse.c				\
-		$(METHOD)shrink_to_fit.c	\
+		$(METHOD)reverse.c					\
+		$(METHOD)shrink_to_fit.c			\
 		$(METHOD)size.c						\
 		$(METHOD)slice.c					\
 		$(METHOD)sort.c
