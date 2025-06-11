@@ -38,7 +38,7 @@ pos_t wrap_coordinates(const pos_t pos, size_t width, size_t height)
 orientation_t turn_left(orientation_t orientation)
 {
     orientation--;
-    if (orientation == 0)
+    if (orientation < NORTH)  // NORTH == 1; 0 is out of bound
         orientation = WEST;
     return orientation;
 }
