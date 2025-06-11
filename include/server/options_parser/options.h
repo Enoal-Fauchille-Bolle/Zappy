@@ -19,7 +19,7 @@ typedef struct server_options_s {
     size_t height;
     char **teams;
     size_t clients_nb;
-    size_t frequency;
+    unsigned int frequency;
     bool help;
     bool debug;
     bool error;
