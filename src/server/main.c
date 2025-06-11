@@ -27,6 +27,7 @@ int main(int ac, char **av)
     server = create_server(options);
     if (!server)
         return EXIT_ERROR_CODE;
-    destroy_server_options(options);
+    run_server(server);
+    destroy_server(server);
     return EXIT_SUCCESS_CODE;
 }

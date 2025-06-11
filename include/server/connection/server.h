@@ -8,8 +8,9 @@
 #ifndef SERVER_H_
     #define SERVER_H_
 
-    #include "client.h"
+    #include <stdbool.h>
     #include "constants.h"
+    #include "connection/client.h"
     #include "options_parser/options.h"
 
 typedef struct server_s {
@@ -17,8 +18,11 @@ typedef struct server_s {
     unsigned int port;
     struct sockaddr_in addr;
     client_t *clients[MAX_CLIENTS];
+    server_options_t *options;
 } server_t;
 
 server_t *create_server(server_options_t *options);
+void destroy_server(server_t *server);
+void run_server(server_t *server);
 
 #endif /* !SERVER_H_ */

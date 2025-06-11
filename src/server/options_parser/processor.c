@@ -53,7 +53,7 @@ static void option_debug(server_options_t *options)
         printf("Team %zu: %s\n", i + 1, options->teams[i]);
     }
     printf("Clients: %zu\n", options->clients_nb);
-    printf("Frequency: %zu\n", options->frequency);
+    printf("Frequency: %u\n", options->frequency);
     printf("Help: %d\n", options->help);
     printf("Debug: %d\n", options->debug);
     printf("Error: %d\n", options->error);
