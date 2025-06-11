@@ -47,6 +47,7 @@ player_t *create_player(size_t id, pos_t pos, size_t team_id)
     for (size_t i = 0; i <= THYSTAME; i++)
         player->inventory[i] = 0;
     player->team_id = team_id;
+    player->tick_cooldown = 0;
     return player;
 }
 
