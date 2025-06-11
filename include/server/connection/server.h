@@ -17,12 +17,11 @@ typedef struct server_s {
     int sockfd;
     unsigned int port;
     struct sockaddr_in addr;
-    client_t *clients[MAX_CLIENTS];
     server_options_t *options;
 } server_t;
 
 server_t *create_server(server_options_t *options);
-void destroy_server(server_t *server);
+void destroy_server(server_t *server, struct pollfd *fds);
 void run_server(server_t *server);
 
 #endif /* !SERVER_H_ */

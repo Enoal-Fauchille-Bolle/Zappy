@@ -23,7 +23,7 @@
  * @param server Pointer to the server structure to destroy. If NULL, the
  * function returns immediately.
  */
-void destroy_server(server_t *server)
+void destroy_server(server_t *server, struct pollfd *fds)
 {
     if (!server) {
         return;
@@ -31,9 +31,8 @@ void destroy_server(server_t *server)
     destroy_server_options(server->options);
     close(server->sockfd);
     for (size_t i = 0; i < MAX_CLIENTS; i++) {
-        if (server->clients[i]) {
-            close(server->clients[i]->sockfd);
-            free(server->clients[i]);
+        if (fds[i + 1].fd >= 0) {
+            close(fds[i + 1].fd);
         }
     }
     free(server);
@@ -59,9 +58,6 @@ server_t *create_server(server_options_t *options)
         free(server);
         destroy_server_options(options);
         return NULL;
-    }
-    for (size_t i = 0; i < MAX_CLIENTS; i++) {
-        server->clients[i] = NULL;
     }
     server->options = options;
     return server;

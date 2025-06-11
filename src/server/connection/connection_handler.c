@@ -9,6 +9,7 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
+#include <unistd.h>
 
 /**
  * @brief Removes a client from the server and poll arrays
@@ -21,16 +22,12 @@
  * @param fds Array of poll file descriptors
  * @param client_index Index of the client to remove (1-based for fds array)
  */
-void remove_client(
-    server_t *server, struct pollfd *fds, int client_index)
+void remove_client(struct pollfd *fds, int client_index, bool debug)
 {
     if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
         return;
-    if (server->options->debug && server->clients[client_index])
-        printf(
-            "Client %d disconnected\n", server->clients[client_index]->sockfd);
-    destroy_client(server->clients[client_index]);
-    server->clients[client_index] = NULL;
+    if (debug)
+        printf("Client %d disconnected\n", fds[client_index].fd);
     fds[client_index].fd = -1;
     fds[client_index].events = 0;
     fds[client_index].revents = 0;
@@ -47,14 +44,13 @@ void remove_client(
  * @param clients Array of client structures corresponding to the file
  * descriptors
  */
-static void process_client_events(
-    struct pollfd *fds, int max_fds, client_t **clients)
+static void process_client_events(struct pollfd *fds, int max_fds, bool debug)
 {
     for (int i = 1; i < max_fds; i++) {
         if (fds[i].fd < 0)
             continue;
         if (fds[i].revents & POLLIN) {
-            process_client_message(clients[i], fds, i);
+            process_client_message(fds, i, debug);
         }
     }
 }
@@ -91,8 +87,7 @@ static void accept_new_connection(server_t *server, struct pollfd *fds)
             ntohs(client_addr.sin_port), client_sockfd);
     for (int i = 1; i < MAX_CLIENTS + 1; i++) {
         if (fds[i].fd < 0) {
-            server->clients[i] =
-                init_client(server, client_sockfd, &client_addr);
+            write(client_sockfd, "WELCOME\n", 8);
             fds[i].fd = client_sockfd;
             fds[i].events = POLLIN;
             break;
@@ -128,7 +123,7 @@ static bool process_connection(server_t *server, struct pollfd *fds)
     if (fds[0].revents & POLLIN) {
         accept_new_connection(server, fds);
     }
-    process_client_events(fds, MAX_CLIENTS + 1, server->clients);
+    process_client_events(fds, MAX_CLIENTS + 1, server->options->debug);
     return SUCCESS;
 }
 
@@ -177,4 +172,5 @@ void process_connections(server_t *server)
         if (process_connection(server, fds) == FAILURE)
             break;
     }
+    destroy_server(server, fds);
 }

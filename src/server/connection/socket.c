@@ -141,9 +141,8 @@ bool setup_socket(server_t *server, int port)
 {
     server->port = port;
     server->sockfd = setup_socket_fd();
-    if (server->sockfd == -1) {
+    if (server->sockfd == -1)
         return FAILURE;
-    }
     server->addr = init_sockin(port);
     if (bind_socket(server->sockfd, &(server->addr)) == FAILURE ||
         listen_socket(server->sockfd) == FAILURE) {

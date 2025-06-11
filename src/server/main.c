@@ -33,6 +33,5 @@ int main(int ac, char **av)
         return EXIT_ERROR_CODE;
     srand(time(NULL));
     run_server(server);
-    destroy_server(server);
     return EXIT_SUCCESS_CODE;
 }
