@@ -187,7 +187,7 @@ UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
 CC_TESTS := gcc
 
 unit_tests: $(LIB_SERVER)libvector.a
-	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC)
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC) $(UNIT_FLAGS)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
