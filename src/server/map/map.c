@@ -7,9 +7,24 @@
 
 #include "map/map.h"
 #include "map/coordinates.h"
+#include "vector.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+static vector_t *init_tiles_vector(size_t width, size_t height)
+{
+    vector_t *tiles = vector_new(sizeof(tile_t));
+    const vector_vtable_t *vtable = vector_get_vtable(tiles);
+
+    if (tiles == NULL) {
+        perror("Failed to allocate memory for tiles vector");
+        return NULL;
+    }
+    for (size_t i = 0; i < width * height; i++)
+        vtable->push_back(tiles, &(tile_t){0});
+    return tiles;
+}
 
 /**
  * @brief Create a new map with specified dimensions.
@@ -27,7 +42,7 @@
  */
 map_t *create_map(size_t width, size_t height)
 {
-    map_t *map = malloc(sizeof(map_t) + sizeof(tile_t) * width * height);
+    map_t *map = malloc(sizeof(map_t));
 
     if (map == NULL) {
         perror("Failed to allocate memory for map");
@@ -41,8 +56,9 @@ map_t *create_map(size_t width, size_t height)
     }
     map->width = width;
     map->height = height;
+    map->tiles = init_tiles_vector(width, height);
     for (size_t i = 0; i < width * height; i++)
-        map->tiles[i] = (tile_t){0};
+        init_tile(get_tile_by_index(map, i));
     return map;
 }
 
@@ -65,32 +81,6 @@ void destroy_map(map_t *map)
 }
 
 /**
- * @brief Get a tile from the map at specified coordinates.
- *
- * This function retrieves a tile from the map based on the provided
- * coordinates (x, y). If the coordinates are outside the map's dimensions,
- * they are wrapped around using modulo operation to ensure valid access.
- *
- * @return Pointer to the initialized tile_t structure on success,
- *         NULL if the given map is NULL.
- *
- * @note Caller is NOT responsible for freeing the returned structure
- */
-tile_t *get_tile(map_t *map, const pos_t pos)
-{
-    pos_t wrapped_pos;
-    size_t index;
-
-    if (map == NULL) {
-        fprintf(stderr, "Invalid map\n");
-        return NULL;
-    }
-    wrapped_pos = wrap_coordinates(pos, map->width, map->height);
-    index = wrapped_pos.y * map->width + wrapped_pos.x;
-    return &map->tiles[index];
-}
-
-/**
  * @brief Add a player to the map at their current position.
  *
  * This function places a player on the tile corresponding to their current
@@ -103,14 +93,11 @@ tile_t *get_tile(map_t *map, const pos_t pos)
 // TODO: Handle multiple players on the same tile
 void add_player_to_map(map_t *map, player_t *player)
 {
-    tile_t *tile;
-
     if (map == NULL || player == NULL) {
         fprintf(stderr, "Invalid map or player pointer\n");
         return;
     }
-    tile = get_tile(map, player->pos);
-    tile->players[0] = player;
+    add_player_to_tile(get_tile(map, player->pos), player);
 }
 
 /**
@@ -131,5 +118,5 @@ void remove_player_from_map(map_t *map, player_t *player)
         fprintf(stderr, "Invalid map or player pointer\n");
         return;
     }
-    get_tile(map, player->pos)->players[0] = NULL;
+    remove_player_from_tile(get_tile(map, player->pos), player);
 }
