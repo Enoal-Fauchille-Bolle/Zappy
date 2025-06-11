@@ -25,6 +25,12 @@
  */
 void handle_port(server_options_t *options, int *i, int ac, char **av)
 {
+    if (options->port != 0) {
+        fputs("Error: Port option already set\n", stderr);
+        options->error = true;
+        *i += 1;
+        return;
+    }
     if (*i + 1 < ac) {
         *i += 1;
         options->port = atoi(av[*i]);

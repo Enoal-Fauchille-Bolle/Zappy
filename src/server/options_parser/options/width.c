@@ -25,6 +25,12 @@
  */
 void handle_width(server_options_t *options, int *i, int ac, char **av)
 {
+    if (options->width != 0) {
+        fputs("Error: Width option already set\n", stderr);
+        options->error = true;
+        *i += 1;
+        return;
+    }
     if (*i + 1 < ac) {
         *i += 1;
         options->width = atoi(av[*i]);

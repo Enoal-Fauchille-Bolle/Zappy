@@ -26,6 +26,12 @@
  */
 void handle_clients(server_options_t *opts, int *i, int ac, char **av)
 {
+    if (opts->clients_nb != 0) {
+        fputs("Error: Clients option already set\n", stderr);
+        opts->error = true;
+        *i += 1;
+        return;
+    }
     if (*i + 1 < ac) {
         *i += 1;
         opts->clients_nb = atoi(av[*i]);
