@@ -73,12 +73,12 @@ pos_t get_forward_position(
     if (map == NULL)
         return pos;
     if (orientation == NORTH)
-        new_pos.y = (new_pos.y == 0) ? map->height - 1 : new_pos.y - 1;
+        new_pos.y = new_pos.y + map->height - 1;
     if (orientation == EAST)
         new_pos.x++;
     if (orientation == SOUTH)
         new_pos.y++;
     if (orientation == WEST)
-        new_pos.x = (new_pos.x == 0) ? map->width - 1 : new_pos.x - 1;
+        new_pos.x = new_pos.x + map->width - 1;
     return wrap_coordinates(new_pos, map->width, map->height);
 }
