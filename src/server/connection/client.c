@@ -6,24 +6,20 @@
 */
 
 #include "connection/client.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 void destroy_client(client_t *client)
 {
-    if (!client) {
+    if (!client)
         return;
-    }
-    if (client->sockfd >= 0) {
+    if (client->sockfd >= 0)
         close(client->sockfd);
-    }
-    if (client->stream) {
+    if (client->stream)
         fclose(client->stream);
-    }
-    if (client->addr) {
+    if (client->addr)
         free(client->addr);
-    }
     free(client);
 }
 

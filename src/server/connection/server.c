@@ -5,10 +5,10 @@
 ** Server Management
 */
 
-#include "constants.h"
 #include "connection/server.h"
 #include "connection/connection_handler.h"
 #include "connection/socket.h"
+#include "constants.h"
 #include "options_parser/options.h"
 #include <stdlib.h>
 #include <unistd.h>
