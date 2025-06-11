@@ -153,6 +153,21 @@ static bool player_in(tile_t *tile, player_t *player)
     return vtable->any(tile->players, predicate, player);
 }
 
+static player_t *player_at(tile_t *tile, size_t idx)
+{
+    const vector_vtable_t *vtable = vector_get_vtable(tile->players);
+
+    if (tile == NULL) {
+        fprintf(stderr, "Invalid tile pointer\n");
+        return NULL;
+    }
+    if (idx >= vtable->size(tile->players)) {
+        fprintf(stderr, "Index out of bounds: %zu\n", idx);
+        return NULL;
+    }
+    return vtable->at(tile->players, idx);
+}
+
 Test(player, move_player_on_map)
 {
     pos_t pos = {5, 5};
@@ -164,7 +179,7 @@ Test(player, move_player_on_map)
     cr_assert_not_null(map, "Map should not be NULL");
     add_player_to_map(map, player);
     prev_tile = get_tile(map, player->pos);
-    cr_assert(player_in(get_tile(map, player->pos), player),
+    cr_assert_eq(player_at(get_tile(map, player->pos), 0), player,
         "Player should be on the tile at (5,5) before moving");
     player->orientation = EAST;
     move_player_forward(player, map);
