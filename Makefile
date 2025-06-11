@@ -170,6 +170,7 @@ TESTS = ./tests/
 
 # Sources
 TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
+			$(SRCDIR_SERVER)map/tile.c	\
 			$(SRCDIR_SERVER)map/coordinates.c	\
 			${SRCDIR_SERVER}map/resources.c	\
 			$(SRCDIR_SERVER)player/player.c	\
@@ -179,12 +180,12 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			${TESTS}map_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(CFLAGS_SERVER) -lcriterion --coverage -g
+UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER) -lvector -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
 
-unit_tests:
+unit_tests: $(LIB_SERVER)libvector.a
 	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC)
 
 tests_run: unit_tests

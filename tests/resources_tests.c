@@ -137,7 +137,7 @@ Test(resources, spread_resource_enough)
     map_t *map = create_map(10, 10);
 
     cr_assert_not_null(map, "Map should not be NULL");
-    map->tiles[0].resources[FOOD] = 1000;
+    get_tile_by_index(map, 0)->resources[FOOD] = 1000;
     spread_resource(map, FOOD);
     cr_assert_eq(count_resource(map, FOOD), 1000,
         "Food count should not increase if already above minimum");

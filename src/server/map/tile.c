@@ -6,6 +6,8 @@
 */
 
 #include "map/map.h"
+#include "vector.h"
+#include <stddef.h>
 #include <stdio.h>
 
 /**
@@ -99,6 +101,19 @@ void add_player_to_tile(tile_t *tile, player_t *player)
 
 void remove_player_from_tile(tile_t *tile, player_t *player)
 {
-    (void)tile;
-    (void)player;
+    const vector_vtable_t *vtable = vector_get_vtable(tile->players);
+    player_t *current_player;
+
+    if (tile == NULL || player == NULL) {
+        fprintf(stderr, "Invalid tile or player pointer\n");
+        return;
+    }
+    for (size_t i = 0; i < vtable->size(tile->players); i++) {
+        current_player = vtable->at(tile->players, i);
+        if (current_player == player) {
+            vtable->erase(tile->players, i);
+            return;
+        }
+    }
+    fprintf(stderr, "Player not found on tile\n");
 }
