@@ -180,7 +180,8 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			${TESTS}map_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER) -lvector -lcriterion --coverage -g
+UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
+			-lvector -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
