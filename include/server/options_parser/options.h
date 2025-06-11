@@ -25,4 +25,7 @@ typedef struct server_options_s {
     bool error;
 } server_options_t;
 
+server_options_t *get_server_options(int ac, char **av);
+void destroy_server_options(server_options_t *options);
+
 #endif /* !OPTIONS_H_ */

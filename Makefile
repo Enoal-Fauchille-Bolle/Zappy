@@ -64,6 +64,7 @@ INCLUDES_SERVER = $(INCLUDES)server/
 # Sources
 SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)constants.c	\
+			 $(SRCDIR_SERVER)options_parser/options.c	\
 			 $(SRCDIR_SERVER)options_parser/parser.c	\
 			 $(SRCDIR_SERVER)options_parser/processor.c	\
 			 $(SRCDIR_SERVER)options_parser/options/port.c	\

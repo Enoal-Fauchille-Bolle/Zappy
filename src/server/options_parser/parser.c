@@ -90,7 +90,7 @@ static const option_map_t *find_option(const char *arg)
  * @note Sets options->error to true if unknown option is encountered
  * @note Stops parsing on first error
  */
-static void parse_options(server_options_t *options, int ac, char **av)
+void parse_options(server_options_t *options, int ac, char **av)
 {
     const option_map_t *option_map = NULL;
 
@@ -125,50 +125,4 @@ bool mandatory_options_present(server_options_t *options)
         return false;
     }
     return true;
-}
-
-/**
- * @brief Main entry point for parsing server command line options.
- *
- * This function orchestrates the complete option parsing process:
- * 1. Initializes the options structure
- * 2. Parses all command line arguments
- * 3. Validates that mandatory options are present
- * Sets error flag if any step fails.
- *
- * @param ac Total number of command line arguments
- * @param av Array of command line argument strings
- * @return Pointer to the populated server_options_t structure, or NULL on
- *         memory allocation failure
- *
- * @note Caller should check options->error flag before using the structure
- * @note Caller is responsible for freeing the returned structure
- */
-server_options_t *get_server_options(int ac, char **av)
-{
-    server_options_t *options = init_options();
-
-    if (options == NULL)
-        return NULL;
-    parse_options(options, ac, av);
-    if (options->error)
-        return options;
-    if (!mandatory_options_present(options)) {
-        fprintf(stderr, "Mandatory options are missing\n");
-        options->error = true;
-    }
-    return options;
-}
-
-void destroy_server_options(server_options_t *options)
-{
-    if (options == NULL)
-        return;
-    if (options->teams != NULL) {
-        for (size_t i = 0; options->teams[i] != NULL; i++) {
-            free(options->teams[i]);
-        }
-        free(options->teams);
-    }
-    free(options);
 }
