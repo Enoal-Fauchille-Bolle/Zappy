@@ -27,7 +27,7 @@ class Player : public Entity {
         void setLevel(int level);
         void setOrientation(Orientation orientation);
         void setInventoryItem(const std::string &item, int quantity);
-        
+
         int getLevel() const;
         Orientation getOrientation() const;
         int getInventoryItem(const std::string &item) const;

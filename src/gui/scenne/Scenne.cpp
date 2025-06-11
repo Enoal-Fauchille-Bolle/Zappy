@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** Zappy
-** File description:
-** Scenne
-*/
-
 #include "Scenne.hpp"
 #include <iostream>
 
@@ -26,23 +19,16 @@ void Scenne::Initialize(OgreBites::ApplicationContext* appContext)
 {
     mAppContext = appContext;
     mRenderWindow = appContext->getRenderWindow();
-    
     setupScene();
     setupCamera();
     setupLighting();
-    
-    // Add this scene as input listener
     appContext->addInputListener(this);
 }
 
 void Scenne::setupScene()
 {
     mSceneManager = Ogre::Root::getSingleton().createSceneManager();
-    
-    // Set default ambient light
     mSceneManager->setAmbientLight(Ogre::ColourValue(0.2f, 0.2f, 0.2f));
-    
-    // Set sky
     mSceneManager->setSkyBox(true, "Examples/SpaceSkyBox", 100);
 }
 
@@ -51,16 +37,13 @@ void Scenne::setupCamera()
     mCamera = mSceneManager->createCamera("MainCamera");
     mCamera->setNearClipDistance(5);
     mCamera->setAutoAspectRatio(true);
-    
-    // Create a camera node
+
     Ogre::SceneNode* camNode = mSceneManager->getRootSceneNode()->createChildSceneNode();
     camNode->attachObject(mCamera);
-    
-    // Position the camera
-    camNode->setPosition(0, 50, 80);
+    // Position camera directly above the scene for a top-down view
+    camNode->setPosition(0, 150, 0);
+    // Make the camera look straight down
     camNode->lookAt(Ogre::Vector3(0, 0, 0), Ogre::Node::TS_WORLD);
-    
-    // Create viewport
     mRenderWindow->addViewport(mCamera);
 }
 
@@ -80,8 +63,6 @@ void Scenne::addEntity(const std::string &meshName, const std::string &entityNam
     Ogre::Entity* entity = mSceneManager->createEntity(entityName, meshName);
     Ogre::SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode();
     node->attachObject(entity);
-    
-    // Store the node for later access
     _entityNodes[entityName] = node;
 }
 
@@ -114,45 +95,44 @@ void Scenne::setCameraLookAt(const Ogre::Vector3 &target)
     mCamera->getParentSceneNode()->lookAt(target, Ogre::Node::TS_WORLD);
 }
 
-void Scenne::Update(float /*deltaTime*/)
+void Scenne::Update(float)
 {
-    // Update scene entities if needed
-    // This is where you would animate objects, update physics, etc.
 }
 
 void Scenne::Render()
 {
-    // Nothing to do here as Ogre automatically renders the scene
 }
 
 bool Scenne::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
-    // Handle keyboard input
     if (evt.keysym.sym == OgreBites::SDLK_ESCAPE) {
-        return false; // Allow app to close
+        return false;
     }
     
-    // Camera movement
     Ogre::Vector3 cameraPos = mCamera->getParentSceneNode()->getPosition();
     
-    if (evt.keysym.sym == 'w') {
+    if (evt.keysym.sym == 'z') {
         cameraPos.z -= 10.0f;
     } else if (evt.keysym.sym == 's') {
         cameraPos.z += 10.0f;
-    } else if (evt.keysym.sym == 'a') {
+    } else if (evt.keysym.sym == 'q') {
         cameraPos.x -= 10.0f;
     } else if (evt.keysym.sym == 'd') {
         cameraPos.x += 10.0f;
+    } else if (evt.keysym.sym == 'e') {
+        // Zoom in - move camera closer to target
+        cameraPos.y = std::max(10.0f, cameraPos.y - 10.0f);
+    } else if (evt.keysym.sym == 'r') {
+        // Zoom out - move camera further from target
+        cameraPos.y = std::min(300.0f, cameraPos.y + 10.0f);
     }
     
     mCamera->getParentSceneNode()->setPosition(cameraPos);
-    
     return true;
 }
 
-bool Scenne::mouseMoved(const OgreBites::MouseMotionEvent& /*evt*/)
+bool Scenne::mouseMoved(const OgreBites::MouseMotionEvent&)
 {
-    // Handle mouse movement
     return true;
 }
 
