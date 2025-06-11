@@ -21,7 +21,7 @@ static const server_options_t default_options = {
     .height = 0,
     .teams = NULL,
     .clients_nb = 0,
-    .frequency = 100,
+    .frequency = 0,
     .help = false,
     .debug = false,
     .error = false
@@ -157,6 +157,8 @@ server_options_t *get_server_options(int ac, char **av)
         fprintf(stderr, "Mandatory options are missing\n");
         options->error = true;
     }
+    if (options->frequency == 0)
+        options->frequency = 100;
     return options;
 }
 
