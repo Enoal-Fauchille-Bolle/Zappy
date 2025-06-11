@@ -9,6 +9,7 @@
 #include "connection/connection_handler.h"
 #include "connection/socket.h"
 #include "constants.h"
+#include "debug.h"
 #include "options_parser/options.h"
 #include <stdlib.h>
 #include <unistd.h>
@@ -75,9 +76,7 @@ server_t *create_server(server_options_t *options)
  */
 void run_server(server_t *server)
 {
-    if (server->options->debug) {
-        printf("\nListening on port %u\n", server->port);
-    }
+    debug_conn(server->options->debug, "Listening on port %u\n", server->port);
     puts("Waiting for connections...");
     process_connections(server);
 }

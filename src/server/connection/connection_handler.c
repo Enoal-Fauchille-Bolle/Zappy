@@ -9,6 +9,7 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
+#include "debug.h"
 #include <unistd.h>
 
 /**
@@ -26,8 +27,7 @@ void remove_client(struct pollfd *fds, int client_index, bool debug)
 {
     if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
         return;
-    if (debug)
-        printf("Client %d disconnected\n", fds[client_index].fd);
+    debug_conn(debug, "Client %d disconnected\n", fds[client_index].fd);
     fds[client_index].fd = -1;
     fds[client_index].events = 0;
     fds[client_index].revents = 0;
@@ -82,9 +82,9 @@ static void accept_new_connection(server_t *server, struct pollfd *fds)
 
     if (client_sockfd == -1)
         return perror("accept");
-    if (server->options->debug)
-        printf("Connection from %s:%d (%d)\n", inet_ntoa(client_addr.sin_addr),
-            ntohs(client_addr.sin_port), client_sockfd);
+    debug_conn(server->options->debug, "Connection from %s:%d (%d)\n",
+        inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port),
+        client_sockfd);
     for (int i = 1; i < MAX_CLIENTS + 1; i++) {
         if (fds[i].fd < 0) {
             write(client_sockfd, "WELCOME\n", 8);

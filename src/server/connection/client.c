@@ -5,6 +5,7 @@
 ** Client Management
 */
 
+#include "debug.h"
 #include "connection/client.h"
 #include "connection/connection_handler.h"
 #include "connection/socket.h"
@@ -19,8 +20,10 @@ void process_client_message(struct pollfd *fds, int client_index, bool debug)
         remove_client(fds, client_index, debug);
         return;
     }
-    printf("Received message from client %d: '%s'\n", fds[client_index].fd,
-        message);
+    // printf("Received message from client %d: '%s'\n", fds[client_index].fd,
+    //     message);
+    debug_cmd(debug, "Client %d: '%s'\n",
+        fds[client_index].fd, message);
     free(message);
     return;
 }
