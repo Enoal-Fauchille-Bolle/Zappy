@@ -9,9 +9,8 @@
     #define SERVER_H_
 
     #include "client.h"
+    #include "constants.h"
     #include "options_parser/options.h"
-
-    #define MAX_CLIENTS 128
 
 typedef struct server_s {
     int sockfd;
