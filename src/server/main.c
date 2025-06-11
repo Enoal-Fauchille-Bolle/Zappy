@@ -19,7 +19,10 @@ int main(int ac, char **av)
         return handle_options_error();
     if (process_options(options) == FAILURE) {
         destroy_server_options(options);
-        return EXIT_ERROR_CODE;
+        if (options->error)
+            return EXIT_ERROR_CODE;
+        else
+            return EXIT_SUCCESS_CODE;
     }
     srand(time(NULL));
     destroy_server_options(options);

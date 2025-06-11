@@ -120,6 +120,8 @@ static void parse_options(server_options_t *options, int ac, char **av)
  */
 bool mandatory_options_present(server_options_t *options)
 {
+    if (options->help)
+        return true;
     if (options->port <= 0 || options->width == 0 || options->height == 0 ||
         options->teams == NULL || options->teams[0] == NULL) {
         return false;
