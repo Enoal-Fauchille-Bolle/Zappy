@@ -28,7 +28,6 @@ int main(int ac, char **av)
         else
             return EXIT_SUCCESS_CODE;
     }
-        return EXIT_ERROR_CODE;
     server = create_server(options);
     if (!server)
         return EXIT_ERROR_CODE;
