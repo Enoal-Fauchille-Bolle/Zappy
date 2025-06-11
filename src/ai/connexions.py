@@ -11,7 +11,7 @@ import socket
 """This module provides a class to manage connections for AI clients in the Zappy game server.
 It includes methods for connecting to the server, sending messages, and handling connection states.
 """
-class Connexion:
+class Connection:
     def __init__(self, port, name, machine):
         self.port = port
         self.name = name
