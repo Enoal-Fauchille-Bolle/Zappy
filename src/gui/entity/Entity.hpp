@@ -11,6 +11,14 @@
 #include <string>
 #include <OGRE/Ogre.h>
 
+
+struct zappy_color {
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
 class Entity {
     public:
         Entity(const std::string &id, const std::string &meshName);
@@ -19,7 +27,8 @@ class Entity {
         void setPosition(float x, float y, float z);
         void setRotation(float x, float y, float z);
         void setScale(float x, float y, float z);
-        
+        void setColor(zappy_color);
+
         std::string getId() const;
         Ogre::SceneNode* getSceneNode() const;
         void attachToScene(Ogre::SceneManager* sceneManager);

@@ -41,6 +41,17 @@ void Entity::setScale(float x, float y, float z)
     }
 }
 
+void Entity::setColor(zappy_color color)
+{
+    if (_ogreEntity) {
+        Ogre::MaterialPtr originalMaterial = _ogreEntity->getSubEntity(0)->getMaterial();
+        Ogre::MaterialPtr clonedMaterial = originalMaterial->clone(_id + "_material");
+        clonedMaterial->setAmbient(color.r, color.g, color.b);
+        clonedMaterial->setDiffuse(color.r, color.g, color.b, color.a);
+        _ogreEntity->getSubEntity(0)->setMaterial(clonedMaterial);
+    }
+}
+
 std::string Entity::getId() const
 {
     return _id;
