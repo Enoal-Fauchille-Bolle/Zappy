@@ -19,7 +19,7 @@ class Tile : public Entity {
 
         void setResource(const std::string &resourceName, int quantity);
         int getResource(const std::string &resourceName) const;
-        
+
         std::pair<int, int> getCoordinates() const;
         void updateVisuals();
 

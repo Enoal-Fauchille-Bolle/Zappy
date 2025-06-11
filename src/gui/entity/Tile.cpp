@@ -40,5 +40,4 @@ std::pair<int, int> Tile::getCoordinates() const
 
 void Tile::updateVisuals()
 {
-    // Placeholder for visual updates
 }
