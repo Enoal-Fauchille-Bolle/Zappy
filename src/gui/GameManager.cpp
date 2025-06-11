@@ -8,19 +8,15 @@
 #include "GameManager.hpp"
 #include <iostream>
 
-GameManager::GameManager()
-    :_scene(nullptr), _mapWidth(0), _mapHeight(0)
+GameManager::GameManager() : _scene(nullptr), _mapWidth(0), _mapHeight(0)
 {
 }
 
 GameManager::~GameManager()
 {
-    // Clean up players
     for (auto& player : _players) {
         delete player.second;
     }
-
-    // Clean up tiles
     for (auto& row : _tiles) {
         for (auto& tile : row) {
             delete tile;
@@ -35,22 +31,16 @@ void GameManager::initialize(Scenne* scene)
 
 void GameManager::update()
 {
-    // This method would be called from the main loop
-    // It would process network updates and update the scene accordingly
 }
 
 void GameManager::setMapSize(int width, int height)
 {
     _mapWidth = width;
     _mapHeight = height;
-    
-    // Initialize tile vector
     _tiles.resize(height);
     for (auto& row : _tiles) {
         row.resize(width, nullptr);
     }
-    
-    // Create visual grid
     createGrid();
 }
 
@@ -69,38 +59,28 @@ void GameManager::createTile(int x, int y)
         std::cerr << "Tile coordinates out of bounds: (" << x << ", " << y << ")" << std::endl;
         return;
     }
-    
-    // Create tile entity
+
     Tile* tile = new Tile(x, y);
-    
-    // Position it in the world
     float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
     float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
     tile->setPosition(posX, 0.0f, posZ);
-    
-    // Store and attach to scene
+    tile->setColor({0.5f, 0.0f, 0.0f, 1.0f});
     _tiles[y][x] = tile;
     tile->attachToScene(_scene->getSceneManager());
 }
 
 void GameManager::createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation)
 {
-    // Check if player already exists
     if (_players.find(id) != _players.end()) {
         std::cerr << "Player " << id << " already exists" << std::endl;
         return;
     }
-    
-    // Create new player
+
     Player* player = new Player(id, teamName);
     player->setOrientation(orientation);
-    
-    // Position it on the right tile
     float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
     float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
-    player->setPosition(posX, 2.0f, posZ); // Slightly above the tile
-    
-    // Store and attach to scene
+    player->setPosition(posX, 2.0f, posZ);
     _players[id] = player;
     player->attachToScene(_scene->getSceneManager());
 }
@@ -112,8 +92,7 @@ void GameManager::updatePlayerPosition(int id, int x, int y, Orientation orienta
         std::cerr << "Player " << id << " not found" << std::endl;
         return;
     }
-    
-    // Update position
+
     Player* player = it->second;
     float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
     float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
@@ -134,7 +113,6 @@ void GameManager::updateTileContent(int x, int y, const std::map<std::string, in
         return;
     }
     
-    // Update resources
     for (const auto& resource : resources) {
         tile->setResource(resource.first, resource.second);
     }
