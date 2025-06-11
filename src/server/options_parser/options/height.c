@@ -25,6 +25,12 @@
  */
 void handle_height(server_options_t *options, int *i, int ac, char **av)
 {
+    if (options->height != 0) {
+        fputs("Error: Height option already set\n", stderr);
+        options->error = true;
+        *i += 1;
+        return;
+    }
     if (*i + 1 < ac) {
         *i += 1;
         options->height = atoi(av[*i]);

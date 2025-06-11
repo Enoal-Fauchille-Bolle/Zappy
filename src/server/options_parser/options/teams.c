@@ -5,8 +5,8 @@
 ** Teams Option
 */
 
-#include "options_parser/options.h"
 #include "constants.h"
+#include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -154,6 +154,27 @@ static bool fill_teams(
 }
 
 /**
+ * @brief Handles error when teams option is already set
+ *
+ * Prints an error message to stderr, sets the error flag in options,
+ * and skips remaining team arguments until the next option or end of
+ * arguments.
+ *
+ * @param options Pointer to server options structure
+ * @param i Pointer to current argument index
+ * @param ac Argument count
+ * @param av Argument vector
+ */
+static void already_set_teams_error(
+    server_options_t *options, int *i, int ac, char **av)
+{
+    fputs("Error: Teams option already set\n", stderr);
+    options->error = true;
+    while (*i + 1 < ac && av[*i + 1][0] != '-')
+        *i += 1;
+}
+
+/**
  * @brief Handle the teams option parsing from command line arguments.
  *
  * This function processes the "-n" option to collect team names.
@@ -175,6 +196,10 @@ void handle_teams(server_options_t *options, int *i, int ac, char **av)
     int start = *i;
     int teams_count = 0;
 
+    if (options->teams != NULL) {
+        already_set_teams_error(options, i, ac, av);
+        return;
+    }
     go_to_end_of_option(i, ac, av, &teams_count);
     if (*i <= start) {
         fputs("Error: No teams provided.\n", stderr);

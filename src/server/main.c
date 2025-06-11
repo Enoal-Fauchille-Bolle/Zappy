@@ -5,13 +5,14 @@
 ** Server Main File
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "constants.h"
 #include "options_parser/parser.h"
 #include "options_parser/processor.h"
 #include "connection/server.h"
 #include "connection/socket.h"
 #include "constants.h"
+#include <stdlib.h>
+#include <time.h>
 
 int main(int ac, char **av)
 {
@@ -22,11 +23,16 @@ int main(int ac, char **av)
         return handle_options_error();
     if (process_options(options) == FAILURE) {
         destroy_server_options(options);
-        return EXIT_ERROR_CODE;
+        if (options->error)
+            return EXIT_ERROR_CODE;
+        else
+            return EXIT_SUCCESS_CODE;
     }
+        return EXIT_ERROR_CODE;
     server = create_server(options);
     if (!server)
         return EXIT_ERROR_CODE;
+    srand(time(NULL));
     run_server(server);
     destroy_server(server);
     return EXIT_SUCCESS_CODE;

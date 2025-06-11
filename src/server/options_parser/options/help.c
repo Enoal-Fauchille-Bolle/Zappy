@@ -7,6 +7,7 @@
 
 #include "options_parser/options.h"
 #include <stdbool.h>
+#include <stdio.h>
 
 /**
  * @brief Handle the help option parsing from command line arguments.
@@ -27,5 +28,10 @@ void handle_help(server_options_t *options, int *i, int ac, char **av)
     (void)i;
     (void)ac;
     (void)av;
+    if (options->help) {
+        fputs("Error: Help option already set\n", stderr);
+        options->error = true;
+        return;
+    }
     options->help = true;
 }
