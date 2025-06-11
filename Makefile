@@ -27,13 +27,11 @@ DEP	=	$(SRC_SERVER:.c=.d)	\
 -include $(DEP)
 
 clean:
-	rm -f $(OBJ_SERVER)
-	rm -f $(OBJ_GUI)
-	rm -f $(OBJ_AI)
-	rm -f $(TESTS_SRC:.c=.o)
-	rm -f $(DEP)
 	find . -name "*.gcda" -delete
 	find . -name "*.gcno" -delete
+	find . -name "*.a" -delete
+	find . -name "*.o" -delete
+	find . -name "*.d" -delete
 
 fclean: clean
 	rm -f $(NAME_SERVER)
