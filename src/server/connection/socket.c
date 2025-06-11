@@ -10,7 +10,40 @@
 #include "constants.h"
 #include "options_parser/options.h"
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+
+/**
+ * @brief Reads data from a client socket
+ *
+ * Reads up to 1024 bytes from the specified client socket file descriptor.
+ * Automatically handles newline termination and null-terminates the string.
+ *
+ * @param client_sockfd The client socket file descriptor to read from
+ * @return char* Dynamically allocated string containing the read data, or NULL
+ * on error/EOF
+ *
+ * @note The returned string must be freed by the caller using free()
+ * @note Returns NULL if read error occurs or if no data is available (EOF)
+ */
+char *read_socket(int client_sockfd)
+{
+    char buffer[1024 + 1];
+    ssize_t bytes_read = read(client_sockfd, buffer, sizeof(buffer) - 1);
+
+    if (bytes_read < 0) {
+        perror("read");
+        return NULL;
+    }
+    if (bytes_read == 0)
+        return NULL;
+    if (bytes_read > 0 && buffer[bytes_read - 1] == '\n') {
+        buffer[bytes_read - 1] = '\0';
+    } else {
+        buffer[bytes_read] = '\0';
+    }
+    return strdup(buffer);
+}
 
 /**
  * @brief Sets up a socket to listen for incoming connections

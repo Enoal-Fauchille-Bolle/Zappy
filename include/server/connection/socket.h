@@ -12,5 +12,6 @@
     #include "connection/server.h"
 
 bool setup_socket(server_t *server, int port);
+char *read_socket(int sockfd);
 
 #endif /* !SOCKET_H_ */

@@ -6,6 +6,8 @@
 */
 
 #include "connection/client.h"
+#include "connection/socket.h"
+#include "connection/connection_handler.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -33,10 +35,18 @@ void destroy_client(client_t *client)
     free(client);
 }
 
-void process_client_message(struct pollfd *fd, client_t *client)
+void process_client_message(
+    client_t *client, struct pollfd *fds, int client_index)
 {
-    (void)fd;
-    (void)client;
+    char *message = read_socket(client->sockfd);
+
+    if (!message) {
+        remove_client(client->server, fds, client_index);
+        return;
+    }
+    printf("Received message from client %d: '%s'\n", client->sockfd, message);
+    free(message);
+    return;
 }
 
 /**

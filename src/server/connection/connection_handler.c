@@ -11,6 +11,32 @@
 #include "constants.h"
 
 /**
+ * @brief Removes a client from the server and poll arrays
+ *
+ * This function safely disconnects a client by removing it from both the
+ * server's client array and the poll file descriptor array, then destroys
+ * the client structure.
+ *
+ * @param server Pointer to the server structure
+ * @param fds Array of poll file descriptors
+ * @param client_index Index of the client to remove (1-based for fds array)
+ */
+void remove_client(
+    server_t *server, struct pollfd *fds, int client_index)
+{
+    if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
+        return;
+    if (server->options->debug && server->clients[client_index])
+        printf(
+            "Client %d disconnected\n", server->clients[client_index]->sockfd);
+    destroy_client(server->clients[client_index]);
+    server->clients[client_index] = NULL;
+    fds[client_index].fd = -1;
+    fds[client_index].events = 0;
+    fds[client_index].revents = 0;
+}
+
+/**
  * @brief Processes client events for all connected clients
  *
  * Iterates through the file descriptor array and processes incoming messages
@@ -28,7 +54,7 @@ static void process_client_events(
         if (fds[i].fd < 0)
             continue;
         if (fds[i].revents & POLLIN) {
-            process_client_message(&fds[i], clients[i]);
+            process_client_message(clients[i], fds, i);
         }
     }
 }
@@ -61,8 +87,8 @@ static void accept_new_connection(server_t *server, struct pollfd *fds)
     if (client_sockfd == -1)
         return perror("accept");
     if (server->options->debug)
-        printf("Connection from %s:%d\n", inet_ntoa(client_addr.sin_addr),
-            ntohs(client_addr.sin_port));
+        printf("Connection from %s:%d (%d)\n", inet_ntoa(client_addr.sin_addr),
+            ntohs(client_addr.sin_port), client_sockfd);
     for (int i = 1; i < MAX_CLIENTS + 1; i++) {
         if (fds[i].fd < 0) {
             server->clients[i] =

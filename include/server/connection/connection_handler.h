@@ -11,5 +11,7 @@
     #include "connection/server.h"
 
 void process_connections(server_t *server);
+void remove_client(
+    server_t *server, struct pollfd *fds, int client_index);
 
 #endif /* !CONNECTION_HANDLER_H_ */
