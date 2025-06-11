@@ -109,7 +109,7 @@ void remove_player_from_tile(tile_t *tile, player_t *player)
         return;
     }
     for (size_t i = 0; i < vtable->size(tile->players); i++) {
-        current_player = vtable->at(tile->players, i);
+        current_player = *(player_t **)vtable->at(tile->players, i);
         if (current_player == player) {
             vtable->erase(tile->players, i);
             return;
