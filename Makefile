@@ -32,8 +32,8 @@ clean:
 	rm -f $(OBJ_AI)
 	rm -f $(TESTS_SRC:.c=.o)
 	rm -f $(DEP)
-	rm -f *.gcno
-	rm -f *.gcda
+	find . -name "*.gcda" -delete
+	find . -name "*.gcno" -delete
 
 fclean: clean
 	rm -f $(NAME_SERVER)
@@ -47,7 +47,7 @@ re_clean: fclean all clean
 
 .PHONY: all clean \
 	fclean re \
-	tests_run unit_tests coverage
+	tests_run unit_tests coverage cs
 
 ################################### Server ###################################
 
@@ -74,6 +74,11 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)options_parser/options/frequency.c	\
 			 $(SRCDIR_SERVER)options_parser/options/help.c	\
 			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
+			 $(SRCDIR_SERVER)map/map.c	\
+			 $(SRCDIR_SERVER)map/coordinates.c	\
+			 $(SRCDIR_SERVER)player/player.c	\
+			 $(SRCDIR_SERVER)player/movement.c	\
+			 $(SRCDIR_SERVER)map/resources.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -165,24 +170,23 @@ TESTS_NAME = unit_tests.out
 TESTS = ./tests/
 
 # Sources
-TESTS_SRC =	\
+TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
+			$(SRCDIR_SERVER)map/coordinates.c	\
+			${SRCDIR_SERVER}map/resources.c	\
+			$(SRCDIR_SERVER)player/player.c	\
+			$(SRCDIR_SERVER)player/movement.c	\
+			${TESTS}player_tests.c	\
+			${TESTS}resources_tests.c	\
+			${TESTS}map_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
-
-# Compilation Flags
-CFLAGS_TESTS += $(ERROR) -I$(INCLUDES_SERVER) -I$(INCLUDES_CLIENT)	\
-				-I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g
+UNIT_FLAGS = $(CFLAGS_SERVER) -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
 
-$(TESTS)%.o: $(TESTS)%.cpp
-	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
-
-unit_tests: $(TESTS_SRC:.cpp=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.cpp=.o)	\
-		$(UNIT_FLAGS)
+unit_tests:
+	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
@@ -190,3 +194,8 @@ tests_run: unit_tests
 coverage: tests_run
 	gcovr --exclude tests/
 	gcovr --exclude tests/ --txt-metric branch
+
+cs:	clean
+	@coding-style . .
+	@cat coding-style-reports.log
+	@rm -f coding-style-reports.log
