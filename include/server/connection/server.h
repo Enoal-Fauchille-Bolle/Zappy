@@ -9,6 +9,7 @@
     #define SERVER_H_
 
     #include <stdbool.h>
+    #include <sys/poll.h>
     #include "constants.h"
     #include "connection/client.h"
     #include "options_parser/options.h"

@@ -10,9 +10,11 @@
 #include "connection/server.h"
 #include "constants.h"
 #include "debug_categories.h"
+#include <arpa/inet.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <netinet/in.h>
 
 /**
  * @brief Removes a client from the server and poll arrays
