@@ -44,6 +44,7 @@ void remove_client(server_t *server, int client_index)
     }
     debug_conn(server->options->debug, "Client %d disconnected\n",
         server->fds[client_index].fd);
+    close(server->fds[client_index].fd);
     server->fds[client_index].fd = -1;
     server->fds[client_index].events = 0;
     server->fds[client_index].revents = 0;
