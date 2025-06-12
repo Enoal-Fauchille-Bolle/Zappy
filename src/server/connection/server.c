@@ -14,6 +14,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ * @brief Destroys and frees memory allocated for client teams array
+ *
+ * This function safely deallocates memory for an array of client team strings.
+ * It iterates through all possible client slots and frees each individual
+ * team string before freeing the main array pointer.
+ *
+ * @param client_teams Array of strings representing client teams to be
+ * destroyed. Can be NULL (function will return early if so).
+ */
 static void destroy_client_teams(char **client_teams)
 {
     if (!client_teams)
@@ -24,6 +34,14 @@ static void destroy_client_teams(char **client_teams)
     free(client_teams);
 }
 
+/**
+ * @brief Initialize an array to store client team assignments
+ *
+ * Allocates memory for an array of string pointers to track which team
+ * each client belongs to. All pointers are initialized to NULL.
+ *
+ * @return char** Pointer to the allocated array on success, NULL on failure
+ */
 static char **init_client_teams(void)
 {
     char **client_teams = malloc(sizeof(char *) * (MAX_CLIENTS));
