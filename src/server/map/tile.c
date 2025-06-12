@@ -38,6 +38,7 @@ void init_tile(tile_t *tile)
     tile->eggs = vector_new(sizeof(egg_t *));
     if (tile->eggs == NULL) {
         perror("Failed to allocate memory for eggs vector");
+        vector_destroy(tile->players);
         return;
     }
 }
