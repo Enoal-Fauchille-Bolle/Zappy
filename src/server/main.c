@@ -5,13 +5,20 @@
 ** Server Main File
 */
 
-#include "constants.h"
-#include "options_parser/processor.h"
 #include "connection/server.h"
 #include "constants.h"
+#include "options_parser/processor.h"
 #include <stdlib.h>
 #include <time.h>
 
+/**
+ * @brief Gets the appropriate return value based on server options error state
+ *
+ * @param options Pointer to server options structure containing error state
+ * @return EXIT_ERROR_CODE if an error occurred, EXIT_SUCCESS_CODE otherwise
+ *
+ * @note This function destroys the server options structure before returning
+ */
 static int get_return_value(server_options_t *options)
 {
     bool error = options->error;
