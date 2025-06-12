@@ -148,3 +148,33 @@ Test(resources, spread_resources_null)
 {
     spread_resources(NULL);
 }
+
+Test(resources, minimum_resource_count_one)
+{
+    map_t *map = create_map(1, 1);
+    size_t count = get_minimum_resource_count(map, FOOD_DENSITY);
+
+    cr_assert_not_null(map, "Map should not be NULL");
+    cr_assert_eq(
+        count, 1, "Minimum resource count should be 1 for 0.5 density");
+    destroy_map(map);
+}
+
+Test(resources, spread_resources_count_one)
+{
+    map_t *map = create_map(1, 1);
+    cr_assert_not_null(map, "Map should not be NULL");
+    spread_resources(map);
+    cr_assert_eq(count_resource(map, FOOD), 1, "Food count should be 1");
+    cr_assert_eq(
+        count_resource(map, LINEMATE), 1, "Linemate count should be 1");
+    cr_assert_eq(
+        count_resource(map, DERAUMERE), 1, "Deraumere count should be 1");
+    cr_assert_eq(count_resource(map, SIBUR), 1, "Sibur count should be 1");
+    cr_assert_eq(
+        count_resource(map, MENDIANE), 1, "Mendiane count should be 1");
+    cr_assert_eq(count_resource(map, PHIRAS), 1, "Phiras count should be 1");
+    cr_assert_eq(
+        count_resource(map, THYSTAME), 1, "Thystame count should be 1");
+    destroy_map(map);
+}

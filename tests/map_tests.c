@@ -12,6 +12,7 @@
 #include <criterion/internal/test.h>
 #include <criterion/redirect.h>
 #include <stdio.h>
+#include <time.h>
 
 // void redirect_stdout(void)
 // {
@@ -156,4 +157,79 @@ Test(remove_player_from_map, null)
     // No assertion here, just checking for crashes
     destroy_player(player);
     destroy_map(map);
+}
+
+Test(access_tile_by_index, null_map)
+{
+    tile_t *tile = get_tile_by_index(NULL, 0);
+
+    cr_assert_null(tile, "Tile should be NULL for NULL map");
+}
+
+Test(access_tile_by_index, out_of_bounds)
+{
+    map_t *map = create_map(10, 10);
+    tile_t *tile = get_tile_by_index(map, 100);
+
+    cr_assert_null(tile, "Tile should be NULL for out of bounds index");
+    destroy_map(map);
+}
+
+Test(add_player_to_tile, null)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    map_t *map = create_map(1, 1);
+    tile_t *tile = get_tile(map, (pos_t){0, 0});
+
+    add_player_to_tile(NULL, player);
+    add_player_to_tile(NULL, NULL);
+    add_player_to_tile(tile, NULL);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(remove_player_from_tile, null)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    map_t *map = create_map(1, 1);
+    tile_t *tile = get_tile(map, (pos_t){0, 0});
+
+    remove_player_from_tile(NULL, player);
+    remove_player_from_tile(NULL, NULL);
+    remove_player_from_tile(tile, NULL);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(remove_player_from_tile, player_not_in_tile)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    map_t *map = create_map(1, 1);
+    tile_t *tile = get_tile(map, (pos_t){0, 0});
+
+    remove_player_from_tile(tile, player);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(remove_player_from_tile, player_in_tile)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    map_t *map = create_map(1, 1);
+    tile_t *tile = get_tile(map, (pos_t){0, 0});
+
+    add_player_to_tile(tile, player);
+    remove_player_from_tile(tile, player);
+    // No assertion here, just checking for crashes
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(init_tile, null)
+{
+    init_tile(NULL);
+    // No assertion here, just checking for crashes
 }
