@@ -31,12 +31,12 @@ void remove_client(server_t *server, int client_index)
 {
     if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
         return;
-    if (server->client_teams[client_index] != NULL) {
+    if (server->clients_team[client_index] != NULL) {
         debug_conn(server->options->debug,
             "Client %d removed from team '%s'\n", server->fds[client_index].fd,
-            server->client_teams[client_index]);
-        free(server->client_teams[client_index]);
-        server->client_teams[client_index] = NULL;
+            server->clients_team[client_index]);
+        free(server->clients_team[client_index]);
+        server->clients_team[client_index] = NULL;
     }
     debug_conn(server->options->debug, "Client %d disconnected\n",
         server->fds[client_index].fd);

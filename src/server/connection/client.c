@@ -66,9 +66,9 @@ static bool parse_team_name(
         write(server->fds[client_index].fd, "ko\n", 3);
         return false;
     }
-    server->client_teams[client_index] = strdup(message);
+    server->clients_team[client_index] = strdup(message);
     debug_conn(server->options->debug, "Client %d assigned to team '%s'\n",
-        server->fds[client_index].fd, server->client_teams[client_index]);
+        server->fds[client_index].fd, server->clients_team[client_index]);
     dprintf(server->fds[client_index].fd, "0\n");
     dprintf(server->fds[client_index].fd, "%ld %ld\n", server->options->width,
         server->options->height);
@@ -108,7 +108,7 @@ void process_client_message(server_t *server, int client_index)
         free(message);
         return;
     }
-    if (server->client_teams[client_index] == NULL) {
+    if (server->clients_team[client_index] == NULL) {
         parse_team_name(server, message, client_index);
     } else {
         debug_cmd(server->options->debug, "Client %d: '%s'\n",

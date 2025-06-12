@@ -70,7 +70,7 @@ void destroy_server(server_t *server)
         return;
     }
     destroy_server_options(server->options);
-    destroy_client_teams(server->client_teams);
+    destroy_client_teams(server->clients_team);
     close(server->sockfd);
     for (size_t i = 0; i < MAX_CLIENTS; i++) {
         if (server->fds[i + 1].fd >= 0) {
@@ -98,9 +98,9 @@ server_t *create_server(server_options_t *options)
 
     if (!server)
         return NULL;
-    server->client_teams = init_client_teams();
+    server->clients_team = init_client_teams();
     if (setup_socket(server, options->port) == FAILURE ||
-        !server->client_teams) {
+        !server->clients_team) {
         free(server);
         destroy_server_options(options);
         return NULL;

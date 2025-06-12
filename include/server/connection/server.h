@@ -18,7 +18,7 @@ typedef struct server_s {
     unsigned int port;
     server_options_t *options;
     struct pollfd fds[MAX_CLIENTS + 1];
-    char **client_teams;
+    char **clients_team;
 } server_t;
 
 server_t *create_server(server_options_t *options);
