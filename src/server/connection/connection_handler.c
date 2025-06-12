@@ -77,9 +77,7 @@ static void init_new_connection(struct pollfd *fd, int client_sockfd)
 {
     fd->fd = client_sockfd;
     fd->events = POLLIN | POLLOUT;
-    if (fd->revents & POLLOUT) {
-        write(client_sockfd, "WELCOME\n", 8);
-    }
+    write(client_sockfd, "WELCOME\n", 8);
 }
 
 /**
