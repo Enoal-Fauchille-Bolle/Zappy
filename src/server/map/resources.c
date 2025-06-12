@@ -5,8 +5,8 @@
 ** resources
 */
 
-#include "map/map.h"
 #include "map/resources.h"
+#include "map/map.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,11 +31,14 @@
  */
 size_t get_minimum_resource_count(const map_t *map, const float density)
 {
+    size_t min_count;
+
     if (map == NULL) {
         fprintf(stderr, "Invalid map pointer\n");
         return 0;
     }
-    return map->width * map->height * density;
+    min_count = map->width * map->height * density;
+    return min_count < 1 ? 1 : min_count;
 }
 
 /**
