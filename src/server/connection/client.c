@@ -57,16 +57,16 @@ static bool is_team_name_valid(server_t *server, const char *team_name)
 //       instead of 0
 // TODO: Server should refuse to assign a team if it is full
 static bool parse_team_name(
-    server_t *server, const char *message, int client_index)
+    server_t *server, const char *team_name, int client_index)
 {
-    if (!is_team_name_valid(server, message)) {
+    if (!is_team_name_valid(server, team_name)) {
         debug_conn(server->options->debug,
             "Client %d tried to join invalid team '%s'\n",
-            server->fds[client_index].fd, message);
+            server->fds[client_index].fd, team_name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return false;
     }
-    server->clients_team[client_index] = strdup(message);
+    server->clients_team[client_index] = strdup(team_name);
     debug_conn(server->options->debug, "Client %d assigned to team '%s'\n",
         server->fds[client_index].fd, server->clients_team[client_index]);
     dprintf(server->fds[client_index].fd, "0\n");
