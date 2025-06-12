@@ -100,7 +100,8 @@ server_t *create_server(server_options_t *options)
  */
 void run_server(server_t *server)
 {
-    debug_conn(server->options->debug, "Listening on port %u\n", server->port);
+    debug_server(
+        server->options->debug, "Listening on port %u\n", server->port);
     puts("Waiting for connections...");
     process_connections(server);
 }
