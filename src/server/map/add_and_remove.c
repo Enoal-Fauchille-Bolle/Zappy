@@ -6,6 +6,8 @@
 */
 
 #include "egg/egg.h"
+#include "map/map.h"
+#include "map/tile.h"
 #include "player/player.h"
 #include <stdio.h>
 
