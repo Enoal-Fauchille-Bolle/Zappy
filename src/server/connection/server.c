@@ -14,6 +14,28 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+static void destroy_client_teams(char **client_teams)
+{
+    if (!client_teams)
+        return;
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        free(client_teams[i]);
+    }
+    free(client_teams);
+}
+
+static char **init_client_teams(void)
+{
+    char **client_teams = malloc(sizeof(char *) * (MAX_CLIENTS));
+
+    if (!client_teams)
+        return NULL;
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        client_teams[i] = NULL;
+    }
+    return client_teams;
+}
+
 /**
  * @brief Destroys a server instance and cleans up all associated resources
  *
@@ -24,16 +46,17 @@
  * @param server Pointer to the server structure to destroy. If NULL, the
  * function returns immediately.
  */
-void destroy_server(server_t *server, struct pollfd *fds)
+void destroy_server(server_t *server)
 {
     if (!server) {
         return;
     }
     destroy_server_options(server->options);
+    destroy_client_teams(server->client_teams);
     close(server->sockfd);
     for (size_t i = 0; i < MAX_CLIENTS; i++) {
-        if (fds[i + 1].fd >= 0) {
-            close(fds[i + 1].fd);
+        if (server->fds[i + 1].fd >= 0) {
+            close(server->fds[i + 1].fd);
         }
     }
     free(server);
@@ -61,6 +84,7 @@ server_t *create_server(server_options_t *options)
         return NULL;
     }
     server->options = options;
+    server->client_teams = init_client_teams();
     return server;
 }
 

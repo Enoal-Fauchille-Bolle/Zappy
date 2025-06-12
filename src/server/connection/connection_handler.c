@@ -10,6 +10,7 @@
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
+#include <stdlib.h>
 #include <unistd.h>
 
 /**
@@ -23,7 +24,7 @@
  * @param fds Array of poll file descriptors
  * @param client_index Index of the client to remove (1-based for fds array)
  */
-void remove_client(struct pollfd *fds, int client_index, bool debug)
+void remove_client(server_t *server, int client_index)
 {
     if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
         return;
@@ -44,13 +45,13 @@ void remove_client(struct pollfd *fds, int client_index, bool debug)
  * @param clients Array of client structures corresponding to the file
  * descriptors
  */
-static void process_client_events(struct pollfd *fds, int max_fds, bool debug)
+static void process_client_events(server_t *server, int max_fds)
 {
     for (int i = 1; i < max_fds; i++) {
-        if (fds[i].fd < 0)
+        if (server->fds[i].fd < 0)
             continue;
-        if (fds[i].revents & POLLIN) {
-            process_client_message(fds, i, debug);
+        if (server->fds[i].revents & POLLIN) {
+            process_client_message(server, i);
         }
     }
 }
@@ -73,7 +74,7 @@ static void process_client_events(struct pollfd *fds, int max_fds, bool debug)
  * @note The function searches for the first available slot (fd < 0) in the fds
  * array
  */
-static void accept_new_connection(server_t *server, struct pollfd *fds)
+static void accept_new_connection(server_t *server)
 {
     struct sockaddr_in client_addr = {0};
     socklen_t client_addr_len = sizeof(client_addr);
@@ -86,10 +87,10 @@ static void accept_new_connection(server_t *server, struct pollfd *fds)
         inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port),
         client_sockfd);
     for (int i = 1; i < MAX_CLIENTS + 1; i++) {
-        if (fds[i].fd < 0) {
+        if (server->fds[i].fd < 0) {
             write(client_sockfd, "WELCOME\n", 8);
-            fds[i].fd = client_sockfd;
-            fds[i].events = POLLIN;
+            server->fds[i].fd = client_sockfd;
+            server->fds[i].events = POLLIN;
             break;
         }
     }
@@ -111,19 +112,19 @@ static void accept_new_connection(server_t *server, struct pollfd *fds)
  * @note Monitors up to MAX_CLIENTS + 1 file descriptors
  */
 // TODO: if (fds[0].revents & POLLIN && server->game->game_state == GAME_START)
-static bool process_connection(server_t *server, struct pollfd *fds)
+static bool process_connection(server_t *server)
 {
-    int result = poll(fds, MAX_CLIENTS + 1, POLL_TIMEOUT);
+    int result = poll(server->fds, MAX_CLIENTS + 1, POLL_TIMEOUT);
 
     if (result < 0) {
         if (errno != EINTR)
             perror("poll");
         return FAILURE;
     }
-    if (fds[0].revents & POLLIN) {
-        accept_new_connection(server, fds);
+    if (server->fds[0].revents & POLLIN) {
+        accept_new_connection(server);
     }
-    process_client_events(fds, MAX_CLIENTS + 1, server->options->debug);
+    process_client_events(server, MAX_CLIENTS + 1);
     return SUCCESS;
 }
 
@@ -165,12 +166,11 @@ static void init_poll_fds(struct pollfd *fds, int server_sockfd)
 //     game_tick(server);
 void process_connections(server_t *server)
 {
-    struct pollfd fds[MAX_CLIENTS + 1];
-
-    init_poll_fds(fds, server->sockfd);
+    init_poll_fds(server->fds, server->sockfd);
     while (true) {
-        if (process_connection(server, fds) == FAILURE)
+        if (process_connection(server) == FAILURE)
             break;
     }
-    destroy_server(server, fds);
+    destroy_server(server);
+    debug_conn(server->options->debug, "Server stopped\n");
 }

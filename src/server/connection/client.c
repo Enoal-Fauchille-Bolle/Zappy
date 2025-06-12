@@ -6,21 +6,23 @@
 */
 
 #include "connection/client.h"
+#include "connection/server.h"
 #include "connection/connection_handler.h"
 #include "connection/socket.h"
 #include "debug.h"
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-void process_client_message(struct pollfd *fds, int client_index, bool debug)
+void process_client_message(server_t *server, int client_index)
 {
-    char *message = read_socket(fds[client_index].fd);
+    char *message = read_socket(server->fds[client_index].fd);
 
     if (!message) {
-        remove_client(fds, client_index, debug);
+        remove_client(server, client_index);
         return;
     }
-    debug_cmd(debug, "Client %d: '%s'\n", fds[client_index].fd, message);
+    debug_cmd(server->options->debug, "Client %d: '%s'\n",
+        server->fds[client_index].fd, message);
     free(message);
-    return;
 }

@@ -17,6 +17,8 @@
     #include <arpa/inet.h>
     #include <stdbool.h>
 
-void process_client_message(struct pollfd *fds, int client_index, bool debug);
+typedef struct server_s server_t;
+
+void process_client_message(server_t *server, int client_index);
 
 #endif /* !CLIENT_H_ */

@@ -139,12 +139,14 @@ static int setup_socket_fd(void)
  */
 bool setup_socket(server_t *server, int port)
 {
+    struct sockaddr_in addr = {0};
+
     server->port = port;
     server->sockfd = setup_socket_fd();
     if (server->sockfd == -1)
         return FAILURE;
-    server->addr = init_sockin(port);
-    if (bind_socket(server->sockfd, &(server->addr)) == FAILURE ||
+    addr = init_sockin(port);
+    if (bind_socket(server->sockfd, &addr) == FAILURE ||
         listen_socket(server->sockfd) == FAILURE) {
         close(server->sockfd);
         return FAILURE;
