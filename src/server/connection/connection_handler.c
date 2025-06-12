@@ -27,7 +27,7 @@
  */
 void remove_client(server_t *server, int client_index)
 {
-    if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
+    if (client_index < 1 || client_index > MAX_CLIENTS)
         return;
     if (server->client_teams[client_index] != NULL) {
         debug_conn(server->options->debug,
