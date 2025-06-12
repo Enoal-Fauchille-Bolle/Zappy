@@ -75,8 +75,16 @@ map_t *create_map(size_t width, size_t height)
  */
 void destroy_map(map_t *map)
 {
+    tile_t *tile;
+
     if (map == NULL)
         return;
+    for (size_t i = 0; i < map->width * map->height; i++) {
+        tile = get_tile_by_index(map, i);
+        if (tile != NULL)
+            vector_destroy(tile->players);
+    }
+    vector_destroy(map->tiles);
     free(map);
 }
 

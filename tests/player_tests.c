@@ -227,6 +227,7 @@ Test(player, move_two_player_on_map)
         "Player2 should no longer be on the previous tile at (1,0) after "
         "moving south");
     destroy_player(player);
+    destroy_player(player2);
     destroy_map(map);
 }
 
