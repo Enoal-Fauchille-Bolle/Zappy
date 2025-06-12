@@ -182,6 +182,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			${TESTS}player_tests.c	\
 			${TESTS}resources_tests.c	\
 			${TESTS}map_tests.c	\
+			${TESTS}egg_tests.c	\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
