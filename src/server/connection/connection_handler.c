@@ -59,9 +59,19 @@ static void process_client_events(server_t *server, int max_fds)
     for (int i = 1; i < max_fds; i++) {
         if (server->fds[i].fd < 0)
             continue;
-        if (server->fds[i].revents & POLLIN) {
+        if ((server->fds[i].revents & POLLIN) &&
+            server->fds[i].revents & POLLOUT) {
             process_client_message(server, i);
         }
+    }
+}
+
+static void init_new_connection(struct pollfd *fd, int client_sockfd)
+{
+    fd->fd = client_sockfd;
+    fd->events = POLLIN | POLLOUT;
+    if (fd->revents & POLLOUT) {
+        write(client_sockfd, "WELCOME\n", 8);
     }
 }
 
@@ -97,9 +107,7 @@ static void accept_new_connection(server_t *server)
         client_sockfd);
     for (int i = 1; i < MAX_CLIENTS + 1; i++) {
         if (server->fds[i].fd < 0) {
-            write(client_sockfd, "WELCOME\n", 8);
-            server->fds[i].fd = client_sockfd;
-            server->fds[i].events = POLLIN;
+            init_new_connection(&server->fds[i], client_sockfd);
             break;
         }
     }
