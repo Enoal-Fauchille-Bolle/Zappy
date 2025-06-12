@@ -7,6 +7,7 @@
 
 #include "map/map.h"
 #include "map/resources.h"
+#include "map/tile.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>

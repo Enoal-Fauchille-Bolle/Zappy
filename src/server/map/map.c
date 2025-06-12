@@ -5,13 +5,25 @@
 ** map
 */
 
-#include "map/map.h"
-#include "map/coordinates.h"
+#include "player/player.h"
 #include "vector.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * @brief Initialize a vector of tiles for the map.
+ *
+ * This function creates a new vector to hold tiles and initializes each tile
+ * to zero. It allocates memory for the vector and each tile, ensuring that
+ * the vector can hold the specified number of tiles based on the map's width
+ * and height.
+ *
+ * @param width Width of the map
+ * @param height Height of the map
+ * @return Pointer to the initialized vector_t structure on success,
+ *         NULL if memory allocation fails
+ */
 static vector_t *init_tiles_vector(size_t width, size_t height)
 {
     vector_t *tiles = vector_new(sizeof(tile_t));
@@ -98,7 +110,6 @@ void destroy_map(map_t *map)
  * @param map Pointer to the map structure where the player will be added
  * @param player Pointer to the player structure to be added to the map
  */
-// TODO: Handle multiple players on the same tile
 void add_player_to_map(map_t *map, player_t *player)
 {
     if (map == NULL || player == NULL) {
@@ -119,7 +130,6 @@ void add_player_to_map(map_t *map, player_t *player)
  * @param map Pointer to the map structure where the player will be removed
  * @param player Pointer to the player structure to be removed from the map
  */
-// TODO: Handle multiple players on the same tile
 void remove_player_from_map(map_t *map, player_t *player)
 {
     if (map == NULL || player == NULL) {

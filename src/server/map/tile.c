@@ -5,7 +5,8 @@
 ** tile
 */
 
-#include "map/map.h"
+#include "map/tile.h"
+#include "player/player.h"
 #include "vector.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -87,33 +88,4 @@ tile_t *get_tile_by_index(const map_t *map, size_t index)
         return NULL;
     }
     return vtable->at(map->tiles, index);
-}
-
-void add_player_to_tile(tile_t *tile, player_t *player)
-{
-    if (tile == NULL || player == NULL) {
-        fprintf(stderr, "Invalid tile or player pointer\n");
-        return;
-    }
-    vector_get_vtable(tile->players)->push_back(tile->players, &player);
-}
-
-void remove_player_from_tile(tile_t *tile, player_t *player)
-{
-    const vector_vtable_t *vtable;
-    player_t *current_player;
-
-    if (tile == NULL || player == NULL) {
-        fprintf(stderr, "Invalid tile or player pointer\n");
-        return;
-    }
-    vtable = vector_get_vtable(tile->players);
-    for (size_t i = 0; i < vtable->size(tile->players); i++) {
-        current_player = *(player_t **)vtable->at(tile->players, i);
-        if (current_player == player) {
-            vtable->erase(tile->players, i);
-            return;
-        }
-    }
-    fprintf(stderr, "Player not found on tile\n");
 }
