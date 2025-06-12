@@ -14,7 +14,6 @@
     #include "options_parser/options.h"
 
 typedef struct server_s {
-    int sockfd;
     server_options_t *options;
     struct pollfd fds[MAX_CLIENTS + 1];
     char **clients_team;

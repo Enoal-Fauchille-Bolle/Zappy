@@ -72,10 +72,9 @@ void destroy_server(server_t *server)
     }
     destroy_server_options(server->options);
     destroy_client_teams(server->clients_team);
-    close(server->sockfd);
-    for (size_t i = 0; i < MAX_CLIENTS; i++) {
-        if (server->fds[i + 1].fd >= 0) {
-            close(server->fds[i + 1].fd);
+    for (size_t i = 0; i < MAX_CLIENTS + 1; i++) {
+        if (server->fds[i].fd >= 0) {
+            close(server->fds[i].fd);
         }
     }
     free(server);

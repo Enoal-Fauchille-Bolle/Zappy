@@ -10,6 +10,7 @@
 #include "constants.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
@@ -125,6 +126,26 @@ static int setup_socket_fd(void)
 }
 
 /**
+ * @brief Initialize polling file descriptors array for server connections
+ *
+ * Sets up the pollfd array by initializing all client slots to -1 (unused)
+ * and configuring the server socket at index 0 to listen for incoming
+ * connections.
+ *
+ * @param fds Pointer to array of pollfd structures to initialize
+ * @param server_sockfd Server socket file descriptor to monitor for new
+ * connections
+ */
+static void init_poll_fds(struct pollfd *fds, int server_sockfd)
+{
+    for (int i = 0; i < MAX_CLIENTS + 1; i++) {
+        fds[i].fd = -1;
+    }
+    fds[0].fd = server_sockfd;
+    fds[0].events = POLLIN;
+}
+
+/**
  * @brief Sets up a server socket for incoming connections
  *
  * Initializes a server socket by creating a file descriptor, binding it to the
@@ -142,13 +163,13 @@ bool setup_socket(server_t *server, int port)
 {
     struct sockaddr_in addr = {0};
 
-    server->sockfd = setup_socket_fd();
-    if (server->sockfd == -1)
+    init_poll_fds(server->fds, setup_socket_fd());
+    if (server->fds[0].fd == -1)
         return FAILURE;
     addr = init_sockaddr_in(port);
-    if (bind_socket(server->sockfd, &addr) == FAILURE ||
-        listen_socket(server->sockfd) == FAILURE) {
-        close(server->sockfd);
+    if (bind_socket(server->fds[0].fd, &addr) == FAILURE ||
+        listen_socket(server->fds[0].fd) == FAILURE) {
+        close(server->fds[0].fd);
         return FAILURE;
     }
     return SUCCESS;

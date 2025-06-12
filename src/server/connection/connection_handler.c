@@ -103,7 +103,7 @@ static void accept_new_connection(server_t *server)
     struct sockaddr_in client_addr = {0};
     socklen_t client_addr_len = sizeof(client_addr);
     int client_sockfd = accept(
-        server->sockfd, (struct sockaddr *)&client_addr, &client_addr_len);
+        server->fds[0].fd, (struct sockaddr *)&client_addr, &client_addr_len);
 
     if (client_sockfd == -1)
         return perror("accept");
@@ -151,26 +151,6 @@ static bool process_connection(server_t *server)
 }
 
 /**
- * @brief Initialize polling file descriptors array for server connections
- *
- * Sets up the pollfd array by initializing all client slots to -1 (unused)
- * and configuring the server socket at index 0 to listen for incoming
- * connections.
- *
- * @param fds Pointer to array of pollfd structures to initialize
- * @param server_sockfd Server socket file descriptor to monitor for new
- * connections
- */
-static void init_poll_fds(struct pollfd *fds, int server_sockfd)
-{
-    for (int i = 0; i < MAX_CLIENTS + 1; i++) {
-        fds[i].fd = -1;
-    }
-    fds[0].fd = server_sockfd;
-    fds[0].events = POLLIN;
-}
-
-/**
  * @brief Processes client connections and handles communication with connected
  * clients
  *
@@ -188,7 +168,6 @@ static void init_poll_fds(struct pollfd *fds, int server_sockfd)
 //     game_tick(server);
 void process_connections(server_t *server)
 {
-    init_poll_fds(server->fds, server->sockfd);
     while (true) {
         if (process_connection(server) == FAILURE)
             break;
