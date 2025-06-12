@@ -6,7 +6,7 @@
 */
 
 #include "map/resources.h"
-#include "map/map.h"
+#include "map/tile.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>

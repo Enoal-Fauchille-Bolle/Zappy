@@ -5,13 +5,25 @@
 ** map
 */
 
-#include "map/map.h"
-#include "map/coordinates.h"
+#include "map/tile.h"
 #include "vector.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * @brief Initialize a vector of tiles for the map.
+ *
+ * This function creates a new vector to hold tiles and initializes each tile
+ * to zero. It allocates memory for the vector and each tile, ensuring that
+ * the vector can hold the specified number of tiles based on the map's width
+ * and height.
+ *
+ * @param width Width of the map
+ * @param height Height of the map
+ * @return Pointer to the initialized vector_t structure on success,
+ *         NULL if memory allocation fails
+ */
 static vector_t *init_tiles_vector(size_t width, size_t height)
 {
     vector_t *tiles = vector_new(sizeof(tile_t));
@@ -81,50 +93,11 @@ void destroy_map(map_t *map)
         return;
     for (size_t i = 0; i < map->width * map->height; i++) {
         tile = get_tile_by_index(map, i);
-        if (tile != NULL)
+        if (tile != NULL) {
             vector_destroy(tile->players);
+            vector_destroy(tile->eggs);
+        }
     }
     vector_destroy(map->tiles);
     free(map);
-}
-
-/**
- * @brief Add a player to the map at their current position.
- *
- * This function places a player on the tile corresponding to their current
- * position in the map. If the map or player pointer is NULL, it prints an
- * error message and returns without making any changes.
- *
- * @param map Pointer to the map structure where the player will be added
- * @param player Pointer to the player structure to be added to the map
- */
-// TODO: Handle multiple players on the same tile
-void add_player_to_map(map_t *map, player_t *player)
-{
-    if (map == NULL || player == NULL) {
-        fprintf(stderr, "Invalid map or player pointer\n");
-        return;
-    }
-    add_player_to_tile(get_tile(map, player->pos), player);
-}
-
-/**
- * @brief Remove a player from the map at their current position.
- *
- * This function removes a player from the tile corresponding to their current
- * position in the map. If the map or player pointer is NULL, it prints an
- * error message and returns without making any changes. If the tile is not
- * found, it also prints an error message.
- *
- * @param map Pointer to the map structure where the player will be removed
- * @param player Pointer to the player structure to be removed from the map
- */
-// TODO: Handle multiple players on the same tile
-void remove_player_from_map(map_t *map, player_t *player)
-{
-    if (map == NULL || player == NULL) {
-        fprintf(stderr, "Invalid map or player pointer\n");
-        return;
-    }
-    remove_player_from_tile(get_tile(map, player->pos), player);
 }
