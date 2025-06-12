@@ -93,8 +93,10 @@ void destroy_map(map_t *map)
         return;
     for (size_t i = 0; i < map->width * map->height; i++) {
         tile = get_tile_by_index(map, i);
-        if (tile != NULL)
+        if (tile != NULL) {
             vector_destroy(tile->players);
+            vector_destroy(tile->eggs);
+        }
     }
     vector_destroy(map->tiles);
     free(map);
