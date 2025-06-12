@@ -78,13 +78,16 @@ server_t *create_server(server_options_t *options)
 {
     server_t *server = malloc(sizeof(server_t));
 
-    if (setup_socket(server, options->port) == FAILURE) {
+    if (!server)
+        return NULL;
+    server->client_teams = init_client_teams();
+    if (setup_socket(server, options->port) == FAILURE ||
+        !server->client_teams) {
         free(server);
         destroy_server_options(options);
         return NULL;
     }
     server->options = options;
-    server->client_teams = init_client_teams();
     return server;
 }
 
