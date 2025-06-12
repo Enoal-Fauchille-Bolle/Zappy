@@ -9,7 +9,6 @@
     #define OPTIONS_PARSER_H_
 
     #include <stdbool.h>
-    #include <stddef.h>
     #include "options_parser/options.h"
 
 typedef void (*option_handler_t)(server_options_t *opts, int *i, int ac,
