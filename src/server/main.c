@@ -6,10 +6,8 @@
 */
 
 #include "constants.h"
-#include "options_parser/parser.h"
 #include "options_parser/processor.h"
 #include "connection/server.h"
-#include "connection/socket.h"
 #include "constants.h"
 #include <stdlib.h>
 #include <time.h>

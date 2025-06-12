@@ -9,9 +9,7 @@
     #define CLIENT_H_
 
     #include <netinet/in.h>
-    #include <stdio.h>
     #include <poll.h>
-    #include <errno.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>

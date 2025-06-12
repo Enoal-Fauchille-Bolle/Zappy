@@ -8,8 +8,7 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
-#include "options_parser/options.h"
-#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 

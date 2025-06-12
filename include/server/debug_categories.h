@@ -11,6 +11,7 @@
     #include <stdarg.h>
     #include <stdio.h>
     #include <stdbool.h>
+    #include "debug.h"
 
     #define DEBUG_SERVER "[🖥️ ] "
     #define DEBUG_CONN "[🔗] "
@@ -19,9 +20,6 @@
     #define DEBUG_PLAYER "[👤] "
     #define DEBUG_MAP "[🌐] "
     #define DEBUG_RESOURCE "[💎] "
-
-static inline void debug_print(bool debug_enabled, const char *prefix,
-    const char *format, va_list args);
 
 static inline void debug_server(bool debug_enabled, const char *format, ...)
 {

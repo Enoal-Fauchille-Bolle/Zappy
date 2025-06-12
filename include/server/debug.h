@@ -11,7 +11,6 @@
     #include <stdarg.h>
     #include <stdio.h>
     #include <stdbool.h>
-    #include "debug_categories.h"
 
     #define DEBUG_INFO "[ℹ️ ] "
     #define DEBUG_WARNING "[⚠️ ] "

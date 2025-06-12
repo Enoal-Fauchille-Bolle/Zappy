@@ -5,9 +5,9 @@
 ** Option Processor
 */
 
+#include "debug_categories.h"
 #include "options_parser/options.h"
 #include "constants.h"
-#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
