@@ -55,6 +55,7 @@ static bool is_team_name_valid(server_t *server, const char *team_name)
  */
 // TODO: Server should send the real number of clients that can join a team
 //       instead of 0
+// TODO: Server should refuse to assign a team if it is full
 static bool parse_team_name(
     server_t *server, const char *message, int client_index)
 {
