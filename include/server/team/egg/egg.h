@@ -10,7 +10,7 @@
     #define EGG_H_
 
     #include "map/tile.h"
-    #include "player/player.h"
+    #include "team/player/player.h"
     #include <stddef.h>
     #include <unistd.h>
 

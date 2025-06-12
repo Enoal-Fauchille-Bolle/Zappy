@@ -60,27 +60,28 @@ LIB_SERVER	=	$(SRCDIR_SERVER)utils/
 INCLUDES_SERVER = $(INCLUDES)server/
 
 # Sources
-SRC_SERVER = $(SRCDIR_SERVER)main.c	\
-			 $(SRCDIR_SERVER)constants.c	\
-			 $(SRCDIR_SERVER)options_parser/parser.c	\
-			 $(SRCDIR_SERVER)options_parser/processor.c	\
-			 $(SRCDIR_SERVER)options_parser/options/port.c	\
-			 $(SRCDIR_SERVER)options_parser/options/width.c	\
-			 $(SRCDIR_SERVER)options_parser/options/height.c	\
-			 $(SRCDIR_SERVER)options_parser/options/teams.c	\
-			 $(SRCDIR_SERVER)options_parser/options/clients.c	\
-			 $(SRCDIR_SERVER)options_parser/options/frequency.c	\
-			 $(SRCDIR_SERVER)options_parser/options/help.c	\
-			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
-			 $(SRCDIR_SERVER)map/map.c	\
-			 $(SRCDIR_SERVER)map/coordinates.c	\
-			 $(SRCDIR_SERVER)map/player_management.c	\
-			 $(SRCDIR_SERVER)map/egg_management.c	\
-			 $(SRCDIR_SERVER)player/player.c	\
-			 $(SRCDIR_SERVER)player/movement.c	\
-			 $(SRCDIR_SERVER)map/resources.c	\
-			 $(SRCDIR_SERVER)map/tile.c	\
-			 $(SRCDIR_SERVER)egg/egg.c	\
+SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
+			 	$(SRCDIR_SERVER)constants.c									\
+			 	$(SRCDIR_SERVER)options_parser/parser.c						\
+			 	$(SRCDIR_SERVER)options_parser/processor.c					\
+			 	$(SRCDIR_SERVER)options_parser/options/port.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/width.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/height.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/teams.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/clients.c			\
+			 	$(SRCDIR_SERVER)options_parser/options/frequency.c			\
+			 	$(SRCDIR_SERVER)options_parser/options/help.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/debug.c				\
+			 	$(SRCDIR_SERVER)map/map.c									\
+			 	$(SRCDIR_SERVER)map/coordinates.c							\
+			 	$(SRCDIR_SERVER)map/player_management.c						\
+			 	$(SRCDIR_SERVER)map/egg_management.c						\
+			 	$(SRCDIR_SERVER)map/resources.c								\
+			 	$(SRCDIR_SERVER)map/tile.c									\
+			 	$(SRCDIR_SERVER)team/player/player.c						\
+			 	$(SRCDIR_SERVER)team/player/movement.c						\
+			 	$(SRCDIR_SERVER)team/egg/egg.c								\
+				$(SRCDIR_SERVER)team/egg/spawn.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -172,19 +173,20 @@ TESTS_NAME = unit_tests.out
 TESTS = ./tests/
 
 # Sources
-TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
-			$(SRCDIR_SERVER)map/tile.c	\
-			$(SRCDIR_SERVER)map/coordinates.c	\
-			${SRCDIR_SERVER}map/resources.c	\
-			$(SRCDIR_SERVER)player/player.c	\
-			$(SRCDIR_SERVER)player/movement.c	\
-			$(SRCDIR_SERVER)map/player_management.c	\
-			$(SRCDIR_SERVER)map/egg_management.c	\
-			$(SRCDIR_SERVER)egg/egg.c	\
-			${TESTS}player_tests.c	\
-			${TESTS}resources_tests.c	\
-			${TESTS}map_tests.c	\
-			${TESTS}egg_tests.c	\
+TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
+			$(SRCDIR_SERVER)map/coordinates.c								\
+			$(SRCDIR_SERVER)map/player_management.c							\
+			$(SRCDIR_SERVER)map/egg_management.c							\
+			$(SRCDIR_SERVER)map/resources.c									\
+			$(SRCDIR_SERVER)map/tile.c										\
+			$(SRCDIR_SERVER)team/player/player.c							\
+			$(SRCDIR_SERVER)team/player/movement.c							\
+			$(SRCDIR_SERVER)team/egg/egg.c									\
+			$(SRCDIR_SERVER)team/egg/spawn.c								\
+			${TESTS}player_tests.c											\
+			${TESTS}resources_tests.c										\
+			${TESTS}map_tests.c												\
+			${TESTS}egg_tests.c												\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\

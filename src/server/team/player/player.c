@@ -5,7 +5,7 @@
 ** player
 */
 
-#include "player/player.h"
+#include "team/player/player.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

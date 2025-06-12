@@ -9,7 +9,7 @@
 #include "map/map.h"
 #include "map/resources.h"
 #include "map/tile.h"
-#include "player/player.h"
+#include "team/player/player.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/test.h>
 #include <criterion/redirect.h>

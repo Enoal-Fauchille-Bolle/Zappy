@@ -5,7 +5,7 @@
 ** egg
 */
 
-#include "egg/egg.h"
+#include "team/egg/egg.h"
 #include "map/map.h"
 #include "map/tile.h"
 #include <stdio.h>

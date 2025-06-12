@@ -5,7 +5,7 @@
 ** spawn
 */
 
-#include "egg/egg.h"
+#include "team/egg/egg.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>

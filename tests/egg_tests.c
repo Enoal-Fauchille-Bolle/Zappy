@@ -5,11 +5,10 @@
 ** egg_tests
 */
 
-#include "egg/egg.h"
+#include "team/egg/egg.h"
 #include "map/coordinates.h"
 #include "map/map.h"
 #include "map/tile.h"
-#include "player/player.h"
 #include "vector.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>

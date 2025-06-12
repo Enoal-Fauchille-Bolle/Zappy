@@ -8,7 +8,7 @@
 #include "map/coordinates.h"
 #include "map/map.h"
 #include "map/tile.h"
-#include "player/player.h"
+#include "team/player/player.h"
 #include "vector.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
