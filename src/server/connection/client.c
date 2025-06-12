@@ -15,12 +15,9 @@
 #include <string.h>
 #include <unistd.h>
 
-static bool parse_command(
-    server_t *server, const char *message, int client_index)
+static bool parse_command(server_t *server[[gnu::unused]],
+    const char *message[[gnu::unused]], int client_index[[gnu::unused]])
 {
-    (void)server;
-    (void)message;
-    (void)client_index;
     return true;
 }
 
