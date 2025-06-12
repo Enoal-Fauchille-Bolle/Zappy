@@ -7,6 +7,7 @@
 
 #include "connection/server.h"
 #include "constants.h"
+#include "options_parser/options.h"
 #include "options_parser/processor.h"
 #include <stdlib.h>
 #include <time.h>
@@ -44,5 +45,6 @@ int main(int ac, char **av)
         return EXIT_ERROR_CODE;
     srand(time(NULL));
     run_server(server, options->port);
+    destroy_server(server);
     return EXIT_SUCCESS_CODE;
 }
