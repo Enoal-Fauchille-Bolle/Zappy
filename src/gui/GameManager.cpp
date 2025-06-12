@@ -31,6 +31,15 @@ void GameManager::initialize(Scenne* scene)
 
 void GameManager::update()
 {
+    if (!_scene) {
+        std::cerr << "Scene not initialized" << std::endl;
+        return;
+    }
+
+    _time++;
+    for (auto& player : _players) {
+        player.second->setPosition(player.first + ((player.first * 10.0f - (_mapHeight * 5.0f)) * _time / 100.0f), 10.0f, player.first * 10.0f - (_mapHeight * 5.0f));
+    }
 }
 
 void GameManager::setMapSize(int width, int height)
@@ -42,6 +51,10 @@ void GameManager::setMapSize(int width, int height)
         row.resize(width, nullptr);
     }
     createGrid();
+    createPlayer(1, "TeamA", 0, 0, Orientation::NORTH);
+    createPlayer(2, "TeamB", 1, 1, Orientation::EAST);
+    createPlayer(3, "TeamC", 2, 2, Orientation::SOUTH);
+    createPlayer(4, "TeamD", 3, 3, Orientation::WEST);
 }
 
 void GameManager::createGrid()
@@ -83,7 +96,8 @@ void GameManager::createTile(int x, int y)
               << posX << ", 0.0, " << posZ << ")" << std::endl;
 }
 
-void GameManager::createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation)
+void GameManager::createPlayer(int id, const std::string& teamName, int x,
+                               int y, Orientation orientation)
 {
     if (_players.find(id) != _players.end()) {
         std::cerr << "Player " << id << " already exists" << std::endl;
@@ -91,15 +105,17 @@ void GameManager::createPlayer(int id, const std::string& teamName, int x, int y
     }
 
     Player* player = new Player(id, teamName);
+    player->attachToScene(_scene->getSceneManager());
     player->setOrientation(orientation);
     float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
     float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
-    player->setPosition(posX, 2.0f, posZ);
+    player->setPosition(posX, 10.0f, posZ);
+    player->setScale(0.1f, 0.1f, 0.1f);
     _players[id] = player;
-    player->attachToScene(_scene->getSceneManager());
 }
 
-void GameManager::updatePlayerPosition(int id, int x, int y, Orientation orientation)
+void GameManager::updatePlayerPosition(int id, int x, int y,
+                                       Orientation orientation)
 {
     auto it = _players.find(id);
     if (it == _players.end()) {
@@ -114,19 +130,22 @@ void GameManager::updatePlayerPosition(int id, int x, int y, Orientation orienta
     player->setOrientation(orientation);
 }
 
-void GameManager::updateTileContent(int x, int y, const std::map<std::string, int>& resources)
+void GameManager::updateTileContent(int x, int y,
+                                    const std::map<std::string, int>& resources)
 {
     if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight) {
-        std::cerr << "Tile coordinates out of bounds: (" << x << ", " << y << ")" << std::endl;
+        std::cerr << "Tile coordinates out of bounds: (" << x << ", " << y
+                  << ")" << std::endl;
         return;
     }
-    
+
     Tile* tile = _tiles[y][x];
     if (!tile) {
-        std::cerr << "Tile not created at (" << x << ", " << y << ")" << std::endl;
+        std::cerr << "Tile not created at (" << x << ", " << y << ")"
+                  << std::endl;
         return;
     }
-    
+
     for (const auto& resource : resources) {
         tile->setResource(resource.first, resource.second);
     }

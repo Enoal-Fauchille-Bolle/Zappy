@@ -37,6 +37,8 @@ class GameManager {
         
         std::map<int, Player*> _players;
         std::vector<std::vector<Tile*>> _tiles;
+
+        int _time = 0;
         
         void createGrid();
 };
