@@ -75,12 +75,13 @@ tile_t *get_tile(const map_t *map, const pos_t pos)
  */
 tile_t *get_tile_by_index(const map_t *map, size_t index)
 {
-    const vector_vtable_t *vtable = vector_get_vtable(map->tiles);
+    const vector_vtable_t *vtable;
 
     if (map == NULL) {
         fprintf(stderr, "Invalid map\n");
         return NULL;
     }
+    vtable = vector_get_vtable(map->tiles);
     if (index >= map->width * map->height) {
         fprintf(stderr, "Index out of bounds: %zu\n", index);
         return NULL;
