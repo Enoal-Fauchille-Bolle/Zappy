@@ -62,13 +62,13 @@ void GameManager::createTile(int x, int y)
     }
 
     Tile* tile = new Tile(x, y);
-    float posX = static_cast<float>(x) * 15.0f - (_mapWidth * 5.0f);
-    float posZ = static_cast<float>(y) * 15.0f - (_mapHeight * 5.0f);
-    tile->setPosition(posX, 0.0f, posZ);
 
     // First store the tile, then attach to scene, then set color
     _tiles[y][x] = tile;
     tile->attachToScene(_scene->getSceneManager());
+    float posX = static_cast<float>(x) * 15.0f - (_mapWidth * 5.0f);
+    float posZ = static_cast<float>(y) * 15.0f - (_mapHeight * 5.0f);
+    tile->setPosition(posX, 0.0f, posZ);
     tile->setScale(0.1f, 0.1f, 0.1f);
 
     // Set contrasting colors AFTER attaching to scene
