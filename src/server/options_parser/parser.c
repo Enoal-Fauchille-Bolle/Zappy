@@ -118,7 +118,7 @@ void parse_options(server_options_t *options, int ac, char **av)
  *
  * @note Does not validate option value ranges, only presence
  */
-bool mandatory_options_present(server_options_t *options)
+bool are_mandatory_options_present(server_options_t *options)
 {
     if (options->help)
         return true;

@@ -22,7 +22,7 @@ typedef struct option_map_s {
 
 server_options_t *init_options(void);
 void parse_options(server_options_t *options, int ac, char **av);
-bool mandatory_options_present(server_options_t *options);
+bool are_mandatory_options_present(server_options_t *options);
 
 // Option handlers
 void handle_port(server_options_t *opts, int *i, int ac, char **av);

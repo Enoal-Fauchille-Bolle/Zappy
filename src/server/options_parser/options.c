@@ -36,7 +36,7 @@ server_options_t *get_server_options(int ac, char **av)
     parse_options(options, ac, av);
     if (options->error)
         return options;
-    if (!mandatory_options_present(options)) {
+    if (!are_mandatory_options_present(options)) {
         fprintf(stderr, "Mandatory options are missing\n");
         options->error = true;
     }
