@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "debug_categories.h"
 #include "options_parser/options.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 

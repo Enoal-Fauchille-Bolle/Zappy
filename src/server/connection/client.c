@@ -9,8 +9,10 @@
 #include "connection/connection_handler.h"
 #include "connection/server.h"
 #include "connection/socket.h"
+#include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
