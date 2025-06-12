@@ -95,7 +95,7 @@ static bool bind_socket(int server_sockfd, struct sockaddr_in *server_addr)
  * @param port The port number to bind the socket to
  * @return struct sockaddr_in Configured socket address structure
  */
-static struct sockaddr_in init_sockin(int port)
+static struct sockaddr_in init_sockaddr_in(int port)
 {
     struct sockaddr_in server_addr = {0};
 
@@ -145,7 +145,7 @@ bool setup_socket(server_t *server, int port)
     server->sockfd = setup_socket_fd();
     if (server->sockfd == -1)
         return FAILURE;
-    addr = init_sockin(port);
+    addr = init_sockaddr_in(port);
     if (bind_socket(server->sockfd, &addr) == FAILURE ||
         listen_socket(server->sockfd) == FAILURE) {
         close(server->sockfd);
