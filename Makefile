@@ -74,10 +74,12 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
 			 $(SRCDIR_SERVER)map/map.c	\
 			 $(SRCDIR_SERVER)map/coordinates.c	\
+			 $(SRCDIR_SERVER)map/add_and_remove.c	\
 			 $(SRCDIR_SERVER)player/player.c	\
 			 $(SRCDIR_SERVER)player/movement.c	\
 			 $(SRCDIR_SERVER)map/resources.c	\
 			 $(SRCDIR_SERVER)map/tile.c	\
+			 $(SRCDIR_SERVER)egg/egg.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -175,6 +177,8 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			${SRCDIR_SERVER}map/resources.c	\
 			$(SRCDIR_SERVER)player/player.c	\
 			$(SRCDIR_SERVER)player/movement.c	\
+			$(SRCDIR_SERVER)map/add_and_remove.c	\
+			$(SRCDIR_SERVER)egg/egg.c	\
 			${TESTS}player_tests.c	\
 			${TESTS}resources_tests.c	\
 			${TESTS}map_tests.c	\
