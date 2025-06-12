@@ -27,13 +27,11 @@ DEP	=	$(SRC_SERVER:.c=.d)	\
 -include $(DEP)
 
 clean:
-	rm -f $(OBJ_SERVER)
-	rm -f $(OBJ_GUI)
-	rm -f $(OBJ_AI)
-	rm -f $(TESTS_SRC:.c=.o)
-	rm -f $(DEP)
 	find . -name "*.gcda" -delete
 	find . -name "*.gcno" -delete
+	find . -name "*.a" -delete
+	find . -name "*.o" -delete
+	find . -name "*.d" -delete
 
 fclean: clean
 	rm -f $(NAME_SERVER)
@@ -79,6 +77,7 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)player/player.c	\
 			 $(SRCDIR_SERVER)player/movement.c	\
 			 $(SRCDIR_SERVER)map/resources.c	\
+			 $(SRCDIR_SERVER)map/tile.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -171,6 +170,7 @@ TESTS = ./tests/
 
 # Sources
 TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
+			$(SRCDIR_SERVER)map/tile.c	\
 			$(SRCDIR_SERVER)map/coordinates.c	\
 			${SRCDIR_SERVER}map/resources.c	\
 			$(SRCDIR_SERVER)player/player.c	\
@@ -180,13 +180,14 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			${TESTS}map_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(CFLAGS_SERVER) -lcriterion --coverage -g
+UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
+			-lvector -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
 
-unit_tests:
-	$(CC_TESTS) $(UNIT_FLAGS) -o $(TESTS_NAME) $(TESTS_SRC)
+unit_tests: $(LIB_SERVER)libvector.a
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC) $(UNIT_FLAGS)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose

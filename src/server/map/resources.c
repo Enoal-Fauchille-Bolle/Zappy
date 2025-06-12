@@ -62,7 +62,7 @@ size_t count_resource(const map_t *map, const resource_t resource)
         return 0;
     }
     for (size_t i = 0; i < map->width * map->height; i++)
-        count += map->tiles[i].resources[resource];
+        count += get_tile_by_index(map, i)->resources[resource];
     return count;
 }
 
@@ -88,7 +88,8 @@ void spread_resource(map_t *map, const resource_t resource)
     if (map == NULL || current_count >= min)
         return;
     for (size_t i = 0; i < target_count; i++) {
-        current_tile = &map->tiles[rand() % (map->width * map->height)];
+        current_tile =
+            get_tile_by_index(map, rand() % (map->width * map->height));
         current_tile->resources[resource]++;
     }
 }

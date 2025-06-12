@@ -80,9 +80,9 @@ Test(map, create_map_valid)
     cr_assert_eq(map->width, 10, "Map width should be 10");
     cr_assert_eq(map->height, 10, "Map height should be 10");
     for (size_t i = 0; i < 100; i++) {
-        cr_assert_eq(map->tiles[i].resources[FOOD], 0,
+        cr_assert_eq(get_tile_by_index(map, i)->resources[FOOD], 0,
             "Food should be initialized to 0");
-        cr_assert_eq(map->tiles[i].resources[LINEMATE], 0,
+        cr_assert_eq(get_tile_by_index(map, i)->resources[LINEMATE], 0,
             "Linemate should be initialized to 0");
     }
     destroy_map(map);

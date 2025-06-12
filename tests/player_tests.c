@@ -8,10 +8,13 @@
 #include "map/coordinates.h"
 #include "map/map.h"
 #include "player/player.h"
+#include "vector.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 #include <criterion/redirect.h>
+#include <stddef.h>
+#include <stdio.h>
 
 // void redirect_stdout(void)
 // {
@@ -131,6 +134,25 @@ Test(player, move_player_forward_wrap)
     destroy_map(map);
 }
 
+static bool predicate(const vector_item_t *element, void *context)
+{
+    const player_t *player_a = *(const player_t **)element;
+    const player_t *player_b = (const player_t *)context;
+
+    return player_a == player_b;
+}
+
+static bool player_in(tile_t *tile, player_t *player)
+{
+    const vector_vtable_t *vtable = vector_get_vtable(tile->players);
+
+    if (tile == NULL) {
+        fprintf(stderr, "Invalid tile pointer\n");
+        return NULL;
+    }
+    return vtable->any(tile->players, predicate, player);
+}
+
 Test(player, move_player_on_map)
 {
     pos_t pos = {5, 5};
@@ -142,7 +164,7 @@ Test(player, move_player_on_map)
     cr_assert_not_null(map, "Map should not be NULL");
     add_player_to_map(map, player);
     prev_tile = get_tile(map, player->pos);
-    cr_assert_eq(prev_tile->players[0], player,
+    cr_assert(player_in(prev_tile, player),
         "Player should be on the tile at (5,5) before moving");
     player->orientation = EAST;
     move_player_forward(player, map);
@@ -150,12 +172,62 @@ Test(player, move_player_on_map)
         "Player X position should be 6 after moving east from (5,5)");
     cr_assert_eq(player->pos.y, 5,
         "Player Y position should remain 5 after moving east from (5,5)");
-    cr_assert_eq(get_tile(map, player->pos)->players[0], player,
+    cr_assert(player_in(get_tile(map, player->pos), player),
         "Player should still be on the tile at (6,5) after moving");
-    cr_assert_eq(prev_tile->players[0], NULL,
+    cr_assert_not(player_in(prev_tile, player),
         "Player should no longer be on the previous tile at (5,5) after "
         "moving");
     destroy_player(player);
+    destroy_map(map);
+}
+
+Test(player, move_two_player_on_map)
+{
+    player_t *player = create_player(1, (pos_t){0, 0}, 1);
+    player_t *player2 = create_player(2, (pos_t){1, 0}, 1);
+    map_t *map = create_map(10, 10);
+    tile_t *prev_tile_A;
+    tile_t *prev_tile_B;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(player2, "Player2 should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    add_player_to_map(map, player);
+    add_player_to_map(map, player2);
+    prev_tile_A = get_tile(map, player->pos);
+    prev_tile_B = get_tile(map, player2->pos);
+    cr_assert(player_in(prev_tile_A, player),
+        "Player should be on the tile at (0,0) before moving");
+    cr_assert(player_in(prev_tile_B, player2),
+        "Player2 should be on the tile at (1,0) before moving");
+    player->orientation = EAST;
+    move_player_forward(player, map);
+    cr_assert_eq(player->pos.x, 1,
+        "Player X position should be 6 after moving east from (0,0)");
+    cr_assert_eq(player->pos.y, 0,
+        "Player Y position should remain 5 after moving east from (0,0)");
+    cr_assert(player_in(get_tile(map, player->pos), player),
+        "Player should be on Player2's tile at (1,0) after moving");
+    cr_assert(player_in(get_tile(map, player->pos), player2),
+        "Player2 should be on the tile at (1,0) after moving player");
+    cr_assert_not(player_in(prev_tile_A, player),
+        "Player should no longer be on the previous tile at (0,0) after "
+        "moving");
+    player2->orientation = SOUTH;
+    move_player_forward(player2, map);
+    cr_assert_eq(player2->pos.x, 1,
+        "Player2 X position should remain 1 after moving south from (1,0)");
+    cr_assert_eq(player2->pos.y, 1,
+        "Player2 Y position should be 1 after moving south from (1,0)");
+    cr_assert(player_in(get_tile(map, player2->pos), player2),
+        "Player2 should be on the tile at (1,1) after moving south");
+    cr_assert_not(player_in(get_tile(map, player->pos), player2),
+        "Player2 should no longer be on the tile at (1,0) after moving south");
+    cr_assert_not(player_in(prev_tile_B, player2),
+        "Player2 should no longer be on the previous tile at (1,0) after "
+        "moving south");
+    destroy_player(player);
+    destroy_player(player2);
     destroy_map(map);
 }
 

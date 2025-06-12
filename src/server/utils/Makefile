@@ -18,6 +18,7 @@ SRC	=	\
 		$(METHOD)all.c						\
 		$(METHOD)any.c						\
 		$(METHOD)assign.c					\
+		$(METHOD)at.c							\
 		$(METHOD)back.c						\
 		$(METHOD)capacity.c				\
 		$(METHOD)clear.c					\
@@ -28,6 +29,7 @@ SRC	=	\
 		$(METHOD)filter.c					\
 		$(METHOD)find.c						\
 		$(METHOD)for_each.c				\
+		$(METHOD)front.c					\
 		$(METHOD)insert.c					\
 		$(METHOD)map.c						\
 		$(METHOD)pop_back.c				\
