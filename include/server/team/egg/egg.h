@@ -23,7 +23,8 @@ egg_t *create_egg(const pos_t pos, void *team);
 void destroy_egg(egg_t *egg);
 
 void spawn_min_eggs(map_t *map, void *team, size_t min);
-player_t *spawn_player_from_egg(egg_t *egg, map_t *map);
+player_t *spawn_player_from_egg(
+    egg_t *egg, map_t *map, const size_t player_id);
 
 void add_egg_to_tile(tile_t *tile, egg_t *egg);
 void remove_egg_from_tile(tile_t *tile, egg_t *egg);

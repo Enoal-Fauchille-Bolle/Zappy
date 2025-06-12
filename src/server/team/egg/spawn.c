@@ -6,6 +6,7 @@
 */
 
 #include "team/egg/egg.h"
+#include "team/team.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,9 +56,8 @@ void spawn_min_eggs(map_t *map, void *team, size_t min)
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if egg or map is NULL or if player creation fails
  */
-// TODO: Add new player to the egg's team player list when implemented and
-// remove the egg from the team's egg list
-player_t *spawn_player_from_egg(egg_t *egg, map_t *map)
+// TODO: Remove the egg from the team's egg list
+player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
 {
     player_t *player;
 
@@ -65,12 +65,13 @@ player_t *spawn_player_from_egg(egg_t *egg, map_t *map)
         fprintf(stderr, "Invalid egg or map pointer\n");
         return NULL;
     }
-    player = create_player(egg->pos);
+    player = create_player(egg->pos, player_id);
     if (player == NULL) {
         fprintf(stderr, "Failed to create player from egg\n");
         return NULL;
     }
     add_player_to_map(map, player);
+    add_player_to_team(egg->team, player);
     remove_egg_from_map(map, egg);
     return player;
 }

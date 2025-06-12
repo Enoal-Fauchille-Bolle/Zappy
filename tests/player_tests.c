@@ -25,7 +25,7 @@
 Test(player, create_player)
 {
     pos_t pos = {5, 4};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_eq(player->pos.x, 5, "Player X position should be 5");
@@ -40,7 +40,7 @@ Test(player, create_player)
 Test(player, turn_left_360)
 {
     pos_t pos = {5, 4};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
 
     cr_assert_not_null(player, "Player should not be NULL");
     player->orientation = NORTH;
@@ -64,7 +64,7 @@ Test(player, turn_left_360)
 Test(player, turn_right_360)
 {
     pos_t pos = {5, 4};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
 
     cr_assert_not_null(player, "Player should not be NULL");
     player->orientation = NORTH;
@@ -88,7 +88,7 @@ Test(player, turn_right_360)
 Test(player, move_player_forward_basic)
 {
     pos_t pos = {0, 0};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
     map_t *map = create_map(10, 10);
 
     cr_assert_not_null(player, "Player should not be NULL");
@@ -113,7 +113,7 @@ Test(player, move_player_forward_basic)
 Test(player, move_player_forward_wrap)
 {
     pos_t pos = {0, 0};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
     map_t *map = create_map(10, 10);
 
     cr_assert_not_null(player, "Player should not be NULL");
@@ -156,7 +156,7 @@ static bool player_in(tile_t *tile, player_t *player)
 Test(player, move_player_on_map)
 {
     pos_t pos = {5, 5};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
     map_t *map = create_map(10, 10);
     tile_t *prev_tile;
 
@@ -183,8 +183,8 @@ Test(player, move_player_on_map)
 
 Test(player, move_two_player_on_map)
 {
-    player_t *player = create_player((pos_t){0, 0});
-    player_t *player2 = create_player((pos_t){1, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
+    player_t *player2 = create_player((pos_t){1, 0}, 0);
     map_t *map = create_map(10, 10);
     tile_t *prev_tile_A;
     tile_t *prev_tile_B;
@@ -234,7 +234,7 @@ Test(player, move_two_player_on_map)
 Test(player, move_player_forward_in_each_direction)
 {
     pos_t pos = {5, 5};
-    player_t *player = create_player(pos);
+    player_t *player = create_player(pos, 0);
     map_t *map = create_map(10, 10);
 
     cr_assert_not_null(player, "Player should not be NULL");
@@ -290,7 +290,7 @@ Test(player, west_wraps_correctly)
 
 Test(player, move_forward_null)
 {
-    player_t *player = create_player((pos_t){5, 5});
+    player_t *player = create_player((pos_t){5, 5}, 0);
     map_t *map = create_map(10, 10);
 
     cr_assert_not_null(player, "Player should not be NULL");
@@ -304,7 +304,7 @@ Test(player, move_forward_null)
 
 Test(player, destroy_player_null)
 {
-    player_t *player = create_player((pos_t){5, 5});
+    player_t *player = create_player((pos_t){5, 5}, 0);
 
     cr_assert_not_null(player, "Player should not be NULL");
     destroy_player(NULL);      // Should not crash

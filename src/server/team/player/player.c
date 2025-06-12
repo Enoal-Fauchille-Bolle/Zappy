@@ -21,7 +21,7 @@
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if memory allocation fails
  */
-player_t *create_player(const pos_t pos)
+player_t *create_player(const pos_t pos, const size_t id)
 {
     player_t *player = malloc(sizeof(player_t));
 
@@ -29,6 +29,7 @@ player_t *create_player(const pos_t pos)
         perror("Failed to allocate memory for player");
         return NULL;
     }
+    player->id = id;
     player->pos = pos;
     player->orientation = (rand() % 4) + 1;
     player->level = 1;

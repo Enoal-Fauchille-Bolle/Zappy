@@ -14,6 +14,7 @@
     #include <unistd.h>
 
 typedef struct player_s {
+    size_t id;
     pos_t pos;
     orientation_t orientation;
     size_t level;      // Player's level, starting at 1
@@ -21,7 +22,7 @@ typedef struct player_s {
     size_t tick_cooldown;      // If 0, player can act
 } player_t;
 
-player_t *create_player(const pos_t pos);
+player_t *create_player(const pos_t pos, const size_t id);
 void destroy_player(player_t *player);
 
 void turn_player_left(player_t *player);
