@@ -119,10 +119,10 @@ server_t *create_server(server_options_t *options)
  * @param server Pointer to the server structure containing configuration and
  * state
  */
-void run_server(server_t *server)
+void run_server(server_t *server, port_t port)
 {
     debug_server(
-        server->options->debug, "Listening on port %u\n", server->port);
+        server->options->debug, "Listening on port %u\n", port);
     puts("Waiting for connections...");
     process_connections(server);
 }

@@ -142,7 +142,6 @@ bool setup_socket(server_t *server, int port)
 {
     struct sockaddr_in addr = {0};
 
-    server->port = port;
     server->sockfd = setup_socket_fd();
     if (server->sockfd == -1)
         return FAILURE;

@@ -36,6 +36,6 @@ int main(int ac, char **av)
     if (!server)
         return EXIT_ERROR_CODE;
     srand(time(NULL));
-    run_server(server);
+    run_server(server, options->port);
     return EXIT_SUCCESS_CODE;
 }
