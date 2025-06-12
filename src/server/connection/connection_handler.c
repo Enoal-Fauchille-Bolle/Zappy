@@ -30,8 +30,8 @@ void remove_client(server_t *server, int client_index)
         return;
     if (server->client_teams[client_index] != NULL) {
         debug_conn(server->options->debug,
-            "Client %d removed from team '%s'\n",
-            server->fds[client_index].fd, server->client_teams[client_index]);
+            "Client %d removed from team '%s'\n", server->fds[client_index].fd,
+            server->client_teams[client_index]);
         free(server->client_teams[client_index]);
         server->client_teams[client_index] = NULL;
     }
