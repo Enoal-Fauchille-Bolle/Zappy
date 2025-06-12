@@ -9,10 +9,20 @@
 #include "connection/connection_handler.h"
 #include "connection/server.h"
 #include "connection/socket.h"
+#include "debug.h"
 #include "debug_categories.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+static bool parse_command(
+    server_t *server, const char *message, int client_index)
+{
+    (void)server;
+    (void)message;
+    (void)client_index;
+    return true;
+}
 
 /**
  * @brief Validates if a team name exists in the server's team list
@@ -53,10 +63,8 @@ static bool is_team_name_valid(server_t *server, const char *team_name)
  * @note Currently sends "0" as team capacity placeholder - needs
  * implementation to send actual available slots for the team
  */
-// TODO: Server should send the real number of clients that can join a team
-//       instead of 0
 // TODO: Server should refuse to assign a team if it is full
-static bool parse_team_name(
+static bool validate_and_assign_team(
     server_t *server, const char *team_name, int client_index)
 {
     if (!is_team_name_valid(server, team_name)) {
@@ -64,24 +72,66 @@ static bool parse_team_name(
             "Client %d tried to join invalid team '%s'\n",
             server->fds[client_index].fd, team_name);
         write(server->fds[client_index].fd, "ko\n", 3);
-        return false;
+        return FAILURE;
     }
     server->clients_team[client_index] = strdup(team_name);
     debug_conn(server->options->debug, "Client %d assigned to team '%s'\n",
         server->fds[client_index].fd, server->clients_team[client_index]);
+    return SUCCESS;
+}
+
+/**
+ * @brief Sends a welcome message to a newly connected client
+ *
+ * This function sends the initial connection response to a client,
+ * including a status code and the game world dimensions.
+ *
+ * @param server Pointer to the server structure containing client file
+ * descriptors and options
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @return true on success (always returns SUCCESS)
+ */
+// TODO: Server should send the real number of clients that can join a team
+//       instead of 0
+static bool send_welcome_message(server_t *server, int client_index)
+{
     dprintf(server->fds[client_index].fd, "0\n");
     dprintf(server->fds[client_index].fd, "%ld %ld\n", server->options->width,
         server->options->height);
-    return true;
+    return SUCCESS;
 }
 
-static bool parse_command(
-    server_t *server, const char *message, int client_index)
+/**
+ * @brief Handles a client's request to join a team
+ *
+ * This function validates and assigns a client to the specified team,
+ * then sends a welcome message upon successful assignment.
+ *
+ * @param server Pointer to the server structure
+ * @param team_name Name of the team the client wants to join
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ *
+ * @return true on success (team assigned and welcome message sent)
+ * @return false on failure (team assignment failed or welcome message failed)
+ */
+static bool handle_team_join(
+    server_t *server, const char *team_name, int client_index)
 {
-    (void)server;
-    (void)message;
-    (void)client_index;
-    return true;
+    if (!validate_and_assign_team(server, team_name, client_index)) {
+        debug_warning(server->options->debug,
+            "Failed to assign team '%s' to client %d\n", team_name,
+            server->fds[client_index].fd);
+        return FAILURE;
+    }
+    if (send_welcome_message(server, client_index) == FAILURE) {
+        debug_warning(server->options->debug,
+            "Failed to send welcome message to client %d\n",
+            server->fds[client_index].fd);
+        return FAILURE;
+    }
+    return SUCCESS;
 }
 
 /**
@@ -109,7 +159,7 @@ void process_client_message(server_t *server, int client_index)
         return;
     }
     if (server->clients_team[client_index] == NULL) {
-        parse_team_name(server, message, client_index);
+        handle_team_join(server, message, client_index);
     } else {
         debug_cmd(server->options->debug, "Client %d: '%s'\n",
             server->fds[client_index].fd, message);
