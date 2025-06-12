@@ -40,6 +40,8 @@ server_options_t *get_server_options(int ac, char **av)
         fprintf(stderr, "Mandatory options are missing\n");
         options->error = true;
     }
+    if (options->frequency == 0)
+        options->frequency = 100;
     return options;
 }
 
