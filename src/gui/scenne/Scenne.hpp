@@ -39,6 +39,8 @@ class Scenne : public OgreBites::InputListener {
         bool keyPressed(const OgreBites::KeyboardEvent& evt) override;
         bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override;
 
+        void createDebugGrid(int width, int height, float spacing);
+
     protected:
     private:
         Ogre::SceneManager* mSceneManager;

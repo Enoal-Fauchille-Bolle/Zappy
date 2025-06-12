@@ -11,7 +11,6 @@ Tile::Tile(int x, int y)
     : Entity("tile_" + std::to_string(x) + "_" + std::to_string(y), "cube.mesh"),
       _x(x), _y(y)
 {
-    setScale(0.5f, 0.1f, 0.5f);
 }
 
 Tile::~Tile()

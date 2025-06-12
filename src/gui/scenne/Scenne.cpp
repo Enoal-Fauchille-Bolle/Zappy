@@ -1,8 +1,11 @@
 #include "Scenne.hpp"
 #include <iostream>
 
-Scenne::Scenne() : mSceneManager(nullptr), mCamera(nullptr), mRenderWindow(nullptr), 
-                   mAppContext(nullptr)
+Scenne::Scenne() :
+        mSceneManager(nullptr),
+        mCamera(nullptr),
+        mRenderWindow(nullptr),
+        mAppContext(nullptr)
 {
 }
 
@@ -30,6 +33,43 @@ void Scenne::setupScene()
     mSceneManager = Ogre::Root::getSingleton().createSceneManager();
     mSceneManager->setAmbientLight(Ogre::ColourValue(0.2f, 0.2f, 0.2f));
     mSceneManager->setSkyBox(true, "Examples/SpaceSkyBox", 100);
+
+    createDebugGrid(10, 10, 20.0f);  // Match your tile spacing of 20.0f
+}
+
+void Scenne::createDebugGrid(int width, int height, float spacing)
+{
+    // Create lines for the grid
+    for (int x = 0; x <= width; x++) {
+        Ogre::ManualObject* line =
+            mSceneManager->createManualObject("GridLineX_" + std::to_string(x));
+        line->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_LIST);
+
+        float posX = static_cast<float>(x) * spacing - (width * spacing / 2.0f);
+
+        line->position(posX, 0, -(height * spacing / 2.0f));  // Start
+        line->position(posX, 0, (height * spacing / 2.0f));   // End
+
+        line->end();
+        mSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(
+            line);
+    }
+
+    for (int z = 0; z <= height; z++) {
+        Ogre::ManualObject* line =
+            mSceneManager->createManualObject("GridLineZ_" + std::to_string(z));
+        line->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_LIST);
+
+        float posZ =
+            static_cast<float>(z) * spacing - (height * spacing / 2.0f);
+
+        line->position(-(width * spacing / 2.0f), 0, posZ);  // Start
+        line->position((width * spacing / 2.0f), 0, posZ);   // End
+
+        line->end();
+        mSceneManager->getRootSceneNode()->createChildSceneNode()->attachObject(
+            line);
+    }
 }
 
 void Scenne::setupCamera()
@@ -38,7 +78,8 @@ void Scenne::setupCamera()
     mCamera->setNearClipDistance(5);
     mCamera->setAutoAspectRatio(true);
 
-    Ogre::SceneNode* camNode = mSceneManager->getRootSceneNode()->createChildSceneNode();
+    Ogre::SceneNode* camNode =
+        mSceneManager->getRootSceneNode()->createChildSceneNode();
     camNode->attachObject(mCamera);
     // Position camera directly above the scene for a top-down view
     camNode->setPosition(0, 150, 0);
@@ -51,22 +92,26 @@ void Scenne::setupLighting()
 {
     Ogre::Light* light = mSceneManager->createLight("MainLight");
     light->setType(Ogre::Light::LT_DIRECTIONAL);
-    Ogre::SceneNode* lightNode = mSceneManager->getRootSceneNode()->createChildSceneNode();
+    Ogre::SceneNode* lightNode =
+        mSceneManager->getRootSceneNode()->createChildSceneNode();
     lightNode->attachObject(light);
     lightNode->setDirection(Ogre::Vector3(0, -1, -1), Ogre::Node::TS_WORLD);
     light->setDiffuseColour(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
     light->setSpecularColour(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 }
 
-void Scenne::addEntity(const std::string &meshName, const std::string &entityName)
+void Scenne::addEntity(const std::string& meshName,
+                       const std::string& entityName)
 {
     Ogre::Entity* entity = mSceneManager->createEntity(entityName, meshName);
-    Ogre::SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode();
+    Ogre::SceneNode* node =
+        mSceneManager->getRootSceneNode()->createChildSceneNode();
     node->attachObject(entity);
     _entityNodes[entityName] = node;
 }
 
-void Scenne::moveEntity(const std::string &entityName, const Ogre::Vector3 &position)
+void Scenne::moveEntity(const std::string& entityName,
+                        const Ogre::Vector3& position)
 {
     auto it = _entityNodes.find(entityName);
     if (it != _entityNodes.end()) {
@@ -76,7 +121,7 @@ void Scenne::moveEntity(const std::string &entityName, const Ogre::Vector3 &posi
     }
 }
 
-Ogre::SceneNode* Scenne::getSceneNode(const std::string &entityName)
+Ogre::SceneNode* Scenne::getSceneNode(const std::string& entityName)
 {
     auto it = _entityNodes.find(entityName);
     if (it != _entityNodes.end()) {
@@ -85,12 +130,12 @@ Ogre::SceneNode* Scenne::getSceneNode(const std::string &entityName)
     return nullptr;
 }
 
-void Scenne::setCameraPosition(const Ogre::Vector3 &position)
+void Scenne::setCameraPosition(const Ogre::Vector3& position)
 {
     mCamera->getParentSceneNode()->setPosition(position);
 }
 
-void Scenne::setCameraLookAt(const Ogre::Vector3 &target)
+void Scenne::setCameraLookAt(const Ogre::Vector3& target)
 {
     mCamera->getParentSceneNode()->lookAt(target, Ogre::Node::TS_WORLD);
 }
@@ -108,9 +153,9 @@ bool Scenne::keyPressed(const OgreBites::KeyboardEvent& evt)
     if (evt.keysym.sym == OgreBites::SDLK_ESCAPE) {
         return false;
     }
-    
+
     Ogre::Vector3 cameraPos = mCamera->getParentSceneNode()->getPosition();
-    
+
     if (evt.keysym.sym == 'z') {
         cameraPos.z -= 10.0f;
     } else if (evt.keysym.sym == 's') {
@@ -126,7 +171,7 @@ bool Scenne::keyPressed(const OgreBites::KeyboardEvent& evt)
         // Zoom out - move camera further from target
         cameraPos.y = std::min(300.0f, cameraPos.y + 10.0f);
     }
-    
+
     mCamera->getParentSceneNode()->setPosition(cameraPos);
     return true;
 }

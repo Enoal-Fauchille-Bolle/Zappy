@@ -56,17 +56,31 @@ void GameManager::createGrid()
 void GameManager::createTile(int x, int y)
 {
     if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight) {
-        std::cerr << "Tile coordinates out of bounds: (" << x << ", " << y << ")" << std::endl;
+        std::cerr << "Tile coordinates out of bounds: (" << x << ", " << y
+                  << ")" << std::endl;
         return;
     }
 
     Tile* tile = new Tile(x, y);
-    float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
-    float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
+    float posX = static_cast<float>(x) * 15.0f - (_mapWidth * 5.0f);
+    float posZ = static_cast<float>(y) * 15.0f - (_mapHeight * 5.0f);
     tile->setPosition(posX, 0.0f, posZ);
-    tile->setColor({0.5f, 0.0f, 0.0f, 1.0f});
+
+    // First store the tile, then attach to scene, then set color
     _tiles[y][x] = tile;
     tile->attachToScene(_scene->getSceneManager());
+    tile->setScale(0.1f, 0.1f, 0.1f);
+
+    // Set contrasting colors AFTER attaching to scene
+    if ((x + y) % 2 == 0) {
+        tile->setColor({1.0f, 0.0f, 1.0f, 0.0f});
+    } else {
+        tile->setColor({0.0f, 0.0f, 1.0f, 1.0f});  // Pure blue
+    }
+
+    // Debug output for each tile creation
+    std::cout << "Creating tile at (" << x << ", " << y << ") with position ("
+              << posX << ", 0.0, " << posZ << ")" << std::endl;
 }
 
 void GameManager::createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation)
