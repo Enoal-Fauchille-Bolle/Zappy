@@ -89,10 +89,6 @@ static egg_t *get_random_egg(team_t *team)
     const vector_vtable_t *vtable;
     size_t egg_count;
 
-    if (!team || !team->eggs) {
-        fprintf(stderr, "Invalid team pointer\n");
-        return NULL;
-    }
     vtable = vector_get_vtable(team->eggs);
     egg_count = get_egg_count(team);
     return *(egg_t **)vtable->at(team->eggs, rand() % egg_count);
@@ -112,8 +108,8 @@ static egg_t *get_random_egg(team_t *team)
  */
 bool hatch_player(team_t *team, map_t *map, const size_t id)
 {
-    if (!team || !team->players) {
-        fprintf(stderr, "Invalid team pointer\n");
+    if (!team || !team->players || !team->eggs || !map) {
+        fprintf(stderr, "Invalid team or map pointer\n");
         return false;
     }
     if (get_egg_count(team) == 0)

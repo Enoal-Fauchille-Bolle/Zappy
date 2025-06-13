@@ -7,6 +7,7 @@
 
 #include "map/coordinates.h"
 #include "team/egg/egg.h"
+#include "team/player/player.h"
 #include "team/team.h"
 #include "vector.h"
 #include <criterion/criterion.h>
@@ -190,10 +191,77 @@ Test(team, remove_player_from_team_valid)
 Test(team, remove_player_from_team_not_found)
 {
     player_t *player = create_player((pos_t){0, 0}, 1);
+    player_t *another_player = create_player((pos_t){1, 1}, 2);
     team_t *team = create_team("TestTeam");
 
+    add_player_to_team(team, another_player);
     remove_player_from_team(team, player);      // Should not crash
     // No assertion here, just checking for crashes
     destroy_player(player);
     destroy_team(team);
+}
+
+Test(team, remove_egg_from_team_not_found)
+{
+    egg_t *egg = create_egg((pos_t){0, 0}, NULL);
+    egg_t *another_egg = create_egg((pos_t){1, 1}, NULL);
+    team_t *team = create_team("TestTeam");
+
+    add_egg_to_team(team, another_egg);
+    remove_egg_from_team(team, egg);      // Should not crash
+    // No assertion here, just checking for crashes
+    destroy_egg(egg);
+    destroy_team(team);
+}
+
+Test(team, get_egg_count_null_team_eggs)
+{
+    team_t *team = create_team("TestTeam");
+    vector_destroy(team->eggs);
+    team->eggs = NULL;
+    size_t count = get_egg_count(team);
+
+    cr_assert_eq(count, 0, "Count should be 0 for NULL team");
+}
+
+Test(team, add_egg_to_team_null)
+{
+    team_t *team = create_team("TestTeam");
+
+    add_egg_to_team(team, NULL);      // Should not crash
+    add_egg_to_team(NULL, NULL);      // Should not crash
+    vector_destroy(team->eggs);
+    team->eggs = NULL;      // Reset to avoid memory leak
+    add_egg_to_team(team, NULL);
+    destroy_team(team);
+}
+
+Test(team, remove_egg_from_team_null)
+{
+    team_t *team = create_team("TestTeam");
+
+    remove_egg_from_team(team, NULL);      // Should not crash
+    remove_egg_from_team(NULL, NULL);      // Should not crash
+    vector_destroy(team->eggs);
+    team->eggs = NULL;      // Reset to avoid memory leak
+    remove_egg_from_team(team, NULL);
+    destroy_team(team);
+}
+
+Test(team, hatch_player_null)
+{
+    map_t *map = create_map(10, 10);
+    team_t *team = create_team("TestTeam");
+
+    hatch_player(NULL, map, 1);
+    hatch_player(team, NULL, 1);
+    vector_destroy(team->eggs);
+    team->eggs = NULL;
+    hatch_player(team, NULL, 1);
+    vector_destroy(team->players);
+    team->players = NULL;
+    hatch_player(team, NULL, 1);
+    hatch_player(NULL, NULL, 1);
+    destroy_team(team);
+    destroy_map(map);
 }
