@@ -37,8 +37,11 @@ class Commands:
         if self.connexion.connected:
             self.connexion.send("Look\n")
         response = self.connexion.receive()
+        print(f"Look response: {response}") # Line added to respect binary protocol
         if response is None or response == "ko":
             return None
+        response = self.connexion.receive()
+        print(f"Look response: {response}")
         if response.startswith('[') and response.endswith(']'):
             response = response[1:-1]
         tiles = []
@@ -46,7 +49,19 @@ class Commands:
             return []
         raw_tiles = response.split(',')
         for tile in raw_tiles:
-            tiles.append(tile.strip())
+            tile_objects = [obj for obj in tile.strip().split() if obj]
+            tiles.append(tile_objects)
+        if tiles and len(tiles) > 0 and "player" in tiles[0]:
+            tiles[0].remove("player")
+            tiles[0].append("self")
+        if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
+            ai = self.connexion.ai_instance
+            ai.look = tiles
+            ai.tile = {
+            "food": 0, "linemate": 0, "deraumere": 0,
+            "sibur": 0, "mendiane": 0, "phiras": 0,
+            "thystame": 0, "player": 0, "egg": 0, "self": 0
+            }
         return tiles
 
     def Inventory(self):
