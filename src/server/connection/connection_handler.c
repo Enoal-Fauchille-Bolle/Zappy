@@ -8,6 +8,7 @@
 #include "connection/connection_handler.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "connection/signal_handler.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include <arpa/inet.h>
@@ -33,14 +34,14 @@
  */
 void remove_client(server_t *server, int client_index)
 {
-    if (client_index < 1 || client_index >= MAX_CLIENTS + 1)
+    if (client_index < 2 || client_index >= MAX_CLIENTS + 2)
         return;
-    if (server->clients_team[client_index] != NULL) {
+    if (server->clients_team[client_index - 2] != NULL) {
         debug_conn(server->options->debug,
             "Client %d removed from team '%s'\n", server->fds[client_index].fd,
-            server->clients_team[client_index]);
-        free(server->clients_team[client_index]);
-        server->clients_team[client_index] = NULL;
+            server->clients_team[client_index - 2]);
+        free(server->clients_team[client_index - 2]);
+        server->clients_team[client_index - 2] = NULL;
     }
     debug_conn(server->options->debug, "Client %d disconnected\n",
         server->fds[client_index].fd);
@@ -63,12 +64,12 @@ void remove_client(server_t *server, int client_index)
  */
 static void process_client_events(server_t *server, int max_fds)
 {
-    for (int i = 1; i < max_fds; i++) {
+    for (int i = 2; i < max_fds; i++) {
         if (server->fds[i].fd < 0)
             continue;
         if ((server->fds[i].revents & POLLIN) &&
             server->fds[i].revents & POLLOUT) {
-            process_client_message(server, i);
+            handle_client_message(server, i);
         }
     }
 }
@@ -110,7 +111,7 @@ static void accept_new_connection(server_t *server)
     debug_conn(server->options->debug, "Connection from %s:%d (%d)\n",
         inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port),
         client_sockfd);
-    for (int i = 1; i < MAX_CLIENTS + 1; i++) {
+    for (int i = 2; i < MAX_CLIENTS + 2; i++) {
         if (server->fds[i].fd < 0) {
             init_new_connection(&server->fds[i], client_sockfd);
             break;
@@ -136,17 +137,22 @@ static void accept_new_connection(server_t *server)
 // TODO: if (fds[0].revents & POLLIN && server->game->game_state == GAME_START)
 static bool process_connection(server_t *server)
 {
-    int result = poll(server->fds, MAX_CLIENTS + 1, POLL_TIMEOUT);
+    int result = poll(server->fds, MAX_CLIENTS + 2, POLL_TIMEOUT);
 
     if (result < 0) {
         if (errno != EINTR)
             perror("poll");
         return FAILURE;
     }
+    if (server->fds[1].revents & POLLIN) {
+        if (!handle_signal(server->fds[1].fd, server->options->debug)) {
+            return FAILURE;
+        }
+    }
     if (server->fds[0].revents & POLLIN) {
         accept_new_connection(server);
     }
-    process_client_events(server, MAX_CLIENTS + 1);
+    process_client_events(server, MAX_CLIENTS + 2);
     return SUCCESS;
 }
 
@@ -172,5 +178,5 @@ void process_connections(server_t *server)
         if (process_connection(server) == FAILURE)
             break;
     }
-    debug_conn(server->options->debug, "Server stopped\n");
+    debug_server(server->options->debug, "Server stopped\n");
 }

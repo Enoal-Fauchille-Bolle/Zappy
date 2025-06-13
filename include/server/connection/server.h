@@ -15,8 +15,8 @@
 
 typedef struct server_s {
     server_options_t *options;
-    struct pollfd fds[MAX_CLIENTS + 1];
-    char **clients_team;
+    struct pollfd fds[MAX_CLIENTS + 2]; // +2 for server socket and signal fd
+    char *clients_team[MAX_CLIENTS];
 } server_t;
 
 server_t *create_server(server_options_t *options);

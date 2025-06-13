@@ -7,12 +7,15 @@
 
 #include "connection/server.h"
 #include "connection/connection_handler.h"
+#include "connection/signal_handler.h"
 #include "connection/socket.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/poll.h>
 #include <unistd.h>
 
 /**
@@ -22,17 +25,14 @@
  * It iterates through all possible client slots and frees each individual
  * team string before freeing the main array pointer.
  *
- * @param client_teams Array of strings representing client teams to be
+ * @param clients_team Array of strings representing client teams to be
  * destroyed. Can be NULL (function will return early if so).
  */
-static void destroy_client_teams(char **client_teams)
+static void destroy_clients_team(server_t *server)
 {
-    if (!client_teams)
-        return;
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        free(client_teams[i]);
+        free(server->clients_team[i]);
     }
-    free(client_teams);
 }
 
 /**
@@ -43,16 +43,11 @@ static void destroy_client_teams(char **client_teams)
  *
  * @return char** Pointer to the allocated array on success, NULL on failure
  */
-static char **init_client_teams(void)
+static void init_clients_team(server_t *server)
 {
-    char **client_teams = malloc(sizeof(char *) * (MAX_CLIENTS));
-
-    if (!client_teams)
-        return NULL;
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        client_teams[i] = NULL;
+        server->clients_team[i] = NULL;
     }
-    return client_teams;
 }
 
 /**
@@ -70,14 +65,36 @@ void destroy_server(server_t *server)
     if (!server) {
         return;
     }
-    destroy_server_options(server->options);
-    destroy_client_teams(server->clients_team);
-    for (size_t i = 0; i < MAX_CLIENTS + 1; i++) {
+    for (size_t i = 0; i < MAX_CLIENTS + 2; i++) {
         if (server->fds[i].fd >= 0) {
             close(server->fds[i].fd);
         }
     }
+    destroy_server_options(server->options);
+    destroy_clients_team(server);
     free(server);
+}
+
+/**
+ * @brief Initialize polling file descriptors array for server connections
+ *
+ * Sets up the pollfd array by initializing all client slots to -1 (unused)
+ * and configuring the server socket at index 0 to listen for incoming
+ * connections.
+ *
+ * @param fds Pointer to array of pollfd structures to initialize
+ * @param server_sockfd Server socket file descriptor to monitor for new
+ * connections
+ */
+static void init_poll_fds(struct pollfd *fds, int server_sockfd, int signal_fd)
+{
+    for (int i = 0; i < MAX_CLIENTS + 2; i++) {
+        fds[i].fd = -1;
+    }
+    fds[0].fd = server_sockfd;
+    fds[0].events = POLLIN;
+    fds[1].fd = signal_fd;
+    fds[1].events = POLLIN;
 }
 
 /**
@@ -98,9 +115,10 @@ server_t *create_server(server_options_t *options)
 
     if (!server)
         return NULL;
-    server->clients_team = init_client_teams();
-    if (setup_socket(server, options->port) == FAILURE ||
-        !server->clients_team) {
+    memset(server, 0, sizeof(server_t));
+    init_clients_team(server);
+    init_poll_fds(server->fds, setup_socket_fd(), setup_signal_handler());
+    if (setup_socket(server, options->port) == FAILURE) {
         free(server);
         destroy_server_options(options);
         return NULL;

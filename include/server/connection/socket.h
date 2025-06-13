@@ -11,6 +11,7 @@
     #include <stdbool.h>
     #include "connection/server.h"
 
+int setup_socket_fd(void);
 bool setup_socket(server_t *server, int port);
 char *read_socket(int sockfd);
 
