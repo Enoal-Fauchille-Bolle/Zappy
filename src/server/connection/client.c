@@ -153,6 +153,7 @@ void process_client_message(server_t *server, int client_index)
         remove_client(server, client_index);
         return;
     }
+    trim(message);
     if (strlen(message) == 0) {
         free(message);
         return;
@@ -160,6 +161,7 @@ void process_client_message(server_t *server, int client_index)
     if (server->clients_team[client_index - 2] == NULL) {
         handle_team_join(server, message, client_index);
     } else {
+        to_lowercase(message);
         debug_cmd(server->options->debug, "Client %d: '%s'\n",
             server->fds[client_index].fd, message);
         parse_command(server, message, client_index);
