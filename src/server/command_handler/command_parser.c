@@ -78,8 +78,6 @@ static char **tokenize_buffer(char *buffer, int token_count)
         tokens[i] = strdup(token);
         token = strtok(NULL, " ");
     }
-    if (tokens[token_count - 1][strlen(tokens[token_count - 1]) - 1] == '\r')
-        tokens[token_count - 1][strlen(tokens[token_count - 1]) - 1] = '\0';
     if (tokens[token_count - 1][strlen(tokens[token_count - 1]) - 1] == '\n')
         tokens[token_count - 1][strlen(tokens[token_count - 1]) - 1] = '\0';
     tokens[token_count] = NULL;
