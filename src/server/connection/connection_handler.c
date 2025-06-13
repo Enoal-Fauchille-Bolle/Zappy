@@ -8,6 +8,7 @@
 #include "connection/connection_handler.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "connection/signal_handler.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include <arpa/inet.h>
@@ -142,6 +143,11 @@ static bool process_connection(server_t *server)
         if (errno != EINTR)
             perror("poll");
         return FAILURE;
+    }
+    if (server->fds[1].revents & POLLIN) {
+        if (!handle_signal(server->fds[1].fd, server->options->debug)) {
+            return FAILURE;
+        }
     }
     if (server->fds[0].revents & POLLIN) {
         accept_new_connection(server);

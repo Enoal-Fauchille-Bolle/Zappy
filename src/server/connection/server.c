@@ -7,6 +7,7 @@
 
 #include "connection/server.h"
 #include "connection/connection_handler.h"
+#include "connection/signal_handler.h"
 #include "connection/socket.h"
 #include "constants.h"
 #include "debug_categories.h"
@@ -81,6 +82,28 @@ void destroy_server(server_t *server)
 }
 
 /**
+ * @brief Initialize polling file descriptors array for server connections
+ *
+ * Sets up the pollfd array by initializing all client slots to -1 (unused)
+ * and configuring the server socket at index 0 to listen for incoming
+ * connections.
+ *
+ * @param fds Pointer to array of pollfd structures to initialize
+ * @param server_sockfd Server socket file descriptor to monitor for new
+ * connections
+ */
+static void init_poll_fds(struct pollfd *fds, int server_sockfd, int signal_fd)
+{
+    for (int i = 0; i < MAX_CLIENTS + 2; i++) {
+        fds[i].fd = -1;
+    }
+    fds[0].fd = server_sockfd;
+    fds[0].events = POLLIN;
+    fds[1].fd = signal_fd;
+    fds[1].events = POLLIN;
+}
+
+/**
  * @brief Creates and initializes a new server instance
  *
  * Allocates memory for a server structure and sets up the socket
@@ -98,9 +121,10 @@ server_t *create_server(server_options_t *options)
 
     if (!server)
         return NULL;
-    server->clients_team = init_client_teams();
+    memset(server, 0, sizeof(server_t));
     if (setup_socket(server, options->port) == FAILURE ||
-        !server->clients_team) {
+    init_poll_fds(server->fds, setup_socket_fd(), setup_signal_handler());
+    if (setup_socket(server, options->port) == FAILURE) {
         free(server);
         destroy_server_options(options);
         return NULL;
