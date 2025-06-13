@@ -40,7 +40,6 @@ void spawn_min_eggs(map_t *map, team_t *team, size_t min)
             continue;
         }
         add_egg_to_map(map, current_egg);
-        add_egg_to_team(team, current_egg);
     }
 }
 
