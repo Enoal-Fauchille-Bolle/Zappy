@@ -10,10 +10,10 @@
 # Source folder
 SRCDIR = ./src/
 
+SRC_INCLUDE = ./src/
+
 # Headers folder
 INCLUDES = ./include/
-
-SRC_INCLUDE = ./src/
 
 # GCC Flags
 ERROR = -Werror -Wall -Wextra -Wshadow
@@ -27,13 +27,11 @@ DEP	=	$(SRC_SERVER:.c=.d)	\
 -include $(DEP)
 
 clean:
-	rm -f $(OBJ_SERVER)
-	rm -f $(OBJ_GUI)
-	rm -f $(OBJ_AI)
-	rm -f $(TESTS_SRC:.c=.o)
-	rm -f $(DEP)
-	rm -f *.gcno
-	rm -f *.gcda
+	find . -name "*.gcda" -delete
+	find . -name "*.gcno" -delete
+	find . -name "*.a" -delete
+	find . -name "*.o" -delete
+	find . -name "*.d" -delete
 
 fclean: clean
 	rm -f $(NAME_SERVER)
@@ -47,7 +45,7 @@ re_clean: fclean all clean
 
 .PHONY: all clean \
 	fclean re \
-	tests_run unit_tests coverage
+	tests_run unit_tests coverage cs
 
 ################################### Server ###################################
 
@@ -55,10 +53,39 @@ re_clean: fclean all clean
 NAME_SERVER = zappy_server
 
 # Folder name
-SRCDIR_SERVER = ${SRCDIR}server/
+SRCDIR_SERVER = $(SRCDIR)server/
+LIB_SERVER	=	$(SRCDIR_SERVER)utils/
+
+# Headers folder
+INCLUDES_SERVER = $(INCLUDES)server/
 
 # Sources
 SRC_SERVER = $(SRCDIR_SERVER)main.c	\
+			 $(SRCDIR_SERVER)constants.c	\
+			 $(SRCDIR_SERVER)options_parser/options.c	\
+			 $(SRCDIR_SERVER)options_parser/parser.c	\
+			 $(SRCDIR_SERVER)options_parser/processor.c	\
+			 $(SRCDIR_SERVER)options_parser/options/port.c	\
+			 $(SRCDIR_SERVER)options_parser/options/width.c	\
+			 $(SRCDIR_SERVER)options_parser/options/height.c	\
+			 $(SRCDIR_SERVER)options_parser/options/teams.c	\
+			 $(SRCDIR_SERVER)options_parser/options/clients.c	\
+			 $(SRCDIR_SERVER)options_parser/options/frequency.c	\
+			 $(SRCDIR_SERVER)options_parser/options/help.c	\
+			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
+			 $(SRCDIR_SERVER)connection/server.c	\
+			 $(SRCDIR_SERVER)connection/client.c	\
+			 $(SRCDIR_SERVER)connection/socket.c	\
+			 $(SRCDIR_SERVER)connection/connection_handler.c	\
+			 $(SRCDIR_SERVER)map/map.c	\
+			 $(SRCDIR_SERVER)map/coordinates.c	\
+			 $(SRCDIR_SERVER)map/player_management.c	\
+			 $(SRCDIR_SERVER)map/egg_management.c	\
+			 $(SRCDIR_SERVER)player/player.c	\
+			 $(SRCDIR_SERVER)player/movement.c	\
+			 $(SRCDIR_SERVER)map/resources.c	\
+			 $(SRCDIR_SERVER)map/tile.c	\
+			 $(SRCDIR_SERVER)egg/egg.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -66,14 +93,22 @@ $(SRCDIR_SERVER)%.o: $(SRCDIR_SERVER)%.c
 	$(CC_SERVER) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_SERVER)
 
 # Compilation Flags
-CFLAGS_SERVER += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_SERVER += $(ERROR) -I$(INCLUDES_SERVER) -I$(SRC_INCLUDE) -g	\
 
 # Pre Compilation
 CC_SERVER := gcc
 
 # Rule
-zappy_server: $(OBJ_SERVER)
-	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)
+
+$(LIB_SERVER)libvector.a:
+		make -C $(LIB_SERVER)
+
+libclean: fclean
+		make -C $(LIB_SERVER) fclean
+
+zappy_server: $(OBJ_SERVER) $(LIB_SERVER)libvector.a
+	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)	\
+	-L$(LIB_SERVER) -lvector
 
 #################################### GUI ####################################
 
@@ -82,6 +117,9 @@ NAME_GUI = zappy_gui
 
 # Folder name
 SRCDIR_GUI = ${SRCDIR}gui/
+
+# Headers folder
+INCLUDES_CLIENT = ${INCLUDES}client/
 
 # Sources
 SRC_GUI = $(SRCDIR_GUI)main.cpp	\
@@ -110,6 +148,9 @@ NAME_AI = zappy_ai
 # Folder name
 SRCDIR_AI = ${SRCDIR}ai/
 
+# Headers folder
+INCLUDES_AI = ${INCLUDES}ai/
+
 # Sources
 SRC_AI = $(SRCDIR_AI)main.c	\
 
@@ -119,7 +160,7 @@ $(SRCDIR_AI)%.o: $(SRCDIR_AI)%.c
 	$(CC_AI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_AI)
 
 # Compilation Flags
-CFLAGS_AI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_AI += $(ERROR) -I$(INCLUDES_AI) -I$(SRC_INCLUDE) -g	\
 
 # Pre Compilation
 CC_AI := gcc
@@ -136,23 +177,29 @@ TESTS_NAME = unit_tests.out
 TESTS = ./tests/
 
 # Sources
-TESTS_SRC =	\
+TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
+			$(SRCDIR_SERVER)map/tile.c	\
+			$(SRCDIR_SERVER)map/coordinates.c	\
+			${SRCDIR_SERVER}map/resources.c	\
+			$(SRCDIR_SERVER)player/player.c	\
+			$(SRCDIR_SERVER)player/movement.c	\
+			$(SRCDIR_SERVER)map/player_management.c	\
+			$(SRCDIR_SERVER)map/egg_management.c	\
+			$(SRCDIR_SERVER)egg/egg.c	\
+			${TESTS}player_tests.c	\
+			${TESTS}resources_tests.c	\
+			${TESTS}map_tests.c	\
+			${TESTS}egg_tests.c	\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
-
-# Compilation Flags
-CFLAGS_TESTS += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
+			-lvector -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
 
-$(TESTS)%.o: $(TESTS)%.cpp
-	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
-
-unit_tests: $(TESTS_SRC:.cpp=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.cpp=.o)	\
-		$(UNIT_FLAGS)
+unit_tests: $(LIB_SERVER)libvector.a
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC) $(UNIT_FLAGS)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
@@ -160,3 +207,8 @@ tests_run: unit_tests
 coverage: tests_run
 	gcovr --exclude tests/
 	gcovr --exclude tests/ --txt-metric branch
+
+cs:	clean
+	@coding-style . .
+	@cat coding-style-reports.log
+	@rm -f coding-style-reports.log
