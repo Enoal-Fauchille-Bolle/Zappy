@@ -62,6 +62,7 @@ INCLUDES_SERVER = $(INCLUDES)server/
 # Sources
 SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)constants.c	\
+			 $(SRCDIR_SERVER)options_parser/options.c	\
 			 $(SRCDIR_SERVER)options_parser/parser.c	\
 			 $(SRCDIR_SERVER)options_parser/processor.c	\
 			 $(SRCDIR_SERVER)options_parser/options/port.c	\
@@ -72,6 +73,10 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)options_parser/options/frequency.c	\
 			 $(SRCDIR_SERVER)options_parser/options/help.c	\
 			 $(SRCDIR_SERVER)options_parser/options/debug.c	\
+			 $(SRCDIR_SERVER)connection/server.c	\
+			 $(SRCDIR_SERVER)connection/client.c	\
+			 $(SRCDIR_SERVER)connection/socket.c	\
+			 $(SRCDIR_SERVER)connection/connection_handler.c	\
 			 $(SRCDIR_SERVER)map/map.c	\
 			 $(SRCDIR_SERVER)map/coordinates.c	\
 			 $(SRCDIR_SERVER)map/player_management.c	\

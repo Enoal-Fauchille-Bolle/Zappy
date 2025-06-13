@@ -19,10 +19,13 @@ typedef struct server_options_s {
     size_t height;
     char **teams;
     size_t clients_nb;
-    size_t frequency;
+    unsigned int frequency;
     bool help;
     bool debug;
     bool error;
 } server_options_t;
+
+server_options_t *get_server_options(int ac, char **av);
+void destroy_server_options(server_options_t *options);
 
 #endif /* !OPTIONS_H_ */

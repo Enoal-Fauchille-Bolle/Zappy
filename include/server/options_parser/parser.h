@@ -9,7 +9,6 @@
     #define OPTIONS_PARSER_H_
 
     #include <stdbool.h>
-    #include <stddef.h>
     #include "options_parser/options.h"
 
 typedef void (*option_handler_t)(server_options_t *opts, int *i, int ac,
@@ -20,6 +19,10 @@ typedef struct option_map_s {
     option_handler_t handler;
 } option_map_t;
 
+server_options_t *init_options(void);
+void parse_options(server_options_t *options, int ac, char **av);
+bool are_mandatory_options_present(server_options_t *options);
+
 // Option handlers
 void handle_port(server_options_t *opts, int *i, int ac, char **av);
 void handle_width(server_options_t *opts, int *i, int ac, char **av);
@@ -29,8 +32,5 @@ void handle_clients(server_options_t *options, int *i, int ac, char **av);
 void handle_frequency(server_options_t *options, int *i, int ac, char **av);
 void handle_help(server_options_t *options, int *i, int ac, char **av);
 void handle_debug(server_options_t *options, int *i, int ac, char **av);
-
-server_options_t *get_server_options(int ac, char **av);
-void destroy_server_options(server_options_t *options);
 
 #endif /* !OPTIONS_PARSER_H_ */

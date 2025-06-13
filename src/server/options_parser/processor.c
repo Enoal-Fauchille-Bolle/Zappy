@@ -5,6 +5,7 @@
 ** Option Processor
 */
 
+#include "debug_categories.h"
 #include "options_parser/options.h"
 #include "constants.h"
 #include <stdio.h>
@@ -45,18 +46,18 @@ static void print_help_page(void)
  */
 static void option_debug(server_options_t *options)
 {
-    puts("Debugging server options:");
-    printf("Port: %d\n", options->port);
-    printf("Width: %zu\n", options->width);
-    printf("Height: %zu\n", options->height);
+    debug_server(true, "Debugging server options:\n");
+    debug_server(true, "Port: %d\n", options->port);
+    debug_server(true, "Width: %zu\n", options->width);
+    debug_server(true, "Height: %zu\n", options->height);
     for (size_t i = 0; options->teams && options->teams[i]; i++) {
-        printf("Team %zu: %s\n", i + 1, options->teams[i]);
+        debug_server(true, "Team %zu: %s\n", i + 1, options->teams[i]);
     }
-    printf("Clients: %zu\n", options->clients_nb);
-    printf("Frequency: %zu\n", options->frequency);
-    printf("Help: %d\n", options->help);
-    printf("Debug: %d\n", options->debug);
-    printf("Error: %d\n", options->error);
+    debug_server(true, "Clients: %zu\n", options->clients_nb);
+    debug_server(true, "Frequency: %u\n", options->frequency);
+    debug_server(true, "Help: %d\n", options->help);
+    debug_server(true, "Debug: %d\n", options->debug);
+    debug_server(true, "Error: %d\n", options->error);
 }
 
 /**
