@@ -6,20 +6,64 @@
 */
 
 #include "connection/client.h"
+#include "command_handler/command.h"
+#include "command_handler/command_parser.h"
+// #include "command_handler/command_status.h"
 #include "connection/connection_handler.h"
 #include "connection/server.h"
 #include "connection/socket.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "utils/string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-static bool parse_command(server_t *server[[gnu::unused]],
-    const char *message[[gnu::unused]], int client_index[[gnu::unused]])
+
+/**
+ * @brief Destroy a command and free allocated resources.
+ *
+ * This function frees the memory associated with the command structure
+ * and its arguments.
+ *
+ * @param command The command structure to destroy.
+ */
+static void destroy_command(command_t *command)
 {
+    char **tokens = NULL;
+
+    if (command == NULL)
+        return;
+    tokens = command->argv - 1;
+    free(command->name);
+    for (int i = 0; i < command->argc && command->argv[i]; i++) {
+        free(command->argv[i]);
+    }
+    free(tokens);
+    free(command);
+}
+
+static bool handle_command(
+    server_t *server, char *command_buffer, int client_index)
+{
+    command_t *command = parse_command_buffer(command_buffer);
+    // command_status_t result_status = COMMAND_NOT_FOUND;
+
+    if (command == NULL) {
+        debug_warning(server->options->debug,
+            "Failed to parse command from client %d\n",
+            server->fds[client_index].fd);
+        write(server->fds[client_index].fd, "ko\n", 3);
+        return false;
+    }
+    printf("Command name: %s, argc: %d\n", command->name, command->argc);
+    for (int i = 0; i < command->argc; i++) {
+        printf("Arg %d: %s\n", i, command->argv[i]);
+    }
+    // result_status = execute_command(command);
+    destroy_command(command);
     return true;
 }
 
@@ -164,7 +208,7 @@ void process_client_message(server_t *server, int client_index)
         to_lowercase(message);
         debug_cmd(server->options->debug, "Client %d: '%s'\n",
             server->fds[client_index].fd, message);
-        parse_command(server, message, client_index);
+        handle_command(server, message, client_index);
     }
     free(message);
 }
