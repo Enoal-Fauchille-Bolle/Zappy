@@ -178,5 +178,5 @@ void process_connections(server_t *server)
         if (process_connection(server) == FAILURE)
             break;
     }
-    debug_conn(server->options->debug, "Server stopped\n");
+    debug_server(server->options->debug, "Server stopped\n");
 }
