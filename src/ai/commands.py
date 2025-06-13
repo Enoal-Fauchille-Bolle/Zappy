@@ -5,8 +5,6 @@
 ## Zappy commands handling
 ##
 
-from generator import AIGenerator
-
 class Commands:
     def __init__(self, connexion):
         self.connexion = connexion
@@ -139,7 +137,8 @@ class Commands:
         response = self.connexion.receive()
         if response == "ko":
             return False
-        AIGenerator().re_fork(self.connexion.port, self.connexion.name, self.connexion.machine, self.connexion)
+        from ai_generator import AIGenerator #avoid circular import
+        AIGenerator().fork(self.connexion.port, self.connexion.name, self.connexion.machine, self.connexion)
         return True
 
     def Eject(self):
