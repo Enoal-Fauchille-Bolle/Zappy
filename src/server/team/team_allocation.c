@@ -15,8 +15,13 @@
 
 static char *init_name(const char *name)
 {
-    char *team_name = strdup(name);
+    char *team_name;
 
+    if (name == NULL) {
+        fprintf(stderr, "Team name cannot be NULL\n");
+        return NULL;
+    }
+    team_name = strdup(name);
     if (team_name == NULL)
         perror("Failed to allocate memory for team name");
     return team_name;
@@ -70,24 +75,24 @@ team_t *create_team(const char *name)
     return team;
 }
 
-static void free_players_vector(team_t *team)
+static void free_players_vector(vector_t *players)
 {
-    const vector_vtable_t *vtable = vector_get_vtable(team->players);
-    size_t size = vtable->size(team->players);
+    const vector_vtable_t *vtable = vector_get_vtable(players);
+    size_t size = vtable->size(players);
 
     for (size_t i = 0; i < size; i++)
-        destroy_player(*(player_t **)vtable->at(team->players, i));
-    vector_destroy(team->players);
+        destroy_player(*(player_t **)vtable->at(players, i));
+    vector_destroy(players);
 }
 
-static void free_eggs_vector(team_t *team)
+static void free_eggs_vector(vector_t *eggs)
 {
-    const vector_vtable_t *vtable = vector_get_vtable(team->eggs);
-    size_t size = vtable->size(team->eggs);
+    const vector_vtable_t *vtable = vector_get_vtable(eggs);
+    size_t size = vtable->size(eggs);
 
     for (size_t i = 0; i < size; i++)
-        destroy_egg(*(egg_t **)vtable->at(team->eggs, i));
-    vector_destroy(team->eggs);
+        destroy_egg(*(egg_t **)vtable->at(eggs, i));
+    vector_destroy(eggs);
 }
 
 /**
@@ -108,8 +113,8 @@ void destroy_team(team_t *team)
         return;
     free(team->name);
     if (team->players != NULL)
-        free_players_vector(team);
+        free_players_vector(team->players);
     if (team->eggs != NULL)
-        free_eggs_vector(team);
+        free_eggs_vector(team->eggs);
     free(team);
 }
