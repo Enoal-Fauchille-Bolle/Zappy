@@ -87,6 +87,8 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)map/resources.c	\
 			 $(SRCDIR_SERVER)map/tile.c	\
 			 $(SRCDIR_SERVER)egg/egg.c	\
+			 $(SRCDIR_SERVER)utils/string.c	\
+			 $(SRCDIR_SERVER)command_handler/command_parser.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
