@@ -122,7 +122,7 @@ SRC_AI = $(SRCDIR_AI)main.py	\
 OBJ_AI =
 
 # Compilation Flags
-CFLAGS_AI += 
+CFLAGS_AI +=
 
 # Pre Compilation
 CC_AI := python3
