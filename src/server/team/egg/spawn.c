@@ -21,10 +21,7 @@
  * @param team Pointer to the team structure for which eggs will be spawned
  * @param count Number of eggs to spawn
  */
-// TODO: Add each spawned egg to the team's egg list when implemented. Check in
-// the team structure that the egg count of the team does not exceed the
-// maximum count parameter
-void spawn_min_eggs(map_t *map, void *team, size_t min)
+void spawn_min_eggs(map_t *map, team_t *team, size_t min)
 {
     pos_t random_pos;
     egg_t *current_egg;
@@ -34,6 +31,8 @@ void spawn_min_eggs(map_t *map, void *team, size_t min)
         return;
     }
     for (size_t i = 0; i < min; i++) {
+        if (get_egg_count(team) >= min)
+            break;
         random_pos = (pos_t){rand() % map->width, rand() % map->height};
         current_egg = create_egg(random_pos, team);
         if (current_egg == NULL) {
@@ -41,6 +40,7 @@ void spawn_min_eggs(map_t *map, void *team, size_t min)
             continue;
         }
         add_egg_to_map(map, current_egg);
+        add_egg_to_team(team, current_egg);
     }
 }
 
@@ -56,7 +56,6 @@ void spawn_min_eggs(map_t *map, void *team, size_t min)
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if egg or map is NULL or if player creation fails
  */
-// TODO: Remove the egg from the team's egg list
 player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
 {
     player_t *player;
@@ -73,5 +72,7 @@ player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
     add_player_to_map(map, player);
     add_player_to_team(egg->team, player);
     remove_egg_from_map(map, egg);
+    remove_egg_from_team(egg->team, egg);
+    destroy_egg(egg);
     return player;
 }

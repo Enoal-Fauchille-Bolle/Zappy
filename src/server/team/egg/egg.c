@@ -21,7 +21,7 @@
  *         NULL if memory allocation fails
  */
 // TODO: Add egg to the team's egg list when implemented
-egg_t *create_egg(const pos_t pos, void *team)
+egg_t *create_egg(const pos_t pos, team_t *team)
 {
     egg_t *egg = malloc(sizeof(egg_t));
 

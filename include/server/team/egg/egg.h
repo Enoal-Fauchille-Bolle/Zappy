@@ -14,15 +14,17 @@
     #include <stddef.h>
     #include <unistd.h>
 
+typedef struct team_s team_t;
+
 typedef struct egg_s {
     pos_t pos;
-    void *team;      // TODO: Modify pointer type to team_t when implemented
+    team_t *team;
 } egg_t;
 
-egg_t *create_egg(const pos_t pos, void *team);
+egg_t *create_egg(const pos_t pos, team_t *team);
 void destroy_egg(egg_t *egg);
 
-void spawn_min_eggs(map_t *map, void *team, size_t min);
+void spawn_min_eggs(map_t *map, team_t *team, size_t min);
 player_t *spawn_player_from_egg(
     egg_t *egg, map_t *map, const size_t player_id);
 

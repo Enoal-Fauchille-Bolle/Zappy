@@ -88,7 +88,8 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
-			 	$(SRCDIR_SERVER)team/team_management.c						\
+			 	$(SRCDIR_SERVER)team/team_egg.c								\
+			 	$(SRCDIR_SERVER)team/team_player.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -191,7 +192,8 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
-			$(SRCDIR_SERVER)team/team_management.c							\
+			$(SRCDIR_SERVER)team/team_egg.c									\
+			$(SRCDIR_SERVER)team/team_player.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\
