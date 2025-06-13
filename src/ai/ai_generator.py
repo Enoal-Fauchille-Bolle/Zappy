@@ -10,7 +10,6 @@ import os
 import sys
 from connexions import Connection
 from loop import Loop
-import time
 import signal
 import atexit
 
