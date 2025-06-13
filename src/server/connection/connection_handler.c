@@ -69,7 +69,7 @@ static void process_client_events(server_t *server, int max_fds)
             continue;
         if ((server->fds[i].revents & POLLIN) &&
             server->fds[i].revents & POLLOUT) {
-            process_client_message(server, i);
+            handle_client_message(server, i);
         }
     }
 }

@@ -145,7 +145,7 @@ static bool handle_team_join(
  * @param client_index Index of the client in the server's file descriptor
  * array
  */
-void process_client_message(server_t *server, int client_index)
+void handle_client_message(server_t *server, int client_index)
 {
     char *message = read_socket(server->fds[client_index].fd);
 
