@@ -111,6 +111,7 @@ Test(egg, add_egg_to_tile_valid)
 Test(egg, remove_egg_from_tile_valid)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL);
+    egg_t *another_egg = create_egg((pos_t){1, 1}, NULL);
     map_t *map = create_map(1, 1);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
@@ -120,7 +121,14 @@ Test(egg, remove_egg_from_tile_valid)
     remove_egg_from_tile(tile, egg);
     cr_assert_eq(vector_get_vtable(tile->eggs)->size(tile->eggs), 0,
         "Tile should have no eggs after removal");
+    add_egg_to_tile(tile, another_egg);
+    cr_assert_eq(*(egg_t **)vector_get_vtable(tile->eggs)->at(tile->eggs, 0),
+        another_egg, "Tile should have another egg after adding another egg");
+    // No assertion here, just checking for crashes
+    remove_egg_from_tile(tile, egg);      // Should not crash
+    // No assertion here, just checking for crashes
     destroy_egg(egg);
+    destroy_egg(another_egg);
     destroy_map(map);
 }
 
