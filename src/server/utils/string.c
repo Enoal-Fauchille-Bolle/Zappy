@@ -9,10 +9,10 @@
 #include <string.h>
 
 /**
- * @brief Converts all characters in a string to uppercase
+ * @brief Converts all characters in a string to lowercase
  *
  * This function modifies the input string in-place, converting each
- * lowercase character to its uppercase equivalent using the toupper()
+ * lowercase character to its lowercase equivalent using the toupper()
  * function. Non-alphabetic characters remain unchanged.
  *
  * @param str Pointer to the null-terminated string to be converted.
