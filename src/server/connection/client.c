@@ -7,8 +7,8 @@
 
 #include "connection/client.h"
 #include "command_handler/command.h"
+#include "command_handler/command_executor.h"
 #include "command_handler/command_parser.h"
-// #include "command_handler/command_status.h"
 #include "connection/connection_handler.h"
 #include "connection/server.h"
 #include "connection/socket.h"
@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 
 /**
  * @brief Destroy a command and free allocated resources.
@@ -49,7 +48,6 @@ static bool handle_command(
     server_t *server, char *command_buffer, int client_index)
 {
     command_t *command = parse_command_buffer(command_buffer);
-    // command_status_t result_status = COMMAND_NOT_FOUND;
 
     if (command == NULL) {
         debug_warning(server->options->debug,
@@ -58,11 +56,8 @@ static bool handle_command(
         write(server->fds[client_index].fd, "ko\n", 3);
         return false;
     }
-    printf("Command name: %s, argc: %d\n", command->name, command->argc);
-    for (int i = 0; i < command->argc; i++) {
-        printf("Arg %d: %s\n", i, command->argv[i]);
-    }
-    // result_status = execute_command(command);
+    execute_command(
+        command, server->fds[client_index].fd, server->options->debug);
     destroy_command(command);
     return true;
 }
