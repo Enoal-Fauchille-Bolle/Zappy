@@ -12,6 +12,7 @@ typedef struct command_s {
     char *name;
     int argc;
     char **argv;
+    char **tokens;
 } command_t;
 
 #endif /* !COMMAND_H_ */

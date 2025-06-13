@@ -31,16 +31,14 @@
  */
 static void destroy_command(command_t *command)
 {
-    char **tokens = NULL;
-
     if (command == NULL)
         return;
-    tokens = command->argv - 1;
-    free(command->name);
-    for (int i = 0; i < command->argc && command->argv[i]; i++) {
-        free(command->argv[i]);
+    if (command->tokens != NULL) {
+        for (int i = 0; command->tokens[i] != NULL; i++) {
+            free(command->tokens[i]);
+        }
+        free(command->tokens);
     }
-    free(tokens);
     free(command);
 }
 
