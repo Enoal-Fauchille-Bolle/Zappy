@@ -19,7 +19,9 @@ typedef struct player_s {
     orientation_t orientation;
     size_t level;      // Player's level, starting at 1
     inventory_t inventory;
-    size_t tick_cooldown;      // If 0, player can act
+    size_t tick_cooldown;        // If 0, player can act
+    size_t hunger_cooldown;      // If 0, player NEEDS to eat if it can't,
+                                 // it will die
 } player_t;
 
 player_t *create_player(const pos_t pos, const size_t id);

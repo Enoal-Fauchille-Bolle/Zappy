@@ -11,13 +11,15 @@
 #include <time.h>
 
 /**
- * @brief Create a new player with a given position.
+ * @brief Create a new player at a specified position with a unique ID.
  *
  * This function allocates memory for a player structure, initializes its
- * position, orientation, level, and inventory. The player's orientation is set
- * to a random value between 1 and 4.
+ * position, ID, orientation, level, and inventory. The player starts with a
+ * random orientation and a level of 1. The inventory is initialized with 10
+ * units of food and zero for all other resources.
  *
- * @param pos The initial position of the player
+ * @param pos The position where the player will be created
+ * @param id The unique ID of the player
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if memory allocation fails
  */
@@ -35,6 +37,8 @@ player_t *create_player(const pos_t pos, const size_t id)
     player->level = 1;
     for (size_t i = 0; i <= THYSTAME; i++)
         player->inventory[i] = 0;
+    player->inventory[FOOD] = 10;
+    player->hunger_cooldown = 0;
     player->tick_cooldown = 0;
     return player;
 }
