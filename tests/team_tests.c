@@ -8,6 +8,7 @@
 #include "map/coordinates.h"
 #include "team/egg/egg.h"
 #include "team/team.h"
+#include "vector.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
@@ -54,4 +55,17 @@ Test(team, destroy_team_valid_with_players_and_eggs)
     destroy_team(team);      // Should not crash
     cr_assert(true, "Destroying valid team with players and eggs should not "
                     "cause a crash");
+}
+
+Test(team, destroy_team_valid_with_null_players_and_eggs)
+{
+    team_t *team = create_team("TestTeam");
+
+    vector_destroy(team->players);
+    team->players = NULL;
+    vector_destroy(team->eggs);
+    team->eggs = NULL;
+    destroy_team(team);
+    cr_assert(true, "Destroying valid team with NULL players and eggs should "
+                    "not cause a crash");
 }
