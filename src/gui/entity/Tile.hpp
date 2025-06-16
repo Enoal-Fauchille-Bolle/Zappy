@@ -11,6 +11,9 @@
 #include "Entity.hpp"
 #include <map>
 #include <string>
+#include <vector>
+
+class Player; // Forward declaration
 
 class Tile : public Entity {
     public:
@@ -23,10 +26,20 @@ class Tile : public Entity {
         std::pair<int, int> getCoordinates() const;
         void updateVisuals();
 
+        void addPlayer(Player* player);
+        void removePlayer(Player* player);
+        const std::vector<Player*>& getPlayers() const;
+
+        void addEntity(Entity* entity);
+        void removeEntity(Entity* entity);
+        const std::vector<Entity*>& getEntities() const;
+
     private:
         int _x;
         int _y;
         std::map<std::string, int> _resources;
+        std::vector<Player*> _players;
+        std::vector<Entity*> _entities;
 };
 
 #endif /* !TILE_HPP_ */

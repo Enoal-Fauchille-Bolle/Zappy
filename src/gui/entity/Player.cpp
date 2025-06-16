@@ -7,8 +7,14 @@
 
 #include "Player.hpp"
 
+/**
+ * @brief Construct a new Player object.
+ *
+ * @param id The player ID.
+ * @param teamName The name of the team.
+ */
 Player::Player(int id, const std::string &teamName)
-    : Entity("player_" + std::to_string(id), "cube.mesh"),
+    : Entity("player_" + std::to_string(id), "ogrehead.mesh"),
       _playerId(id),
       _teamName(teamName),
       _level(1),
@@ -16,10 +22,18 @@ Player::Player(int id, const std::string &teamName)
 {
 }
 
+/**
+ * @brief Destroy the Player object.
+ */
 Player::~Player()
 {
 }
 
+/**
+ * @brief Set the level of the player and update scale.
+ *
+ * @param level The new level.
+ */
 void Player::setLevel(int level)
 {
     _level = level;
@@ -27,12 +41,20 @@ void Player::setLevel(int level)
     setScale(scale, scale, scale);
 }
 
+/**
+ * @brief Set the orientation of the player and update visuals.
+ *
+ * @param orientation The new orientation.
+ */
 void Player::setOrientation(Orientation orientation)
 {
     _orientation = orientation;
     updateVisualOrientation();
 }
 
+/**
+ * @brief Update the visual orientation of the player.
+ */
 void Player::updateVisualOrientation()
 {
     switch (_orientation) {
@@ -51,21 +73,43 @@ void Player::updateVisualOrientation()
     }
 }
 
+/**
+ * @brief Set the quantity of an inventory item.
+ *
+ * @param item The item name.
+ * @param quantity The quantity to set.
+ */
 void Player::setInventoryItem(const std::string &item, int quantity)
 {
     _inventory[item] = quantity;
 }
 
+/**
+ * @brief Get the player's level.
+ *
+ * @return int The level.
+ */
 int Player::getLevel() const
 {
     return _level;
 }
 
+/**
+ * @brief Get the player's orientation.
+ *
+ * @return Orientation The orientation.
+ */
 Orientation Player::getOrientation() const
 {
     return _orientation;
 }
 
+/**
+ * @brief Get the quantity of an inventory item.
+ *
+ * @param item The item name.
+ * @return int The quantity.
+ */
 int Player::getInventoryItem(const std::string &item) const
 {
     auto it = _inventory.find(item);
@@ -75,6 +119,11 @@ int Player::getInventoryItem(const std::string &item) const
     return 0;
 }
 
+/**
+ * @brief Get the player's team name.
+ *
+ * @return std::string The team name.
+ */
 std::string Player::getTeamName() const
 {
     return _teamName;
