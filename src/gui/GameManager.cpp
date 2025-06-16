@@ -103,7 +103,7 @@ void GameManager::createEgg(int id, int parentId, int x, int y)
     _eggs[id] = egg;
 
     if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
-        _tiles[y][x]->addEgg(egg);
+        _tiles[y][x]->addEgg(egg, _mapWidth, _mapHeight);
     } else {
         std::cerr << "Invalid tile for egg " << id << " at (" << x << ", " << y << ")" << std::endl;
     }
@@ -164,7 +164,7 @@ void GameManager::createPlayer(int id, const std::string& teamName, int x,
     _players[id] = player;
 
     if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
-        _tiles[y][x]->addPlayer(player);
+        _tiles[y][x]->addPlayer(player, _mapWidth, _mapHeight);
     } else {
         std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
     }
@@ -194,7 +194,7 @@ void GameManager::updatePlayerPosition(int id, int x, int y,
         }
     }
     if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
-        _tiles[y][x]->addPlayer(player);
+        _tiles[y][x]->addPlayer(player, _mapWidth, _mapHeight);
     } else {
         std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
     }

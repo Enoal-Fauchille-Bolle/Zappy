@@ -27,11 +27,11 @@ class Tile : public Entity {
         std::pair<int, int> getCoordinates() const;
         void updateVisuals();
 
-        void addPlayer(Player* player);
+        void addPlayer(Player* player, int mapWidth, int mapHeight);
         void removePlayer(Player* player);
         const std::vector<Player*>& getPlayers() const;
 
-        void addEgg(Egg* egg);
+        void addEgg(Egg* egg, int mapWidth, int mapHeight);
         void removeEgg(Egg* egg);
         const std::vector<Egg*>& getEggs() const;
 
