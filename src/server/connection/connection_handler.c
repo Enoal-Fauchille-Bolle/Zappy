@@ -55,7 +55,8 @@ void remove_client(server_t *server, int client_index)
  * @brief Processes client events for all connected clients
  *
  * Iterates through the file descriptor array and processes incoming messages
- * from clients that have data ready to be read (POLLIN event).
+ * from clients that have data ready to be read (POLLIN event). Also handles
+ * client disconnections detected through POLLHUP events.
  *
  * @param fds Array of poll file descriptors to monitor
  * @param max_fds Maximum number of file descriptors in the array
@@ -67,6 +68,18 @@ static void process_client_events(server_t *server, int max_fds)
     for (int i = 2; i < max_fds; i++) {
         if (server->fds[i].fd < 0)
             continue;
+        if (server->fds[i].revents & POLLHUP) {
+            debug_conn(server->options->debug,
+                "Client %d disconnected (POLLHUP)\n", server->fds[i].fd);
+            remove_client(server, i);
+            continue;
+        }
+        if (server->fds[i].revents & POLLERR) {
+            debug_conn(server->options->debug, "Client %d error (POLLERR)\n",
+                server->fds[i].fd);
+            remove_client(server, i);
+            continue;
+        }
         if ((server->fds[i].revents & POLLIN) &&
             server->fds[i].revents & POLLOUT) {
             handle_client_message(server, i);
@@ -77,7 +90,7 @@ static void process_client_events(server_t *server, int max_fds)
 static void init_new_connection(struct pollfd *fd, int client_sockfd)
 {
     fd->fd = client_sockfd;
-    fd->events = POLLIN | POLLOUT;
+    fd->events = POLLIN | POLLOUT | POLLHUP;
     write(client_sockfd, "WELCOME\n", 8);
 }
 
