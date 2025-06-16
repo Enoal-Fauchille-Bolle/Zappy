@@ -85,10 +85,10 @@ void GameManager::createGrid()
  * @brief Create a player and add to the map.
  *
  * @param id Player ID.
- * @param teamName Team name.
+ * @param parentId Player ID that laid the egg.
  * @param x X coordinate.
  * @param y Y coordinate.
- * @param orientation Player orientation.
+ * 
  */
 void GameManager::createEgg(int id, int parentId, int x, int y)
 {

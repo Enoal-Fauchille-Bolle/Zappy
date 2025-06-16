@@ -119,12 +119,11 @@ const std::vector<Player*>& Tile::getPlayers() const
 /**
  * @brief Add an egg to the tile.
  *
- * @param egg The egg to add.
+ * @param egg The egg to added.
  */
 void Tile::addEgg(Egg* egg)
 {
     if (std::find(_eggs.begin(), _eggs.end(), egg) == _eggs.end()) {
-        std::cout << "Adding egg with ID: " << egg->getEggId() << " to tile at (" << _x << ", " << _y << ")" << std::endl;
         _eggs.push_back(egg);
         float tileSize = 10.0f;
         int mapWidth = 10;  // Default fallback, should be set by GameManager

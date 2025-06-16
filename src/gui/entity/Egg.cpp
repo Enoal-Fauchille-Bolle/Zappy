@@ -18,8 +18,6 @@ Egg::Egg(int id, int parentId)
 
 Egg::~Egg()
 {
-    // Destructor logic if needed
-    std::cout << "Egg " << _eggId << " destroyed." << std::endl;
 }
 
 int Egg::getParentId() const
