@@ -66,4 +66,5 @@ void destroy_server_options(server_options_t *options)
         free(options->teams);
     }
     free(options);
+    options = NULL;
 }

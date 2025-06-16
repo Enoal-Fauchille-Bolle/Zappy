@@ -65,7 +65,11 @@ void destroy_player(player_t *player)
 {
     if (player == NULL)
         return;
+    if (player->team != NULL) {
+        remove_player_from_team(player->team, player);
+    }
     free(player);
+    player = NULL;
 }
 
 /**
