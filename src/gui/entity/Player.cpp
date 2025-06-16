@@ -29,6 +29,7 @@ Player::~Player()
 {
 }
 
+
 /**
  * @brief Set the level of the player and update scale.
  *
@@ -127,4 +128,13 @@ int Player::getInventoryItem(const std::string &item) const
 std::string Player::getTeamName() const
 {
     return _teamName;
+}
+
+/**
+ * @brief Initialize the player entity.
+ *
+ * This function is called after the player entity is attached to a node.
+ */
+void Player::initialize()
+{
 }
