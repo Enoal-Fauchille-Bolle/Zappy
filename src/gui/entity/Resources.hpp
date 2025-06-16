@@ -9,16 +9,7 @@
 #define RESOURCES_HPP_
 
 #include "Entity.hpp"
-
-enum class ResourceType {
-    FOOD,
-    LINEMATE,
-    DERAUMERE,
-    SIBUR,
-    MENDIANE,
-    PHIRAS,
-    THYSTAME
-};
+#include "../Types.hpp"
 
 class Resources : public Entity{
     public:
@@ -26,6 +17,7 @@ class Resources : public Entity{
         Resources(const std::string &id, const std::string &meshName, ResourceType type = ResourceType::FOOD);
         ~Resources();
 
+        void initialize() override;
         void setResourceType(ResourceType type);
         void applyResourceColor();
         ResourceType getResourceType() const;

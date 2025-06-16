@@ -32,25 +32,25 @@ void Resources::applyResourceColor()
 {
     switch (_type) {
         case ResourceType::FOOD:
-            this->setColor({1.0f, 0.5f, 0.0f, 1.0f}); // Orange
+            this->setColor(Color(1.0f, 0.5f, 0.0f, 1.0f)); // Orange
             break;
         case ResourceType::LINEMATE:
-            this->setColor({0.5f, 0.5f, 0.5f, 1.0f}); // Gray
+            this->setColor(Color(0.5f, 0.5f, 0.5f, 1.0f)); // Gray
             break;
         case ResourceType::DERAUMERE:
-            this->setColor({10.0f, 0.0f, 0.0f, 1.0f}); // Red
+            this->setColor(Color(1.0f, 0.2f, 0.2f, 1.0f)); // Red (fixed values)
             break;
         case ResourceType::SIBUR:
-            this->setColor({0.01f, 10.0f, 0.0, 1.0f}); // Green
+            this->setColor(Color(0.2f, 0.8f, 0.2f, 1.0f)); // Green (fixed values)
             break;
         case ResourceType::MENDIANE:
-            this->setColor({0.2f, 0.2f, 0.8f, 1.0f}); // Blue
+            this->setColor(Color(0.2f, 0.2f, 0.8f, 1.0f)); // Blue
             break;
         case ResourceType::PHIRAS:
-            this->setColor({1.0f, 1.0f, 0.2f, 1.0f}); // Yellow
+            this->setColor(Color(1.0f, 1.0f, 0.2f, 1.0f)); // Yellow
             break;
         case ResourceType::THYSTAME:
-            this->setColor({1.0f, 0.2f, 1.0f, 1.0f}); // Magenta
+            this->setColor(Color(1.0f, 0.2f, 1.0f, 1.0f)); // Magenta
             break;
     }
 }
@@ -58,5 +58,11 @@ void Resources::applyResourceColor()
 ResourceType Resources::getResourceType() const
 {
     return _type;
+}
+
+void Resources::initialize()
+{
+    setScale(0.01f, 0.01f, 0.01f); // Or use Constants::RESOURCE_SCALE if available
+    applyResourceColor();
 }
 
