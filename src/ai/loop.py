@@ -66,14 +66,17 @@ class Loop:
             return
 
     def search_line(self):
-        a, b, c = 0, 0, 1
+        # This function calculates the "line number" of the tile containing "self" in the look array.
+        # It uses a triangular pattern to determine the line based on the number of tiles processed.
+        tile_count, boundary, line_number = 0, 0, 1
         for tile in self.look:
             if "self" in tile:
-                while b < a:
-                    b = c * 2 + 1
-                    c += 1
-            a += 1
-        return c
+                # Increment the boundary until it exceeds the number of tiles processed.
+                while boundary < tile_count:
+                    boundary = line_number * 2 + 1
+                    line_number += 1
+            tile_count += 1
+        return line_number
 
     def search_self_index(self):
         for i, tile in enumerate(self.look):
