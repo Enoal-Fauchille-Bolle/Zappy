@@ -99,7 +99,8 @@ $(SRCDIR_GUI)%.o: $(SRCDIR_GUI)%.cpp
 	$(CC_GUI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_GUI)
 
 # OGRE specific flags
-OGRE_INCLUDE = -I/usr/local/include/OGRE -I/usr/local/include/OGRE/Bites -I/usr/local/include/OGRE/RTShaderSystem
+OGRE_INCLUDE = -I/usr/local/include/OGRE -I/usr/local/include/OGRE/Bites 	\
+-I/usr/local/include/OGRE/RTShaderSystem
 OGRE_LIBS = -L/usr/local/lib -lOgreMain -lOgreBites -lOgreRTShaderSystem
 
 # Compilation Flags
