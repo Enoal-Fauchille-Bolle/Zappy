@@ -14,13 +14,16 @@
     #include "map/tile.h"
     #include <stddef.h>
 
+typedef unsigned int level_t;
+typedef unsigned int tick_t;
+
 typedef struct player_s {
     size_t id;
     pos_t pos;
     orientation_t orientation;
-    size_t level;      // Player's level, starting at 1
+    level_t level;      // Player's level, starting at 1
     inventory_t inventory;
-    size_t tick_cooldown;        // If 0, player can act
+    tick_t tick_cooldown;        // If 0, player can act
     size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
 } player_t;
 

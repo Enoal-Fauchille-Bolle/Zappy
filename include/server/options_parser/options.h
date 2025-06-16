@@ -12,6 +12,7 @@
     #include <stddef.h>
 
 typedef unsigned int port_t;
+typedef unsigned int tick_rate_t;
 
 typedef struct server_options_s {
     port_t port;
@@ -19,7 +20,7 @@ typedef struct server_options_s {
     size_t height;
     char **teams;
     size_t clients_nb;
-    unsigned int frequency;
+    tick_rate_t frequency;
     bool help;
     bool debug;
     bool error;
