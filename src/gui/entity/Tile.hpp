@@ -14,6 +14,7 @@
 #include <vector>
 
 class Player; // Forward declaration
+class Egg; // Forward declaration
 
 class Tile : public Entity {
     public:
@@ -26,9 +27,13 @@ class Tile : public Entity {
         std::pair<int, int> getCoordinates() const;
         void updateVisuals();
 
-        void addPlayer(Player* player);
+        void addPlayer(Player* player, int mapWidth, int mapHeight);
         void removePlayer(Player* player);
         const std::vector<Player*>& getPlayers() const;
+
+        void addEgg(Egg* egg, int mapWidth, int mapHeight);
+        void removeEgg(Egg* egg);
+        const std::vector<Egg*>& getEggs() const;
 
         void addEntity(Entity* entity);
         void removeEntity(Entity* entity);
@@ -39,6 +44,7 @@ class Tile : public Entity {
         int _y;
         std::map<std::string, int> _resources;
         std::vector<Player*> _players;
+        std::vector<Egg*> _eggs;
         std::vector<Entity*> _entities;
 };
 

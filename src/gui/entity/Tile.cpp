@@ -7,8 +7,10 @@
 
 #include "Tile.hpp"
 #include "Player.hpp"
+#include "Egg.hpp"
 #include <algorithm>
 
+#include <iostream>
 /**
  * @brief Construct a new Tile object.
  *
@@ -77,15 +79,11 @@ void Tile::updateVisuals()
  *
  * @param player The player to add.
  */
-void Tile::addPlayer(Player* player)
+void Tile::addPlayer(Player* player, int mapWidth, int mapHeight)
 {
     if (std::find(_players.begin(), _players.end(), player) == _players.end()) {
         _players.push_back(player);
         float tileSize = 10.0f;
-        int mapWidth = 10;  // Default fallback, should be set by GameManager
-        int mapHeight = 10; // Default fallback, should be set by GameManager
-        #ifdef TILE_MAP_SIZE_GLOBAL
-        #endif
         float posX = static_cast<float>(_x - (mapWidth - 1) / 2.0f) * tileSize;
         float posZ = static_cast<float>(_y - (mapHeight - 1) / 2.0f) * tileSize;
         player->setPosition(posX, 5.0f, posZ);
@@ -112,6 +110,44 @@ void Tile::removePlayer(Player* player)
 const std::vector<Player*>& Tile::getPlayers() const
 {
     return _players;
+}
+
+/**
+ * @brief Add an egg to the tile.
+ *
+ * @param egg The egg to added.
+ */
+void Tile::addEgg(Egg* egg, int mapWidth, int mapHeight)
+{
+    if (std::find(_eggs.begin(), _eggs.end(), egg) == _eggs.end()) {
+        _eggs.push_back(egg);
+        float tileSize = 10.0f;
+        float posX = static_cast<float>(_x - (mapWidth - 1) / 2.0f) * tileSize;
+        float posZ = static_cast<float>(_y - (mapHeight - 1) / 2.0f) * tileSize;
+        egg->setPosition(posX, 5.0f, posZ);
+    }
+}
+
+/**
+ * @brief Remove an egg from the tile.
+ *
+ * @param egg The egg to remove.
+ */
+void Tile::removeEgg(Egg* egg)
+{
+    auto it = std::remove(_eggs.begin(), _eggs.end(), egg);
+    if (it != _eggs.end())
+        _eggs.erase(it, _eggs.end());
+}
+
+/**
+ * @brief Get the list of eggs on the tile.
+ *
+ * @return const std::vector<Egg*>& The vector of egg pointers.
+ */
+const std::vector<Egg*>& Tile::getEggs() const
+{
+    return _eggs;
 }
 
 /**

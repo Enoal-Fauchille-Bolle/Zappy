@@ -82,6 +82,34 @@ void GameManager::createGrid()
 }
 
 /**
+ * @brief Create a player and add to the map.
+ *
+ * @param id Player ID.
+ * @param parentId Player ID that laid the egg.
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ * 
+ */
+void GameManager::createEgg(int id, int parentId, int x, int y)
+{
+    if (_eggs.find(id) != _eggs.end()) {
+        std::cerr << "Egg " << id << " already exists" << std::endl;
+        return;
+    }
+
+    Egg* egg = new Egg(id, parentId);
+    egg->attachToScene(_scene->getSceneManager());
+    egg->setScale(0.01f, 0.01f, 0.01f);
+    _eggs[id] = egg;
+
+    if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
+        _tiles[y][x]->addEgg(egg, _mapWidth, _mapHeight);
+    } else {
+        std::cerr << "Invalid tile for egg " << id << " at (" << x << ", " << y << ")" << std::endl;
+    }
+}
+
+/**
  * @brief Create a tile at the specified coordinates.
  *
  * @param x X coordinate.
@@ -136,7 +164,7 @@ void GameManager::createPlayer(int id, const std::string& teamName, int x,
     _players[id] = player;
 
     if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
-        _tiles[y][x]->addPlayer(player);
+        _tiles[y][x]->addPlayer(player, _mapWidth, _mapHeight);
     } else {
         std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
     }
@@ -166,7 +194,7 @@ void GameManager::updatePlayerPosition(int id, int x, int y,
         }
     }
     if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
-        _tiles[y][x]->addPlayer(player);
+        _tiles[y][x]->addPlayer(player, _mapWidth, _mapHeight);
     } else {
         std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
     }

@@ -10,6 +10,7 @@
 
 #include "scenne/Scenne.hpp"
 #include "entity/Player.hpp"
+#include "entity/Egg.hpp"
 #include "entity/Tile.hpp"
 #include <vector>
 #include <map>
@@ -23,6 +24,7 @@ class GameManager {
         void update();
 
         void setMapSize(int width, int height);
+        void createEgg(int id, int parentId, int x, int y);
         void createTile(int x, int y);
         void createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation);
         void updatePlayerPosition(int id, int x, int y, Orientation orientation);
@@ -37,6 +39,7 @@ class GameManager {
         int _mapHeight;
 
         std::map<int, Player*> _players;
+        std::map<int, Egg*> _eggs;
         std::vector<std::vector<Tile*>> _tiles;
 
         int _time = 0;
