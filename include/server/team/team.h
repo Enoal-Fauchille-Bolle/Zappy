@@ -29,6 +29,6 @@ void add_egg_to_team(team_t *team, egg_t *egg);
 void remove_egg_from_team(team_t *team, egg_t *egg);
 
 size_t get_egg_count(const team_t *team);
-bool hatch_player(team_t *team, map_t *map, const size_t id);
+player_t *hatch_player(team_t *team, map_t *map, const size_t id);
 
 #endif /* !TEAM_H_ */
