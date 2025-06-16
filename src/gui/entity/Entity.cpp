@@ -7,6 +7,7 @@
 
 #include "Entity.hpp"
 #include <iostream>
+#include <cstdlib>
 
 /**
  * @brief Construct a new Entity object.
@@ -24,6 +25,16 @@ Entity::Entity(const std::string &id, const std::string &meshName)
  */
 Entity::~Entity()
 {
+}
+
+/**
+ * @brief Set the position of the entity.
+ *
+ * @param pos Position struct.
+ */
+void Entity::setPosition(const Position& pos)
+{
+    setPosition(pos.x, pos.y, pos.z);
 }
 
 /**
@@ -76,7 +87,7 @@ void Entity::setScale(float x, float y, float z)
  *
  * @param color The color to set.
  */
-void Entity::setColor(zappy_color color)
+void Entity::setColor(const Color& color)
 {
     if (_ogreEntity && _ogreEntity->getNumSubEntities() > 0) {
         try {
@@ -131,4 +142,15 @@ void Entity::attachToScene(Ogre::SceneManager* sceneManager)
             std::cerr << "Error attaching entity to scene: " << e.what() << std::endl;
         }
     }
+}
+
+/**
+ * @brief Initialize the entity.
+ *
+ * Default implementation does nothing. Derived classes can override this method
+ * to perform custom initialization.
+ */
+void Entity::initialize()
+{
+    // Default: do nothing. Derived classes can override.
 }
