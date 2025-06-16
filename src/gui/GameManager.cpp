@@ -8,10 +8,16 @@
 #include "GameManager.hpp"
 #include <iostream>
 
+/**
+ * @brief Construct a new GameManager object.
+ */
 GameManager::GameManager() : _scene(nullptr), _mapWidth(0), _mapHeight(0)
 {
 }
 
+/**
+ * @brief Destroy the GameManager object and free resources.
+ */
 GameManager::~GameManager()
 {
     for (auto& player : _players) {
@@ -24,24 +30,34 @@ GameManager::~GameManager()
     }
 }
 
+/**
+ * @brief Initialize the game manager with a scene.
+ *
+ * @param scene Pointer to the scene object.
+ */
 void GameManager::initialize(Scenne* scene)
 {
     _scene = scene;
 }
 
+/**
+ * @brief Update the game state.
+ */
 void GameManager::update()
 {
     if (!_scene) {
         std::cerr << "Scene not initialized" << std::endl;
         return;
     }
-
     _time++;
-    for (auto& player : _players) {
-        player.second->setPosition(player.first + ((player.first * 10.0f - (_mapHeight * 5.0f)) * _time / 100.0f), 10.0f, player.first * 10.0f - (_mapHeight * 5.0f));
-    }
 }
 
+/**
+ * @brief Set the map size and create the grid.
+ *
+ * @param width Map width.
+ * @param height Map height.
+ */
 void GameManager::setMapSize(int width, int height)
 {
     _mapWidth = width;
@@ -51,12 +67,11 @@ void GameManager::setMapSize(int width, int height)
         row.resize(width, nullptr);
     }
     createGrid();
-    createPlayer(1, "TeamA", 0, 0, Orientation::NORTH);
-    createPlayer(2, "TeamB", 1, 1, Orientation::EAST);
-    createPlayer(3, "TeamC", 2, 2, Orientation::SOUTH);
-    createPlayer(4, "TeamD", 3, 3, Orientation::WEST);
 }
 
+/**
+ * @brief Create the grid of tiles for the map.
+ */
 void GameManager::createGrid()
 {
     for (int y = 0; y < _mapHeight; y++) {
@@ -66,6 +81,12 @@ void GameManager::createGrid()
     }
 }
 
+/**
+ * @brief Create a tile at the specified coordinates.
+ *
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ */
 void GameManager::createTile(int x, int y)
 {
     if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight) {
@@ -76,26 +97,30 @@ void GameManager::createTile(int x, int y)
 
     Tile* tile = new Tile(x, y);
 
-    // First store the tile, then attach to scene, then set color
     _tiles[y][x] = tile;
     tile->attachToScene(_scene->getSceneManager());
-    float posX = static_cast<float>(x) * 15.0f - (_mapWidth * 5.0f);
-    float posZ = static_cast<float>(y) * 15.0f - (_mapHeight * 5.0f);
+    const float tileSize = 10.0f;
+    float posX = static_cast<float>(x - (_mapWidth - 1) / 2.0f) * tileSize;
+    float posZ = static_cast<float>(y - (_mapHeight - 1) / 2.0f) * tileSize;
     tile->setPosition(posX, 0.0f, posZ);
     tile->setScale(0.1f, 0.1f, 0.1f);
 
-    // Set contrasting colors AFTER attaching to scene
     if ((x + y) % 2 == 0) {
-        tile->setColor({1.0f, 0.0f, 1.0f, 0.0f});
+        tile->setColor({0.0f, 0.8f, 0.0f, 1.0f});
     } else {
-        tile->setColor({0.0f, 0.0f, 1.0f, 1.0f});  // Pure blue
+        tile->setColor({0.03f, 0.1f, 0.03f, 1.0f});
     }
-
-    // Debug output for each tile creation
-    std::cout << "Creating tile at (" << x << ", " << y << ") with position ("
-              << posX << ", 0.0, " << posZ << ")" << std::endl;
 }
 
+/**
+ * @brief Create a player and add to the map.
+ *
+ * @param id Player ID.
+ * @param teamName Team name.
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ * @param orientation Player orientation.
+ */
 void GameManager::createPlayer(int id, const std::string& teamName, int x,
                                int y, Orientation orientation)
 {
@@ -107,13 +132,24 @@ void GameManager::createPlayer(int id, const std::string& teamName, int x,
     Player* player = new Player(id, teamName);
     player->attachToScene(_scene->getSceneManager());
     player->setOrientation(orientation);
-    float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
-    float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
-    player->setPosition(posX, 10.0f, posZ);
     player->setScale(0.1f, 0.1f, 0.1f);
     _players[id] = player;
+
+    if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
+        _tiles[y][x]->addPlayer(player);
+    } else {
+        std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
+    }
 }
 
+/**
+ * @brief Update a player's position and orientation.
+ *
+ * @param id Player ID.
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ * @param orientation Player orientation.
+ */
 void GameManager::updatePlayerPosition(int id, int x, int y,
                                        Orientation orientation)
 {
@@ -124,12 +160,26 @@ void GameManager::updatePlayerPosition(int id, int x, int y,
     }
 
     Player* player = it->second;
-    float posX = static_cast<float>(x) * 10.0f - (_mapWidth * 5.0f);
-    float posZ = static_cast<float>(y) * 10.0f - (_mapHeight * 5.0f);
-    player->setPosition(posX, 2.0f, posZ);
+    for (auto& row : _tiles) {
+        for (auto& tile : row) {
+            if (tile) tile->removePlayer(player);
+        }
+    }
+    if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
+        _tiles[y][x]->addPlayer(player);
+    } else {
+        std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
+    }
     player->setOrientation(orientation);
 }
 
+/**
+ * @brief Update the resources on a tile.
+ *
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ * @param resources Map of resource names to quantities.
+ */
 void GameManager::updateTileContent(int x, int y,
                                     const std::map<std::string, int>& resources)
 {
@@ -151,6 +201,11 @@ void GameManager::updateTileContent(int x, int y,
     }
 }
 
+/**
+ * @brief Get the map size.
+ *
+ * @return std::pair<int, int> The (width, height) of the map.
+ */
 std::pair<int, int> GameManager::getMapSize() const
 {
     return std::make_pair(_mapWidth, _mapHeight);
