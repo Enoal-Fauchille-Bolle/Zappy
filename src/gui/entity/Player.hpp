@@ -9,20 +9,16 @@
 #define PLAYER_HPP_
 
 #include "Entity.hpp"
+#include "../Types.hpp"
 #include <string>
 #include <map>
-
-enum class Orientation {
-    NORTH = 1,
-    EAST = 2,
-    SOUTH = 3,
-    WEST = 4
-};
 
 class Player : public Entity {
     public:
         Player(int id, const std::string &teamName);
         ~Player();
+
+        void initialize() override;
 
         void setLevel(int level);
         void setOrientation(Orientation orientation);
