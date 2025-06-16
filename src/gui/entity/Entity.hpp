@@ -10,24 +10,20 @@
 
 #include <string>
 #include <OGRE/Ogre.h>
-
-
-struct zappy_color {
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "../Types.hpp"
 
 class Entity {
     public:
         Entity(const std::string &id, const std::string &meshName);
         virtual ~Entity();
 
+        virtual void initialize(); // New: virtual initialize method
+
+        void setPosition(const Position& pos);
         void setPosition(float x, float y, float z);
         void setRotation(float x, float y, float z);
         void setScale(float x, float y, float z);
-        void setColor(zappy_color);
+        void setColor(const Color& color);
 
         std::string getId() const;
         Ogre::SceneNode* getSceneNode() const;
