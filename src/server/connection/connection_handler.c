@@ -11,12 +11,12 @@
 #include "connection/signal_handler.h"
 #include "constants.h"
 #include "debug_categories.h"
+#include "game/game_state.h"
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -36,12 +36,14 @@ void remove_client(server_t *server, int client_index)
 {
     if (client_index < 2 || client_index >= MAX_CLIENTS + 2)
         return;
-    if (server->clients_team[client_index - 2] != NULL) {
+    if (server->clients[client_index - 2] != NULL) {
         debug_conn(server->options->debug,
-            "Client %d removed from team '%s'\n", server->fds[client_index].fd,
-            server->clients_team[client_index - 2]);
-        free(server->clients_team[client_index - 2]);
-        server->clients_team[client_index - 2] = NULL;
+            "Player %d (Client %d) removed from team '%s'\n",
+            server->clients[client_index - 2]->player->id,
+            server->fds[client_index].fd,
+            server->clients[client_index - 2]->team_name);
+        destroy_client(server->clients[client_index - 2]);
+        server->clients[client_index - 2] = NULL;
     }
     debug_conn(server->options->debug, "Client %d disconnected\n",
         server->fds[client_index].fd);
@@ -87,6 +89,16 @@ static void process_client_events(server_t *server, int max_fds)
     }
 }
 
+/**
+ * @brief Initializes a new client connection for polling
+ *
+ * Sets up a pollfd structure for a new client socket and sends a welcome
+ * message. Configures the socket to monitor for input, output, and hangup
+ * events.
+ *
+ * @param fd Pointer to the pollfd structure to initialize
+ * @param client_sockfd File descriptor of the client socket
+ */
 static void init_new_connection(struct pollfd *fd, int client_sockfd)
 {
     fd->fd = client_sockfd;
@@ -121,7 +133,7 @@ static void accept_new_connection(server_t *server)
 
     if (client_sockfd == -1)
         return perror("accept");
-    debug_conn(server->options->debug, "Connection from %s:%d (%d)\n",
+    debug_conn(server->options->debug, "Connection from %s:%d (Client %d)\n",
         inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port),
         client_sockfd);
     for (int i = 2; i < MAX_CLIENTS + 2; i++) {
@@ -147,8 +159,7 @@ static void accept_new_connection(server_t *server)
  * @note Uses a timeout defined by POLL_TIMEOUT constant
  * @note Monitors up to MAX_CLIENTS + 1 file descriptors
  */
-// TODO: if (fds[0].revents & POLLIN && server->game->game_state == GAME_START)
-static bool process_connection(server_t *server)
+bool process_connection(server_t *server)
 {
     int result = poll(server->fds, MAX_CLIENTS + 2, POLL_TIMEOUT);
 
@@ -157,7 +168,8 @@ static bool process_connection(server_t *server)
             perror("poll");
         return FAILURE;
     }
-    if (server->fds[1].revents & POLLIN) {
+    if (server->fds[1].revents & POLLIN &&
+        server->game->game_state == GAME_RUNNING) {
         if (!handle_signal(server->fds[1].fd, server->options->debug)) {
             return FAILURE;
         }
@@ -167,29 +179,4 @@ static bool process_connection(server_t *server)
     }
     process_client_events(server, MAX_CLIENTS + 2);
     return SUCCESS;
-}
-
-/**
- * @brief Processes client connections and handles communication with connected
- * clients
- *
- * This function initializes polling file descriptors and enters a main loop to
- * continuously process client connections. It handles incoming client requests
- * and manages the server's connection state until a failure occurs or the
- * server is stopped.
- *
- * @param server Pointer to the server structure containing socket information
- *               and client management data
- */
-// TODO: Replace the "while (true)" with the actual game state check
-// TODO:
-// if (game is running)
-//     game_tick(server);
-void process_connections(server_t *server)
-{
-    while (true) {
-        if (process_connection(server) == FAILURE)
-            break;
-    }
-    debug_server(server->options->debug, "Server stopped\n");
 }

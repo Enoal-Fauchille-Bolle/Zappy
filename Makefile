@@ -75,6 +75,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)options_parser/options/debug.c				\
 			 	$(SRCDIR_SERVER)connection/server.c							\
 			 	$(SRCDIR_SERVER)connection/client.c							\
+			 	$(SRCDIR_SERVER)connection/team_join.c						\
 			 	$(SRCDIR_SERVER)connection/socket.c							\
 			 	$(SRCDIR_SERVER)connection/connection_handler.c				\
 			 	$(SRCDIR_SERVER)connection/signal_handler.c					\
@@ -98,6 +99,8 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)command_handler/command_validator.c			\
 				$(SRCDIR_SERVER)command_handler/command_executor.c			\
 				$(SRCDIR_SERVER)commands/dummy.c							\
+				$(SRCDIR_SERVER)game/game.c									\
+				$(SRCDIR_SERVER)game/teams.c								\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)

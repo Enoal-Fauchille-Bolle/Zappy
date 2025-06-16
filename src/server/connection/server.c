@@ -11,6 +11,8 @@
 #include "connection/socket.h"
 #include "constants.h"
 #include "debug_categories.h"
+#include "game/game.h"
+#include "game/game_state.h"
 #include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,10 +30,16 @@
  * @param clients_team Array of strings representing client teams to be
  * destroyed. Can be NULL (function will return early if so).
  */
-static void destroy_clients_team(server_t *server)
+static void destroy_clients(server_t *server)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        free(server->clients_team[i]);
+        if (server->clients[i] == NULL) {
+            continue;
+        }
+        if (server->clients[i]->team_name != NULL) {
+            free(server->clients[i]->team_name);
+        }
+        free(server->clients[i]);
     }
 }
 
@@ -43,10 +51,10 @@ static void destroy_clients_team(server_t *server)
  *
  * @return char** Pointer to the allocated array on success, NULL on failure
  */
-static void init_clients_team(server_t *server)
+static void init_clients(server_t *server)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        server->clients_team[i] = NULL;
+        server->clients[i] = NULL;
     }
 }
 
@@ -65,13 +73,16 @@ void destroy_server(server_t *server)
     if (!server) {
         return;
     }
+    if (server->game) {
+        destroy_game(server->game);
+    }
     for (size_t i = 0; i < MAX_CLIENTS + 2; i++) {
         if (server->fds[i].fd >= 0) {
             close(server->fds[i].fd);
         }
     }
     destroy_server_options(server->options);
-    destroy_clients_team(server);
+    destroy_clients(server);
     free(server);
 }
 
@@ -98,6 +109,42 @@ static void init_poll_fds(struct pollfd *fds, int server_sockfd, int signal_fd)
 }
 
 /**
+ * @brief Sets up and initializes the server with the given options
+ *
+ * This function initializes a server structure by setting up signal handling,
+ * initializing client teams, configuring poll file descriptors, and
+ * establishing the server socket on the specified port.
+ *
+ * @param server Pointer to the server structure to be initialized
+ * @param options Pointer to server options containing configuration (e.g.,
+ * port)
+ *
+ * @return true on successful setup, false on failure
+ *
+ * @note On failure, the function cleans up allocated resources
+ * @warning The function will return NULL on socket setup failure
+ */
+static bool setup_server(server_t *server, server_options_t *options)
+{
+    int signal_fd = setup_signal_handler();
+
+    if (signal_fd == -1) {
+        perror("Failed to set up signal handler");
+        return FAILURE;
+    }
+    memset(server, 0, sizeof(server_t));
+    init_clients(server);
+    init_poll_fds(server->fds, setup_socket_fd(), signal_fd);
+    if (setup_socket(server, options->port) == FAILURE) {
+        free(server);
+        destroy_server_options(options);
+        return NULL;
+    }
+    server->options = options;
+    return SUCCESS;
+}
+
+/**
  * @brief Creates and initializes a new server instance
  *
  * Allocates memory for a server structure and sets up the socket
@@ -115,32 +162,37 @@ server_t *create_server(server_options_t *options)
 
     if (!server)
         return NULL;
-    memset(server, 0, sizeof(server_t));
-    init_clients_team(server);
-    init_poll_fds(server->fds, setup_socket_fd(), setup_signal_handler());
-    if (setup_socket(server, options->port) == FAILURE) {
-        free(server);
-        destroy_server_options(options);
+    if (setup_server(server, options) == FAILURE) {
         return NULL;
     }
-    server->options = options;
+    server->game = create_game(server->options);
+    if (!server->game) {
+        destroy_server(server);
+        return NULL;
+    }
     return server;
 }
 
 /**
- * @brief Runs the server and starts listening for client connections
+ * @brief Runs the main server loop to handle incoming connections
  *
- * This function initializes the server listening process, optionally prints
- * debug information about the port being used, and then enters the main
- * connection processing loop to handle incoming client connections.
+ * This function starts the server listening process and continuously accepts
+ * and processes new client connections while the game is in running state.
+ * The server will stop when the game state changes or a connection processing
+ * failure occurs.
  *
  * @param server Pointer to the server structure containing configuration and
- * state
+ * game state
  */
-void run_server(server_t *server, port_t port)
+// TODO: game_tick(server);
+void run_server(server_t *server)
 {
-    debug_server(
-        server->options->debug, "Listening on port %u\n", port);
+    debug_server(server->options->debug, "Listening on port %u\n",
+        server->options->port);
     puts("Waiting for connections...");
-    process_connections(server);
+    while (server->game->game_state == GAME_RUNNING) {
+        if (process_connection(server) == FAILURE)
+            break;
+    }
+    debug_server(server->options->debug, "Server stopped\n");
 }

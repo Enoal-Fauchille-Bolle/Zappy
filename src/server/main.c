@@ -43,12 +43,11 @@ int main(int ac, char **av)
     }
     server = create_server(options);
     if (!server) {
-        destroy_server_options(options);
         perror("Failed to create server");
         return EXIT_ERROR_CODE;
     }
     srand(time(NULL));
-    run_server(server, options->port);
+    run_server(server);
     destroy_server(server);
     return EXIT_SUCCESS_CODE;
 }

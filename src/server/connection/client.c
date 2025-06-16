@@ -12,11 +12,12 @@
 #include "connection/connection_handler.h"
 #include "connection/server.h"
 #include "connection/socket.h"
-#include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "team/egg/egg.h"
+#include "team/player/player.h"
+#include "team/team.h"
 #include "utils/string.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -42,6 +43,21 @@ static void destroy_command(command_t *command)
     free(command);
 }
 
+/**
+ * @brief Handles a command received from a client
+ *
+ * Parses the command buffer, executes the command if valid, and sends
+ * appropriate response to the client. If parsing fails, sends "ko\n" to
+ * client.
+ *
+ * @param server Pointer to the server structure
+ * @param command_buffer String containing the command to be parsed and
+ * executed
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @return true if command was successfully parsed and executed, false
+ * otherwise
+ */
 static bool handle_command(
     server_t *server, char *command_buffer, int client_index)
 {
@@ -61,116 +77,6 @@ static bool handle_command(
 }
 
 /**
- * @brief Validates if a team name exists in the server's team list
- *
- * Checks if the provided team name matches any of the teams defined in the
- * server's options. This is used to ensure clients can only join valid teams.
- *
- * @param server Pointer to the server structure containing team options
- * @param team_name The team name string to validate
- * @return true if the team name is found in the server's team list
- * @return false if the team name is not found
- */
-static bool is_team_name_valid(server_t *server, const char *team_name)
-{
-    for (size_t i = 0; server->options->teams[i] != NULL; i++) {
-        if (strcmp(server->options->teams[i], team_name) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * @brief Parses and validates a team name from a client connection message
- *
- * Validates the team name against server rules and assigns the client to the
- * team if valid. Sends appropriate response messages to the client including
- * team capacity and world dimensions.
- *
- * @param server Pointer to the server structure
- * @param message The team name message received from the client
- * @param client_index Index of the client in the server's file descriptor
- * array
- *
- * @return true if team name is valid and client was successfully assigned
- * @return false if team name is invalid
- *
- * @note Currently sends "0" as team capacity placeholder - needs
- * implementation to send actual available slots for the team
- */
-// TODO: Server should refuse to assign a team if it is full
-static bool validate_and_assign_team(
-    server_t *server, const char *team_name, int client_index)
-{
-    if (!is_team_name_valid(server, team_name)) {
-        debug_conn(server->options->debug,
-            "Client %d tried to join invalid team '%s'\n",
-            server->fds[client_index].fd, team_name);
-        write(server->fds[client_index].fd, "ko\n", 3);
-        return FAILURE;
-    }
-    server->clients_team[client_index - 2] = strdup(team_name);
-    debug_conn(server->options->debug, "Client %d assigned to team '%s'\n",
-        server->fds[client_index].fd, server->clients_team[client_index - 2]);
-    return SUCCESS;
-}
-
-/**
- * @brief Sends a welcome message to a newly connected client
- *
- * This function sends the initial connection response to a client,
- * including a status code and the game world dimensions.
- *
- * @param server Pointer to the server structure containing client file
- * descriptors and options
- * @param client_index Index of the client in the server's file descriptor
- * array
- * @return true on success (always returns SUCCESS)
- */
-// TODO: Server should send the real number of clients that can join a team
-//       instead of 0
-static bool send_welcome_message(server_t *server, int client_index)
-{
-    dprintf(server->fds[client_index].fd, "0\n");
-    dprintf(server->fds[client_index].fd, "%ld %ld\n", server->options->width,
-        server->options->height);
-    return SUCCESS;
-}
-
-/**
- * @brief Handles a client's request to join a team
- *
- * This function validates and assigns a client to the specified team,
- * then sends a welcome message upon successful assignment.
- *
- * @param server Pointer to the server structure
- * @param team_name Name of the team the client wants to join
- * @param client_index Index of the client in the server's file descriptor
- * array
- *
- * @return true on success (team assigned and welcome message sent)
- * @return false on failure (team assignment failed or welcome message failed)
- */
-static bool handle_team_join(
-    server_t *server, const char *team_name, int client_index)
-{
-    if (!validate_and_assign_team(server, team_name, client_index)) {
-        debug_warning(server->options->debug,
-            "Failed to assign team '%s' to client %d\n", team_name,
-            server->fds[client_index].fd);
-        return FAILURE;
-    }
-    if (send_welcome_message(server, client_index) == FAILURE) {
-        debug_warning(server->options->debug,
-            "Failed to send welcome message to client %d\n",
-            server->fds[client_index].fd);
-        return FAILURE;
-    }
-    return SUCCESS;
-}
-
-/**
  * @brief Processes a message received from a client
  *
  * Reads a message from the specified client socket and handles it
@@ -186,22 +92,79 @@ void handle_client_message(server_t *server, int client_index)
 {
     char *message = read_socket(server->fds[client_index].fd);
 
-    if (!message) {
-        remove_client(server, client_index);
-        return;
-    }
+    if (!message)
+        return remove_client(server, client_index);
     trim(message);
-    if (strlen(message) == 0) {
-        free(message);
-        return;
-    }
-    if (server->clients_team[client_index - 2] == NULL) {
+    if (strlen(message) == 0)
+        return free(message);
+    if (server->clients[client_index - 2] == NULL) {
         handle_team_join(server, message, client_index);
     } else {
         to_lowercase(message);
-        debug_cmd(server->options->debug, "Client %d: '%s'\n",
+        debug_cmd(server->options->debug, "Player %d (Client %d): '%s'\n",
+            server->clients[client_index - 2]->player->id,
             server->fds[client_index].fd, message);
         handle_command(server, message, client_index);
     }
     free(message);
+}
+
+/**
+ * @brief Destroys a client structure and frees all associated memory
+ *
+ * This function safely deallocates a client structure and all its associated
+ * resources, including the team name string and player object. It performs
+ * null checks to prevent segmentation faults.
+ *
+ * @param client Pointer to the client structure to destroy. Can be NULL.
+ *
+ * @note After calling this function, the client pointer should be considered
+ * invalid.
+ * @note The function is safe to call with NULL pointer.
+ */
+void destroy_client(client_t *client)
+{
+    if (client == NULL)
+        return;
+    if (client->team_name != NULL) {
+        free(client->team_name);
+    }
+    if (client->player != NULL) {
+        destroy_player(client->player);
+    }
+    free(client);
+    client = NULL;
+}
+
+/**
+ * @brief Creates a new client and associates it with a team and player
+ *
+ * Allocates memory for a new client structure, duplicates the team name,
+ * and creates a hatched player for the client. Updates the server's next
+ * player ID counter.
+ *
+ * @param server Pointer to the server structure
+ * @param team Pointer to the team structure to associate with the client
+ * @return Pointer to the newly created client, or NULL on failure
+ */
+client_t *create_client(server_t *server, team_t *team)
+{
+    client_t *client = malloc(sizeof(client_t));
+
+    if (!client) {
+        debug_warning(server->options->debug,
+            "Failed to allocate memory for new client\n");
+        return NULL;
+    }
+    client->team_name = strdup(team->name);
+    if (!client->team_name) {
+        debug_warning(server->options->debug,
+            "Failed to allocate memory for team name\n");
+        free(client);
+        return NULL;
+    }
+    client->player =
+        hatch_player(team, server->game->map, server->game->next_player_id);
+    server->game->next_player_id++;
+    return client;
 }
