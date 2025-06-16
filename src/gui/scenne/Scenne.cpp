@@ -83,38 +83,6 @@ void Scenne::setupLighting()
     light->setDiffuseColour(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
     light->setSpecularColour(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 }
-
-/**
- * @brief Adds an entity to the scene
- * @param meshName The name of the mesh resource
- * @param entityName The name for the entity instance
- */
-void Scenne::addEntity(const std::string& meshName,
-                       const std::string& entityName)
-{
-    Ogre::Entity* entity = mSceneManager->createEntity(entityName, meshName);
-    Ogre::SceneNode* node =
-        mSceneManager->getRootSceneNode()->createChildSceneNode();
-    node->attachObject(entity);
-    _entityNodes[entityName] = node;
-}
-
-/**
- * @brief Moves an entity to a new position
- * @param entityName The name of the entity to move
- * @param position The new position vector
- */
-void Scenne::moveEntity(const std::string& entityName,
-                        const Ogre::Vector3& position)
-{
-    auto it = _entityNodes.find(entityName);
-    if (it != _entityNodes.end()) {
-        it->second->setPosition(position);
-    } else {
-        std::cerr << "Entity not found: " << entityName << std::endl;
-    }
-}
-
 /**
  * @brief Gets the scene node for a specific entity
  * @param entityName The name of the entity

@@ -24,9 +24,6 @@ class Scenne : public OgreBites::InputListener {
         void Update(float deltaTime);
         void Render();
         
-        // Entity management
-        void addEntity(const std::string &meshName, const std::string &entityName);
-        void moveEntity(const std::string &entityName, const Ogre::Vector3 &position);
         Ogre::SceneNode* getSceneNode(const std::string &entityName);
 
         // Camera control
@@ -37,7 +34,7 @@ class Scenne : public OgreBites::InputListener {
         
         // Scene manager access
         Ogre::SceneManager* getSceneManager() const;
-        
+
         bool keyPressed(const OgreBites::KeyboardEvent& evt) override;
         bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override;
 
