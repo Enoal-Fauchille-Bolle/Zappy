@@ -50,16 +50,17 @@ class AIGenerator:
         """
     def re_fork(self, port, name, machine, connection):
         if connection.connected:
-            response = connection.receive()
-            print(f"Server response received: {response}")
-            if response is not None:
+            client_number = connection.receive()
+            print(f"Server response received (client number): {client_number}")
+            if client_number is not None:
                 try:
-                    parts = response.split('\n')
-                    client_number = parts[0].strip()
-                    num = int(client_number)
+                    num = int(client_number.strip())
+                    print(f"Server returned client number: {num}")
+                    map_size_response = connection.receive()
+                    print(f"Server response received (map size): {map_size_response}")
                     map_size = None
-                    if len(parts) > 1 and parts[1].strip():
-                        dimensions = parts[1].strip().split()
+                    if map_size_response and map_size_response.strip():
+                        dimensions = map_size_response.strip().split()
                         if len(dimensions) >= 2:
                             map_width = int(dimensions[0])
                             map_height = int(dimensions[1])
