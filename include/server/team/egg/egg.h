@@ -9,10 +9,10 @@
 #ifndef EGG_H_
     #define EGG_H_
 
+    #include "map/coordinates.h"
     #include "map/tile.h"
     #include "team/player/player.h"
     #include <stddef.h>
-    #include <unistd.h>
 
 typedef struct team_s team_t;
 

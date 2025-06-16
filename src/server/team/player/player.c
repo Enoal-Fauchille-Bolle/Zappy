@@ -6,6 +6,11 @@
 */
 
 #include "team/player/player.h"
+#include "map/coordinates.h"
+#include "map/coordinates.h"
+#include "map/resources.h"
+#include "map/tile.h"
+#include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

@@ -5,7 +5,9 @@
 ** spawn
 */
 
+#include "map/coordinates.h"
 #include "team/egg/egg.h"
+#include "team/player/player.h"
 #include "team/team.h"
 #include <stddef.h>
 #include <stdio.h>

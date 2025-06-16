@@ -10,7 +10,9 @@
     #define TILE_H_
     #include "map/map.h"
     #include "map/coordinates.h"
+    #include "map/resources.h"
     #include "vector.h"
+    #include <stddef.h>
 
 typedef struct map_s map_t;
 

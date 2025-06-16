@@ -5,6 +5,7 @@
 ** team_egg
 */
 
+#include "map/coordinates.h"
 #include "team/egg/egg.h"
 #include "team/team.h"
 #include "vector.h"

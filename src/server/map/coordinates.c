@@ -7,6 +7,7 @@
 
 #include "map/coordinates.h"
 #include "map/map.h"
+#include <stddef.h>
 
 /**
  * @brief Wraps the coordinates to ensure they stay within the map boundaries.

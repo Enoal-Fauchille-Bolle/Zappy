@@ -5,6 +5,7 @@
 ** team
 */
 
+#include "team/player/player.h"
 #include "team/team.h"
 #include "vector.h"
 #include <stdbool.h>

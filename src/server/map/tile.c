@@ -6,6 +6,7 @@
 */
 
 #include "map/tile.h"
+#include "map/coordinates.h"
 #include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "vector.h"
