@@ -16,10 +16,10 @@ class ZappyApp : public OgreBites::ApplicationContext {
     public:
         ZappyApp();
         ~ZappyApp();
-        
+
         void setup() override;
         Scenne& getScene();
-        
+
     private:
         Scenne _scene;
 };
