@@ -7,28 +7,29 @@
 
 #include "team/player/player.h"
 #include "map/coordinates.h"
-#include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
+#include "team/egg/egg.h"
+#include "team/team.h"
 #include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 /**
- * @brief Create a new player at a specified position with a unique ID.
+ * @brief Create a new player at a specified position with a team pointer.
  *
  * This function allocates memory for a player structure, initializes its
- * position, ID, orientation, level, and inventory. The player starts with a
- * random orientation and a level of 1. The inventory is initialized with 10
- * units of food and zero for all other resources.
+ * position, ID, orientation, level, inventory, and adds the player to the
+ * specified team.
  *
  * @param pos The position where the player will be created
- * @param id The unique ID of the player
+ * @param id The unique identifier for the player
+ * @param team Pointer to the team associated with the player
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if memory allocation fails
  */
-player_t *create_player(const pos_t pos, const size_t id)
+player_t *create_player(const pos_t pos, const size_t id, team_t *team)
 {
     player_t *player = malloc(sizeof(player_t));
 
@@ -45,6 +46,7 @@ player_t *create_player(const pos_t pos, const size_t id)
     player->inventory[FOOD] = 10;
     player->hunger_cooldown = 0;
     player->tick_cooldown = 0;
+    add_player_to_team(team, player);
     return player;
 }
 

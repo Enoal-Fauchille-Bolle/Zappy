@@ -49,7 +49,7 @@ Test(team, destroy_team_null)
 Test(team, destroy_team_valid_with_players_and_eggs)
 {
     team_t *team = create_team("TestTeam");
-    player_t *player = create_player((pos_t){0, 0}, 1);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL);
 
     create_egg((pos_t){0, 0}, team);
     add_player_to_team(team, player);
@@ -112,8 +112,7 @@ Test(team, hatch_player_valid)
     map_t *map = create_map(10, 10);
     team_t *team = create_team("TestTeam");
     spawn_min_eggs(map, team, 1);
-    size_t initial_player_count =
-        vector_get_vtable(team->players)->size(team->players);
+    size_t initial_player_count = 0;
 
     bool result = hatch_player(team, map, 1);
 
@@ -146,7 +145,7 @@ Test(team, hatch_player_no_eggs)
 
 Test(team, add_player_to_team_null)
 {
-    player_t *player = create_player((pos_t){0, 0}, 1);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL);
     team_t *team = create_team("TestTeam");
 
     add_player_to_team(NULL, player);      // Should not crash
@@ -161,7 +160,7 @@ Test(team, add_player_to_team_null)
 
 Test(team, remove_player_from_team_null)
 {
-    player_t *player = create_player((pos_t){0, 0}, 1);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL);
     team_t *team = create_team("TestTeam");
 
     remove_player_from_team(NULL, player);      // Should not crash
@@ -175,26 +174,23 @@ Test(team, remove_player_from_team_null)
 
 Test(team, remove_player_from_team_valid)
 {
-    player_t *player = create_player((pos_t){0, 0}, 1);
     team_t *team = create_team("TestTeam");
+    player_t *player = create_player((pos_t){0, 0}, 1, team);
 
-    add_player_to_team(team, player);
     cr_assert_eq(vector_get_vtable(team->players)->size(team->players), 1,
         "Team should have one player before removal");
     remove_player_from_team(team, player);
     cr_assert_eq(vector_get_vtable(team->players)->size(team->players), 0,
         "Team should have no players after removal");
-    destroy_player(player);
     destroy_team(team);
 }
 
 Test(team, remove_player_from_team_not_found)
 {
-    player_t *player = create_player((pos_t){0, 0}, 1);
-    player_t *another_player = create_player((pos_t){1, 1}, 2);
     team_t *team = create_team("TestTeam");
-
-    add_player_to_team(team, another_player);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL);
+    
+    create_player((pos_t){1, 1}, 2, team);
     remove_player_from_team(team, player);      // Should not crash
     // No assertion here, just checking for crashes
     destroy_player(player);
@@ -203,11 +199,10 @@ Test(team, remove_player_from_team_not_found)
 
 Test(team, remove_egg_from_team_not_found)
 {
-    egg_t *egg = create_egg((pos_t){0, 0}, NULL);
-    egg_t *another_egg = create_egg((pos_t){1, 1}, NULL);
     team_t *team = create_team("TestTeam");
+    egg_t *egg = create_egg((pos_t){0, 0}, NULL);
 
-    add_egg_to_team(team, another_egg);
+    create_egg((pos_t){1, 1}, team);
     remove_egg_from_team(team, egg);      // Should not crash
     // No assertion here, just checking for crashes
     destroy_egg(egg);
@@ -264,4 +259,20 @@ Test(team, hatch_player_null)
     hatch_player(NULL, NULL, 1);
     destroy_team(team);
     destroy_map(map);
+}
+
+Test(team, create_player_with_team)
+{
+    team_t *team = create_team("TestTeam");
+    player_t *player = create_player((pos_t){0, 0}, 1, team);
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_eq(
+        player->team, team, "Player's team should match the created team");
+    cr_assert_eq(vector_get_vtable(team->players)->size(team->players), 1,
+        "Team should have one player after creation");
+    cr_assert_eq(
+        *(player_t **)vector_get_vtable(team->players)->at(team->players, 0),
+        player, "Player should be the first in the team's players vector");
+    destroy_team(team);
 }
