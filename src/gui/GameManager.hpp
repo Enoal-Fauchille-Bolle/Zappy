@@ -2,53 +2,64 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Game Manager class
+** Simplified Game Manager class
 */
 
-#ifndef GAME_MANAGER_HPP_
-#define GAME_MANAGER_HPP_
+#ifndef SIMPLE_GAME_MANAGER_HPP_
+#define SIMPLE_GAME_MANAGER_HPP_
 
 #include "scenne/Scenne.hpp"
 #include "entity/Player.hpp"
 #include "entity/Egg.hpp"
-#include "entity/Tile.hpp"
+#include "entity/TileDisplay.hpp"
 #include "entity/Resources.hpp"
+#include "Types.hpp"
 #include <vector>
 #include <map>
 
-class GameManager {
-    public:
-        GameManager();
-        ~GameManager();
+class SimpleGameManager {
+public:
+    SimpleGameManager();
+    ~SimpleGameManager();
 
-        void initialize(Scenne* scene);
-        void update();
+    // Core setup
+    void initialize(Scenne* scene);
+    void setMapSize(int width, int height);
 
-        void setMapSize(int width, int height);
-        void createEgg(int id, int parentId, int x, int y);
-        void createTile(int x, int y);
-        void createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation);
-        void updatePlayerPosition(int id, int x, int y, Orientation orientation);
-        void updateTileContent(int x, int y, const std::map<std::string, int>& resources);
+    // Tile management
+    void createTile(int x, int y);
 
-        void createResource(ResourceType type, int x, int y, int quantity = 1);
-        void removeResource(ResourceType type, int x, int y, int quantity = 1);
+    // Player management
+    void createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation);
+    void updatePlayerPosition(int id, int x, int y, Orientation orientation);
+    void removePlayer(int id);
 
+    // Egg management
+    void createEgg(int id, int parentId, int x, int y);
+    void removeEgg(int id);
 
-        std::pair<int, int> getMapSize() const;
+    // Resource management
+    void createResource(ResourceType type, int x, int y, int quantity = 1);
+    void removeResource(ResourceType type, int x, int y, int quantity = 1);
 
-    private:
-        Scenne* _scene;
-        int _mapWidth;
-        int _mapHeight;
+    // Utility
+    void update();
+    std::pair<int, int> getMapSize() const;
 
-        std::map<int, Player*> _players;
-        std::map<int, Egg*> _eggs;
-        std::vector<std::vector<Tile*>> _tiles;
-
-        int _time = 0;
-
-        void createGrid();
+private:
+    Scenne* _scene;
+    int _mapWidth, _mapHeight;
+    
+    PlayerMap _players;
+    EggMap _eggs;
+    std::vector<std::vector<TileDisplay*>> _tiles;
+    
+    // Helper methods
+    void createGrid();
+    TileDisplay* getTile(int x, int y);
+    bool isValidPosition(int x, int y) const;
+    void positionPlayerOnTile(Player* player, int x, int y);
+    void positionResourceOnTile(Resources* resource, int x, int y, int index);
 };
 
-#endif /* !GAME_MANAGER_HPP_ */
+#endif /* !SIMPLE_GAME_MANAGER_HPP_ */
