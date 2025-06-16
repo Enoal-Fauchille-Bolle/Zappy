@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "options_parser/options.h"
 #include "options_parser/processor.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -41,8 +42,11 @@ int main(int ac, char **av)
         return get_return_value(options);
     }
     server = create_server(options);
-    if (!server)
+    if (!server) {
+        destroy_server_options(options);
+        perror("Failed to create server");
         return EXIT_ERROR_CODE;
+    }
     srand(time(NULL));
     run_server(server, options->port);
     destroy_server(server);
