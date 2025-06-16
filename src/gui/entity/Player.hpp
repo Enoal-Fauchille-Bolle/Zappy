@@ -13,7 +13,7 @@
 #include <string>
 #include <map>
 
-extern std::map<int, std::string> playerMeshes; // Meshes for different player IDs
+extern std::map<int, std::string> playerMeshes;
 
 class Player : public Entity {
     public:
