@@ -58,6 +58,7 @@ void remove_player_from_team(team_t *team, player_t *player)
     for (size_t i = 0; i < vtable->size(team->players); i++) {
         current_player = *(player_t **)vtable->at(team->players, i);
         if (current_player == player) {
+            current_player->team = NULL;
             vtable->erase(team->players, i);
             return;
         }
