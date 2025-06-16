@@ -9,6 +9,7 @@
 #include "command_handler/command.h"
 #include "command_handler/command_status.h"
 #include "command_handler/commands.h"
+#include "connection/server.h"
 #include "debug.h"
 #include <stdbool.h>
 #include <strings.h>
@@ -49,15 +50,15 @@ static command_registry_entry_t get_command_registry_entry(command_t *command)
  * @return command_status_t The status of the command execution.
  */
 command_status_t execute_command(
-    command_t *command, int client_sockfd, bool debug)
+    server_t *server, command_t *command, int client_sockfd)
 {
     command_registry_entry_t handler = {0};
 
     handler = get_command_registry_entry(command);
     if (!handler.handler) {
-        debug_warning(debug, "Invalid command: '%s'\n", command->name);
+        debug_warning(server->options->debug, "Invalid command: '%s'\n", command->name);
         write(client_sockfd, "ko\n", 3);
         return COMMAND_NOT_FOUND;
     }
-    return handler.handler(command, client_sockfd, debug);
+    return handler.handler(server, command, client_sockfd);
 }

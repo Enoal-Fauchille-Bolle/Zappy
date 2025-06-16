@@ -10,9 +10,10 @@
 
     #include "command_handler/command.h"
     #include "command_handler/command_status.h"
+    #include "connection/server.h"
     #include <stdbool.h>
 
 command_status_t dummy_command(
-    command_t *command, int client_sockfd, bool debug);
+    server_t *server, command_t *command, int client_sockfd);
 
 #endif /* !COMMANDS_H_ */

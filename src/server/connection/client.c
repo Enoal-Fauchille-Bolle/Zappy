@@ -71,7 +71,7 @@ static bool handle_command(
         return false;
     }
     execute_command(
-        command, server->fds[client_index].fd, server->options->debug);
+        server, command, server->fds[client_index].fd);
     destroy_command(command);
     return true;
 }
