@@ -78,12 +78,19 @@ void Entity::setScale(float x, float y, float z)
  */
 void Entity::setColor(zappy_color color)
 {
-    if (_ogreEntity) {
-        Ogre::MaterialPtr originalMaterial = _ogreEntity->getSubEntity(0)->getMaterial();
-        Ogre::MaterialPtr clonedMaterial = originalMaterial->clone(_id + "_material");
-        clonedMaterial->setAmbient(color.r, color.g, color.b);
-        clonedMaterial->setDiffuse(color.r, color.g, color.b, color.a);
-        _ogreEntity->getSubEntity(0)->setMaterial(clonedMaterial);
+    if (_ogreEntity && _ogreEntity->getNumSubEntities() > 0) {
+        try {
+            Ogre::SubEntity* subEntity = _ogreEntity->getSubEntity(0);
+            Ogre::MaterialPtr originalMaterial = subEntity->getMaterial();
+            std::string materialName = _id + "_material_" + std::to_string(rand());
+            Ogre::MaterialPtr clonedMaterial = originalMaterial->clone(materialName);
+            clonedMaterial->setAmbient(color.r, color.g, color.b);
+            clonedMaterial->setDiffuse(color.r, color.g, color.b, color.a);
+            clonedMaterial->setLightingEnabled(true);
+            subEntity->setMaterial(clonedMaterial);
+        } catch (const Ogre::Exception& e) {
+            std::cerr << "Error setting entity color: " << e.what() << std::endl;
+        }
     }
 }
 

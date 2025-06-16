@@ -40,6 +40,14 @@ int main(int argc, char **argv)
         gameManager.createPlayer(1, "TeamA", 0, 0, Orientation::SOUTH);
         gameManager.createEgg(1, 0, 5, 5);
 
+        gameManager.createResource(ResourceType::FOOD, 2, 2, 10);
+        gameManager.createResource(ResourceType::LINEMATE, 3, 3, 5);
+        gameManager.createResource(ResourceType::DERAUMERE, 4, 4, 3);
+        gameManager.createResource(ResourceType::SIBUR, 5, 5, 2);
+        gameManager.createResource(ResourceType::MENDIANE, 6, 6, 1);
+        gameManager.createResource(ResourceType::PHIRAS, 7, 7, 4);
+        gameManager.createResource(ResourceType::THYSTAME, 8, 8, 6);
+
         bool running = true;
         while (running && !app.getRoot()->endRenderingQueued()) {
             gameManager.update();

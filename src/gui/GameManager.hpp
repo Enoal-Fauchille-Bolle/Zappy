@@ -12,6 +12,7 @@
 #include "entity/Player.hpp"
 #include "entity/Egg.hpp"
 #include "entity/Tile.hpp"
+#include "entity/Resources.hpp"
 #include <vector>
 #include <map>
 
@@ -29,6 +30,9 @@ class GameManager {
         void createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation);
         void updatePlayerPosition(int id, int x, int y, Orientation orientation);
         void updateTileContent(int x, int y, const std::map<std::string, int>& resources);
+
+        void createResource(ResourceType type, int x, int y, int quantity = 1);
+        void removeResource(ResourceType type, int x, int y, int quantity = 1);
 
 
         std::pair<int, int> getMapSize() const;

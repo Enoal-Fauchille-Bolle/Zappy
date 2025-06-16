@@ -15,6 +15,7 @@
 
 class Player; // Forward declaration
 class Egg; // Forward declaration
+class Resources; // Forward declaration
 
 class Tile : public Entity {
     public:
@@ -39,6 +40,10 @@ class Tile : public Entity {
         void removeEntity(Entity* entity);
         const std::vector<Entity*>& getEntities() const;
 
+        void addResource(Resources* resource);
+        void removeResource(Resources* resource);
+        const std::vector<Resources*>& getResources() const;
+
     private:
         int _x;
         int _y;
@@ -46,6 +51,7 @@ class Tile : public Entity {
         std::vector<Player*> _players;
         std::vector<Egg*> _eggs;
         std::vector<Entity*> _entities;
+        std::vector<Resources*> _resourcesEntities;
 };
 
 #endif /* !TILE_HPP_ */

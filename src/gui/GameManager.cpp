@@ -6,7 +6,9 @@
 */
 
 #include "GameManager.hpp"
+#include "entity/Resources.hpp"
 #include <iostream>
+#include <cstdlib>
 
 /**
  * @brief Construct a new GameManager object.
@@ -238,3 +240,76 @@ std::pair<int, int> GameManager::getMapSize() const
 {
     return std::make_pair(_mapWidth, _mapHeight);
 }
+
+/**
+ * @brief Add resources to an existing tile (does not create new tiles).
+ *
+ * @param type The type of resource to add.
+ * @param x X coordinate of existing tile.
+ * @param y Y coordinate of existing tile.
+ * @param quantity Number of resources to add.
+ */
+void GameManager::createResource(ResourceType type, int x, int y, int quantity)
+{
+    if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight) {
+        std::cerr << "Resource coordinates out of bounds: (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+    Tile* tile = _tiles[y][x];
+    if (!tile) {
+        std::cerr << "No existing tile found at (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < quantity; ++i) {
+        Resources* resource = new Resources("resource_" + std::to_string(x) + "_" + std::to_string(y) + "_" + std::to_string(i), "knot.mesh", type);
+        resource->attachToScene(_scene->getSceneManager());
+        resource->applyResourceColor();
+        resource->setScale(0.01f, 0.01f, 0.01f);
+        const float tileSize = 10.0f;
+        float posX = static_cast<float>(x - (_mapWidth - 1) / 2.0f) * tileSize;
+        float posZ = static_cast<float>(y - (_mapHeight - 1) / 2.0f) * tileSize;
+        const float tileHalfSize = tileSize * 0.4f;
+        float offsetX = ((i % 4) - 1.5f) * (tileHalfSize / 2.0f);
+        float offsetZ = ((i / 4) - 1.5f) * (tileHalfSize / 2.0f);
+        float randomX = (rand() % 100 - 50) / 100.0f * 0.5f;
+        float randomZ = (rand() % 100 - 50) / 100.0f * 0.5f;
+        resource->setPosition(posX + offsetX + randomX, 8.0f, posZ + offsetZ + randomZ);
+
+        tile->addResource(resource);
+    }
+}
+
+/**
+ * @brief Remove resources from an existing tile.
+ *
+ * @param type The type of resource to remove.
+ * @param x X coordinate of tile.
+ * @param y Y coordinate of tile.
+ * @param quantity Number of resources to remove.
+ */
+void GameManager::removeResource(ResourceType type, int x, int y, int quantity)
+{
+    if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight) {
+        std::cerr << "Resource coordinates out of bounds: (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+    Tile* tile = _tiles[y][x];
+    if (!tile) {
+        std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+    const std::vector<Resources*>& resources = tile->getResources();
+    int removed = 0;
+    std::vector<Resources*> resourcesCopy = resources;
+    for (Resources* resource : resourcesCopy) {
+        if (removed >= quantity) break;
+        if (resource->getResourceType() == type) {
+            tile->removeResource(resource);
+            delete resource;
+            ++removed;
+        }
+    }
+}
+
+

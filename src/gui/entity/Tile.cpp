@@ -182,3 +182,21 @@ const std::vector<Entity*>& Tile::getEntities() const
 {
     return _entities;
 }
+
+void Tile::addResource(Resources* resource)
+{
+    if (std::find(_resourcesEntities.begin(), _resourcesEntities.end(), resource) == _resourcesEntities.end())
+        _resourcesEntities.push_back(resource);
+}
+
+void Tile::removeResource(Resources* resource)
+{
+    auto it = std::remove(_resourcesEntities.begin(), _resourcesEntities.end(), resource);
+    if (it != _resourcesEntities.end())
+        _resourcesEntities.erase(it, _resourcesEntities.end());
+}
+
+const std::vector<Resources*>& Tile::getResources() const
+{
+    return _resourcesEntities;
+}
