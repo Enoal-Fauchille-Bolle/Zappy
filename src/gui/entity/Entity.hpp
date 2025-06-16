@@ -28,6 +28,7 @@ class Entity {
         std::string getId() const;
         Ogre::SceneNode* getSceneNode() const;
         void attachToScene(Ogre::SceneManager* sceneManager);
+        void replaceMesh(const std::string &meshName);
 
     private:
         std::string _id;

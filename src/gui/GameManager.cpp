@@ -238,6 +238,12 @@ void SimpleGameManager::update() {
     if (time == 100) {
         updatePlayerPosition(1, 1, 0, Orientation::NORTH);
     }
+    if (time == 200) {
+        if (_players.find(1) != _players.end()) {
+            _players[1]->evolve();
+            std::cout << "Player 1 evolved to level " << _players[1]->getLevel() << std::endl;
+        }
+    }
 }
 
 /**

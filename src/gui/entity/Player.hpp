@@ -13,6 +13,8 @@
 #include <string>
 #include <map>
 
+extern std::map<int, std::string> playerMeshes; // Meshes for different player IDs
+
 class Player : public Entity {
     public:
         Player(int id, const std::string &teamName);
@@ -28,6 +30,8 @@ class Player : public Entity {
         Orientation getOrientation() const;
         int getInventoryItem(const std::string &item) const;
         std::string getTeamName() const;
+
+        void evolve();
 
     private:
         int _playerId;

@@ -6,6 +6,18 @@
 */
 
 #include "Player.hpp"
+#include "../Types.hpp"
+
+std::map<int, std::string> playerMeshes = {
+    {1, "ogrehead.mesh"},
+    {2, "robot.mesh"},
+    {3, "ogrehead.mesh"},
+    {4, "ogrehead.mesh"},
+    {5, "ogrehead.mesh"},
+    {6, "ogrehead.mesh"},
+    {7, "ogrehead.mesh"},
+    {8, "ogrehead.mesh"},
+};
 
 /**
  * @brief Construct a new Player object.
@@ -28,7 +40,6 @@ Player::Player(int id, const std::string &teamName)
 Player::~Player()
 {
 }
-
 
 /**
  * @brief Set the level of the player and update scale.
@@ -137,4 +148,14 @@ std::string Player::getTeamName() const
  */
 void Player::initialize()
 {
+}
+
+/**
+ * @brief Evolve the player to the next level.
+ */
+void Player::evolve()
+{
+    setLevel(_level + 1);
+    this->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE, Constants::PLAYER_SCALE);
+    replaceMesh(playerMeshes[_level]);
 }

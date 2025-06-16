@@ -88,7 +88,7 @@ SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(SRCDIR_GUI)Parsing.cpp	\
 		$(SRCDIR_GUI)ZappyApp.cpp	\
 		$(SRCDIR_GUI)scenne/Scenne.cpp \
-		$(SRCDIR_GUI)SimpleGameManager.cpp \
+		$(SRCDIR_GUI)GameManager.cpp \
 		$(SRCDIR_GUI)entity/Egg.cpp \
 		$(SRCDIR_GUI)entity/Entity.cpp \
 		$(SRCDIR_GUI)entity/Resources.cpp \
