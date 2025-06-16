@@ -22,7 +22,7 @@
 static void print_help_page(void)
 {
     puts("USAGE: ./zappy_server -p port -x width -y height -n team1 team2 ... "
-         "-c clientsNb -f freq");
+        "-c clientsNb -f freq");
     puts("OPTIONS:");
     puts("  -p port             Port number for the server");
     puts("  -x width            Width of the map");
