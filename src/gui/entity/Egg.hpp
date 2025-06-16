@@ -17,6 +17,8 @@ class Egg : public Entity {
         Egg(int id, int parentId);
         ~Egg();
 
+        void initialize() override;
+
         int getParentId() const;
         int getEggId() const;
 
