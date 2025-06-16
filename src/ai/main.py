@@ -8,7 +8,7 @@
 
 import sys
 from parser import check_good_args
-from generator import AIGenerator
+from ai_generator import AIGenerator
 
 """@brief Main function for the Zappy AI client.
 This function processes command line arguments, validates them, and initializes the AI client.

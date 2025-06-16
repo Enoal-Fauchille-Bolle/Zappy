@@ -111,22 +111,27 @@ NAME_AI = zappy_ai
 SRCDIR_AI = ${SRCDIR}ai/
 
 # Sources
-SRC_AI = $(SRCDIR_AI)main.c	\
+SRC_AI = $(SRCDIR_AI)main.py	\
+		$(SRCDIR_AI)ai_generator.py	\
+		$(SRCDIR_AI)commands.py	\
+		$(SRCDIR_AI)connexions.py	\
+		$(SRCDIR_AI)loop.py	\
+		$(SRCDIR_AI)parser.py	\
 
 # Objects
-OBJ_AI = $(SRC_AI:.c=.o)
-$(SRCDIR_AI)%.o: $(SRCDIR_AI)%.c
-	$(CC_AI) -c $< -o $@ -MMD -MF $*.d -MT $@ $(CFLAGS_AI)
+OBJ_AI =
 
 # Compilation Flags
-CFLAGS_AI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_AI +=
 
 # Pre Compilation
-CC_AI := gcc
+CC_AI := python3
 
 # Rule
-zappy_ai: $(OBJ_AI)
-	$(CC_AI) -o $(NAME_AI) $(OBJ_AI) $(CFLAGS_AI)
+zappy_ai:
+	@echo "#!/bin/bash" > $(NAME_AI)
+	@echo "$(CC_AI) $(SRCDIR_AI)main.py \$$@" >> $(NAME_AI)
+	@chmod +x $(NAME_AI)
 
 ################################### Tests ###################################
 

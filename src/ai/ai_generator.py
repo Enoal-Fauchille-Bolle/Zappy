@@ -8,8 +8,8 @@
 
 import os
 import sys
-from connections import Connexion
-import time
+from connexions import Connection
+from loop import Loop
 import signal
 import atexit
 
@@ -46,11 +46,11 @@ class AIGenerator:
         @param port: The port to connect to the server.
         @param name: The name of the AI.
         @param machine: The machine address of the server.
-        @param connexion: The Connexion object used to communicate with the server.
+        @param connection: The Connection object used to communicate with the server.
         """
-    def re_fork(self, port, name, machine, connexion):
-        if connexion.connected:
-            response = connexion.receive()
+    def re_fork(self, port, name, machine, connection):
+        if connection.connected:
+            response = connection.receive()
             print(f"Server response received: {response}")
             if response is not None:
                 try:
@@ -65,6 +65,8 @@ class AIGenerator:
                             map_height = int(dimensions[1])
                             map_size = (map_width, map_height)
                             print(f"Map size: {map_width}x{map_height}")
+                    connection.map_size = map_size
+
                     if num > 0:
                         self.fork(port, name, machine)
                     else:
@@ -86,16 +88,13 @@ class AIGenerator:
         if pid == 0:
             signal.signal(signal.SIGINT, signal.SIG_DFL)
             signal.signal(signal.SIGTERM, signal.SIG_DFL)
-            connexion = Connexion(port, name, machine)
-            if connexion.connect():
-                print(connexion.receive())
-                connexion.send(name)
-                self.re_fork(port, name, machine, connexion)
-                while True:
-                    is_dead = connexion.receive()
-                    if is_dead == "dead":
-                        print(f"AI {name} on {machine}:{port} is dead.")
-                        break
+            connection = Connection(port, name, machine)
+            if connection.connect():
+                print(connection.receive())
+                connection.send(name)
+                self.re_fork(port, name, machine, connection)
+                ai_loop = Loop(connection)
+                ai_loop.run(connection.map_size if hasattr(connection, 'map_size') else None)
             else:
                 print("Failed to connect to the server.")
             os._exit(0)
