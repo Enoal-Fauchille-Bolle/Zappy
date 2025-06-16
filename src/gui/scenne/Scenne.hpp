@@ -32,14 +32,14 @@ class Scenne : public OgreBites::InputListener {
         // Camera control
         void setCameraPosition(const Ogre::Vector3 &position);
         void setCameraLookAt(const Ogre::Vector3 &target);
+        // Camera angle control
+        void rotateCamera(float yawDegrees, float pitchDegrees = 0.0f);
         
         // Scene manager access
         Ogre::SceneManager* getSceneManager() const;
         
         bool keyPressed(const OgreBites::KeyboardEvent& evt) override;
         bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override;
-
-        void createDebugGrid(int width, int height, float spacing);
 
     protected:
     private:
