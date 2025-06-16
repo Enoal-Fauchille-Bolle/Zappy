@@ -87,6 +87,13 @@ SRC_SERVER = $(SRCDIR_SERVER)main.c	\
 			 $(SRCDIR_SERVER)map/resources.c	\
 			 $(SRCDIR_SERVER)map/tile.c	\
 			 $(SRCDIR_SERVER)egg/egg.c	\
+			 $(SRCDIR_SERVER)utils/string.c	\
+			 $(SRCDIR_SERVER)command_handler/command_parser.c	\
+			 $(SRCDIR_SERVER)command_handler/command_factory.c	\
+			 $(SRCDIR_SERVER)command_handler/command_tokenizer.c	\
+			 $(SRCDIR_SERVER)command_handler/command_validator.c	\
+			 $(SRCDIR_SERVER)command_handler/command_executor.c	\
+			 $(SRCDIR_SERVER)commands/dummy.c	\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -187,10 +194,21 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c	\
 			$(SRCDIR_SERVER)map/player_management.c	\
 			$(SRCDIR_SERVER)map/egg_management.c	\
 			$(SRCDIR_SERVER)egg/egg.c	\
+			$(SRCDIR_SERVER)utils/string.c	\
+			$(SRCDIR_SERVER)command_handler/command_parser.c	\
+			$(SRCDIR_SERVER)command_handler/command_factory.c	\
+			$(SRCDIR_SERVER)command_handler/command_tokenizer.c	\
+			$(SRCDIR_SERVER)command_handler/command_validator.c	\
 			${TESTS}player_tests.c	\
 			${TESTS}resources_tests.c	\
 			${TESTS}map_tests.c	\
 			${TESTS}egg_tests.c	\
+			${TESTS}command_parser_tests.c	\
+            ${TESTS}command_tokenizer_tests.c	\
+            ${TESTS}command_factory_tests.c	\
+            ${TESTS}command_validator_tests.c	\
+            ${TESTS}command_parser_edge_tests.c	\
+            ${TESTS}command_tokenizer_edge_tests.c	\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
