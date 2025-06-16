@@ -34,14 +34,14 @@ int main(int argc, char **argv)
         ZappyApp app;
         app.initApp();
 
-        GameManager gameManager;
+        SimpleGameManager gameManager;
         gameManager.initialize(&app.getScene());
-        gameManager.setMapSize(10, 17);
-        gameManager.createPlayer(1, "TeamA", 0, 0, Orientation::SOUTH);
+        gameManager.setMapSize(10, 10);
+        gameManager.createPlayer(1, "TeamA", 0, 0, Orientation::NORTH);
         gameManager.createEgg(1, 0, 5, 5);
 
-        gameManager.createResource(ResourceType::FOOD, 2, 2, 10);
-        gameManager.createResource(ResourceType::LINEMATE, 3, 3, 5);
+        gameManager.createResource(ResourceType::FOOD, 2, 2, 3);
+        gameManager.createResource(ResourceType::LINEMATE, 2, 2, 2);
         gameManager.createResource(ResourceType::DERAUMERE, 4, 4, 3);
         gameManager.createResource(ResourceType::SIBUR, 5, 5, 2);
         gameManager.createResource(ResourceType::MENDIANE, 6, 6, 1);
