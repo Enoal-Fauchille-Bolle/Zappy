@@ -8,7 +8,7 @@
 #include "Player.hpp"
 #include "../Types.hpp"
 
-std::map<int, std::string> playerMeshes = {
+std::map<int, std::string> Player::playerMeshes = {
     {1, "ogrehead.mesh"},
     {2, "robot.mesh"},
     {3, "ogrehead.mesh"},
@@ -158,6 +158,6 @@ void Player::evolve()
     if (_level < Constants::MAX_PLAYER_LEVEL) {
         _level++;
         this->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE, Constants::PLAYER_SCALE);
-        replaceMesh(playerMeshes[_level]);
+        replaceMesh(this->playerMeshes[_level]);
     }
 }

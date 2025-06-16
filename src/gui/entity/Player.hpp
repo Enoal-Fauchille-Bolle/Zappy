@@ -13,8 +13,6 @@
 #include <string>
 #include <map>
 
-extern std::map<int, std::string> playerMeshes;
-
 class Player : public Entity {
     public:
         Player(int id, const std::string &teamName);
@@ -39,6 +37,8 @@ class Player : public Entity {
         int _level;
         Orientation _orientation;
         std::map<std::string, int> _inventory;
+
+        static std::map<int, std::string> playerMeshes;
 
         void updateVisualOrientation();
 };
