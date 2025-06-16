@@ -65,13 +65,12 @@ player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
         fprintf(stderr, "Invalid egg or map pointer\n");
         return NULL;
     }
-    player = create_player(egg->pos, player_id);
+    player = create_player(egg->pos, player_id, egg->team);
     if (player == NULL) {
         fprintf(stderr, "Failed to create player from egg\n");
         return NULL;
     }
     add_player_to_map(map, player);
-    add_player_to_team(egg->team, player);
     remove_egg_from_map(map, egg);
     remove_egg_from_team(egg->team, egg);
     destroy_egg(egg);

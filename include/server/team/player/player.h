@@ -16,6 +16,8 @@
 
 typedef unsigned int level_t;
 typedef unsigned int tick_t;
+typedef struct team_s team_t;
+typedef struct egg_s egg_t;
 
 typedef struct player_s {
     size_t id;
@@ -25,14 +27,16 @@ typedef struct player_s {
     inventory_t inventory;
     tick_t tick_cooldown;        // If 0, player can act
     size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
+    team_t *team;
 } player_t;
 
-player_t *create_player(const pos_t pos, const size_t id);
+player_t *create_player(const pos_t pos, const size_t id, team_t *team);
 void destroy_player(player_t *player);
 
 void turn_player_left(player_t *player);
 void turn_player_right(player_t *player);
 void move_player_forward(player_t *player, map_t *map);
+egg_t *lay_egg(player_t *player, map_t *map);
 
 void add_player_to_tile(tile_t *tile, player_t *player);
 void remove_player_from_tile(tile_t *tile, player_t *player);

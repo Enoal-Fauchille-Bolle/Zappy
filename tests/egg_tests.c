@@ -295,3 +295,44 @@ Test(egg, spawn_minimum_eggs_twice)
     destroy_team(team);
     destroy_map(map);
 }
+
+Test(egg, player_lays_egg_null)
+{
+    team_t *team = create_team("TestTeam");
+    player_t *player = create_player((pos_t){0, 0}, 1, team);
+    map_t *map = create_map(1, 1);
+
+    lay_egg(NULL, map);         // Should not crash
+    lay_egg(player, NULL);      // Should not crash
+    lay_egg(NULL, NULL);        // Should not crash
+    player->team = NULL;        // Set team to NULL to avoid memory leak
+    lay_egg(player, map);       // Should not crash
+
+    destroy_team(team);
+    destroy_map(map);
+}
+
+Test(egg, player_lays_egg_valid)
+{
+    team_t *team = create_team("TestTeam");
+    player_t *player = create_player((pos_t){3, 7}, 1, team);
+    map_t *map = create_map(10, 10);
+    egg_t *egg;
+
+    cr_assert_eq(player->tick_cooldown, 0,
+        "Player should have no cooldown before laying an egg");
+    cr_assert_eq(get_egg_count(team), 0, "Team should have no eggs initially");
+    egg = lay_egg(player, map);
+    cr_assert_not_null(egg, "Egg should not be NULL after laying");
+    cr_assert_eq(egg->pos.x, player->pos.x,
+        "Egg X position should match player position");
+    cr_assert_eq(egg->pos.y, player->pos.y,
+        "Egg Y position should match player position");
+    cr_assert_eq(egg->team, team, "Egg team should match the player's team");
+    cr_assert_eq(
+        get_egg_count(team), 1, "Team should have one egg after laying");
+    cr_assert_eq(player->tick_cooldown, 42,
+        "Player should have cooldown of 42 ticks after laying an egg");
+    destroy_team(team);
+    destroy_map(map);
+}
