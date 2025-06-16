@@ -38,6 +38,7 @@ int main(int argc, char **argv)
         gameManager.initialize(&app.getScene());
         gameManager.setMapSize(10, 10);
         gameManager.createPlayer(1, "TeamA", 0, 0, Orientation::SOUTH);
+        gameManager.createEgg(1, 0, 5, 5); // Example egg creation
 
         bool running = true;
         while (running && !app.getRoot()->endRenderingQueued()) {
