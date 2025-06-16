@@ -65,6 +65,7 @@ namespace Constants {
     constexpr float TILE_SCALE = 0.1f;
     constexpr float EGG_SCALE = 0.01f;
 
+    constexpr int MAX_PLAYER_LEVEL = 8;
     constexpr int MAX_RESOURCES_PER_TILE = 16;
     constexpr float TILE_COVERAGE = 0.8f; // 80% of tile used for spreading
 }

@@ -155,7 +155,9 @@ void Player::initialize()
  */
 void Player::evolve()
 {
-    setLevel(_level + 1);
-    this->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE, Constants::PLAYER_SCALE);
-    replaceMesh(playerMeshes[_level]);
+    if (_level < Constants::MAX_PLAYER_LEVEL) {
+        _level++;
+        this->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE, Constants::PLAYER_SCALE);
+        replaceMesh(playerMeshes[_level]);
+    }
 }
