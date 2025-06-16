@@ -37,6 +37,7 @@ void turn_player_left(player_t *player);
 void turn_player_right(player_t *player);
 void move_player_forward(player_t *player, map_t *map);
 egg_t *lay_egg(player_t *player, map_t *map);
+char *look(player_t *player, map_t *map);
 
 void add_player_to_tile(tile_t *tile, player_t *player);
 void remove_player_from_tile(tile_t *tile, player_t *player);
