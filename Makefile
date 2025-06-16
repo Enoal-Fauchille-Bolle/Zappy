@@ -170,7 +170,7 @@ CC_AI := python3
 
 # Rule
 zappy_ai:
-	@echo "#!/usr/bin/env python3" > $(NAME_AI)
+	@echo "#!/bin/bash" > $(NAME_AI)
 	@echo "$(CC_AI) $(SRCDIR_AI)main.py \$$@" >> $(NAME_AI)
 	@chmod +x $(NAME_AI)
 
