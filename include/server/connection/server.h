@@ -17,7 +17,6 @@
 typedef struct server_s {
     server_options_t *options;
     struct pollfd fds[MAX_CLIENTS + 2]; // +2 for server socket and signal fd
-    // char *clients_team[MAX_CLIENTS];
     client_t *clients[MAX_CLIENTS];
     game_t *game;
 } server_t;
