@@ -10,9 +10,8 @@
 #include "map/resources.h"
 #include "map/tile.h"
 #include "team/player/player.h"
-#include <criterion/criterion.h>
+#include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
-#include <criterion/redirect.h>
 #include <stdio.h>
 #include <time.h>
 
