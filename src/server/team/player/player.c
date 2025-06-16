@@ -117,3 +117,40 @@ void remove_player_from_tile(tile_t *tile, player_t *player)
     }
     fprintf(stderr, "Player not found on tile\n");
 }
+
+/**
+ * @brief Spawn an egg at the player's position and add it to the map.
+ *
+ * This function creates a new egg at the player's current position and
+ * associates it with the player's team. The egg is then added to the map's
+ * egg list.
+ *
+ * This is the fork command for the player to lay an egg. It gives the player
+ * a cooldown of 42 ticks before they can do another action.
+ *
+ * @param player Pointer to the player who is laying the egg
+ * @param map Pointer to the map where the egg will be added
+ * @return Pointer to the newly created egg_t structure on success,
+ *         NULL if player or map is NULL, or if egg creation fails
+ */
+egg_t *lay_egg(player_t *player, map_t *map)
+{
+    egg_t *egg;
+
+    if (player == NULL || map == NULL) {
+        fprintf(stderr, "Invalid player or map pointer\n");
+        return NULL;
+    }
+    if (player->team == NULL) {
+        fprintf(stderr, "Player is not part of a team\n");
+        return NULL;
+    }
+    egg = create_egg(player->pos, player->team);
+    if (egg == NULL) {
+        fprintf(stderr, "Failed to create egg\n");
+        return NULL;
+    }
+    add_egg_to_map(map, egg);
+    player->tick_cooldown = 42;
+    return egg;
+}

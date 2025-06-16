@@ -17,6 +17,7 @@
 typedef unsigned int level_t;
 typedef unsigned int tick_t;
 typedef struct team_s team_t;
+typedef struct egg_s egg_t;
 
 typedef struct player_s {
     size_t id;
@@ -35,6 +36,7 @@ void destroy_player(player_t *player);
 void turn_player_left(player_t *player);
 void turn_player_right(player_t *player);
 void move_player_forward(player_t *player, map_t *map);
+egg_t *lay_egg(player_t *player, map_t *map);
 
 void add_player_to_tile(tile_t *tile, player_t *player);
 void remove_player_from_tile(tile_t *tile, player_t *player);
