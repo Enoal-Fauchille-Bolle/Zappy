@@ -5,9 +5,9 @@
 ** Option Processor
 */
 
+#include "constants.h"
 #include "debug_categories.h"
 #include "options_parser/options.h"
-#include "constants.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,18 +21,17 @@
  */
 static void print_help_page(void)
 {
-    printf(
-        "USAGE: ./zappy_server -p port -x width -y height -n team1 team2 ... "
-        "-c clientsNb -f freq\n");
-    printf("OPTIONS:\n");
-    printf("  -p port             Port number for the server\n");
-    printf("  -x width            Width of the map\n");
-    printf("  -y height           Height of the map\n");
-    printf("  -n team1 team2 ...  Names of teams\n");
-    printf("  -c clientsNb        Number of clients\n");
-    printf("  -f freq             Frequency of the server (default: 100)\n");
-    printf("  -h --help           Display this help message\n");
-    printf("  -d --debug          Enable debug mode\n");
+    puts("USAGE: ./zappy_server -p port -x width -y height -n team1 team2 ... "
+         "-c clientsNb -f freq");
+    puts("OPTIONS:");
+    puts("  -p port             Port number for the server");
+    puts("  -x width            Width of the map");
+    puts("  -y height           Height of the map");
+    puts("  -n team1 team2 ...  Names of teams");
+    puts("  -c clientsNb        Number of clients");
+    puts("  -f freq             Frequency of the server (default: 100)");
+    puts("  -h --help           Display this help message");
+    puts("  -d --debug          Enable debug mode");
 }
 
 /**
