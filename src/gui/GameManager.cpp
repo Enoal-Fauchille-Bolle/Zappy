@@ -160,13 +160,17 @@ void GameManager::updatePlayerPosition(int id, int x, int y,
     }
 
     Player* player = it->second;
-    for (auto& row : _tiles) {
-        for (auto& tile : row) {
-            if (tile) tile->removePlayer(player);
+    auto prevPosIt = _playerPositions.find(id);
+    if (prevPosIt != _playerPositions.end()) {
+        int prevX = prevPosIt->second.first;
+        int prevY = prevPosIt->second.second;
+        if (prevY >= 0 && prevY < _mapHeight && prevX >= 0 && prevX < _mapWidth && _tiles[prevY][prevX]) {
+            _tiles[prevY][prevX]->removePlayer(player);
         }
     }
     if (y >= 0 && y < _mapHeight && x >= 0 && x < _mapWidth && _tiles[y][x]) {
         _tiles[y][x]->addPlayer(player);
+        _playerPositions[id] = std::make_pair(x, y); // Update player's position
     } else {
         std::cerr << "Invalid tile for player " << id << " at (" << x << ", " << y << ")" << std::endl;
     }
