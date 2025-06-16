@@ -29,3 +29,7 @@ int Egg::getEggId() const
 {
     return _eggId;
 }
+
+void Egg::initialize() {
+    // Add Egg-specific initialization here if needed
+}
