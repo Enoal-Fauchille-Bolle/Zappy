@@ -6,6 +6,8 @@
 */
 
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -57,4 +59,52 @@ void trim(char *str)
     }
     if (start != str)
         memmove(str, start, strlen(start) + 1);
+}
+
+/**
+ * @brief Concatenate two strings with dynamic memory allocation.
+ *
+ * This function reallocates memory for the destination string to accommodate
+ * the source string and appends the source string to the destination.
+ *
+ * @param dest Pointer to the destination string
+ * @param src Pointer to the source string
+ * @return Pointer to the newly allocated concatenated string, or NULL on
+ * failure
+ */
+char *dyn_strcat(char *dest, const char *src)
+{
+    char *new_str = realloc(dest, strlen(dest) + strlen(src) + 1);
+
+    if (dest == NULL || src == NULL) {
+        fprintf(stderr, "Invalid string pointer\n");
+        return NULL;
+    }
+    if (new_str == NULL) {
+        perror("Failed to reallocate memory for string concatenation");
+        return NULL;
+    }
+    strcat(new_str, src);
+    return new_str;
+}
+
+/**
+ * @brief Create an empty string with a null terminator.
+ *
+ * This function allocates memory for an empty string (a string with only
+ * a null terminator) and returns a pointer to it. If memory allocation fails,
+ * it prints an error message and returns NULL.
+ *
+ * @return Pointer to the newly allocated empty string, or NULL on failure
+ */
+char *empty_string(void)
+{
+    char *str = malloc(sizeof(char) * 1);
+
+    if (str == NULL) {
+        perror("Failed to allocate memory for empty string");
+        return NULL;
+    }
+    str[0] = '\0';
+    return str;
 }
