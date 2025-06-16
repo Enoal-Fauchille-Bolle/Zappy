@@ -152,8 +152,9 @@ class Commands:
         response = self.connexion.receive()
         if response == "ko":
             return False
-        from ai_generator import AIGenerator #avoid circular import
-        AIGenerator().fork(self.connexion.port, self.connexion.name, self.connexion.machine, self.connexion)
+        from ai_generator import AIGenerator  # avoid circular import
+        ai_gen = AIGenerator(self.connexion.port, self.connexion.name, self.connexion.machine)
+        ai_gen.fork(self.connexion.port, self.connexion.name, self.connexion.machine)
         return True
 
     def Eject(self):
