@@ -12,7 +12,7 @@
     #include "map/coordinates.h"
     #include "map/resources.h"
     #include "vector.h"
-    #include <unistd.h>
+    #include <stddef.h>
 
 typedef struct map_s {
     size_t width;

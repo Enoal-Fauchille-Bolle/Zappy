@@ -5,7 +5,11 @@
 ** egg
 */
 
-#include "egg/egg.h"
+#include "team/egg/egg.h"
+#include "map/coordinates.h"
+#include "map/tile.h"
+#include "team/team.h"
+#include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,8 +24,7 @@
  * @return Pointer to the newly created egg_t structure on success,
  *         NULL if memory allocation fails
  */
-// TODO: Add egg to the team's egg list when implemented
-egg_t *create_egg(const pos_t pos, void *team)
+egg_t *create_egg(const pos_t pos, team_t *team)
 {
     egg_t *egg = malloc(sizeof(egg_t));
 
@@ -31,6 +34,7 @@ egg_t *create_egg(const pos_t pos, void *team)
     }
     egg->pos = pos;
     egg->team = team;
+    add_egg_to_team(team, egg);
     return egg;
 }
 

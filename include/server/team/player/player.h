@@ -9,19 +9,22 @@
 #ifndef PLAYER_H_
     #define PLAYER_H_
 
+    #include "map/coordinates.h"
+    #include "map/resources.h"
     #include "map/tile.h"
     #include <stddef.h>
-    #include <unistd.h>
 
 typedef struct player_s {
+    size_t id;
     pos_t pos;
     orientation_t orientation;
     size_t level;      // Player's level, starting at 1
     inventory_t inventory;
-    size_t tick_cooldown;      // If 0, player can act
+    size_t tick_cooldown;        // If 0, player can act
+    size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
 } player_t;
 
-player_t *create_player(const pos_t pos);
+player_t *create_player(const pos_t pos, const size_t id);
 void destroy_player(player_t *player);
 
 void turn_player_left(player_t *player);

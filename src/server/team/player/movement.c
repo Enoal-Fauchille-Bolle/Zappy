@@ -5,8 +5,9 @@
 ** movement
 */
 
+#include "map/coordinates.h"
 #include "map/map.h"
-#include "player/player.h"
+#include "team/player/player.h"
 #include <stdio.h>
 
 /**

@@ -9,10 +9,9 @@
 #include "map/map.h"
 #include "map/resources.h"
 #include "map/tile.h"
-#include "player/player.h"
-#include <criterion/criterion.h>
+#include "team/player/player.h"
+#include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
-#include <criterion/redirect.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -139,7 +138,7 @@ Test(get_tile, null)
 
 Test(add_player_to_map, null)
 {
-    player_t *player = create_player((pos_t){0, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
     map_t *map = create_map(1, 1);
 
     add_player_to_map(map, NULL);
@@ -151,7 +150,7 @@ Test(add_player_to_map, null)
 
 Test(remove_player_from_map, null)
 {
-    player_t *player = create_player((pos_t){0, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
     map_t *map = create_map(1, 1);
 
     remove_player_from_map(map, NULL);
@@ -179,7 +178,7 @@ Test(access_tile_by_index, out_of_bounds)
 
 Test(add_player_to_tile, null)
 {
-    player_t *player = create_player((pos_t){0, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
     map_t *map = create_map(1, 1);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
@@ -193,7 +192,7 @@ Test(add_player_to_tile, null)
 
 Test(remove_player_from_tile, null)
 {
-    player_t *player = create_player((pos_t){0, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
     map_t *map = create_map(1, 1);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
@@ -207,19 +206,22 @@ Test(remove_player_from_tile, null)
 
 Test(remove_player_from_tile, player_not_in_tile)
 {
-    player_t *player = create_player((pos_t){0, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
+    player_t *another_player = create_player((pos_t){0, 0}, 1);
     map_t *map = create_map(1, 1);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
+    add_player_to_tile(tile, another_player);
     remove_player_from_tile(tile, player);
     // No assertion here, just checking for crashes
     destroy_player(player);
+    destroy_player(another_player);
     destroy_map(map);
 }
 
 Test(remove_player_from_tile, player_in_tile)
 {
-    player_t *player = create_player((pos_t){0, 0});
+    player_t *player = create_player((pos_t){0, 0}, 0);
     map_t *map = create_map(1, 1);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
