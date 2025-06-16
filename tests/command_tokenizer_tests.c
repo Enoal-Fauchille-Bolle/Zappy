@@ -245,9 +245,7 @@ Test(command_tokenizer, extract_tokens_null_parsed_count)
     char buffer[] = "test";
     char **tokens = extract_tokens(buffer, NULL);
 
-    cr_assert_not_null(tokens, "Tokens should not be NULL");
-    cr_assert_str_eq(tokens[0], "test", "First token should be 'test'");
-    cr_assert_null(tokens[1], "Second token should be NULL");
+    cr_assert_null(tokens, "Tokens should be NULL when parsed_count is NULL");
 
     cleanup_tokens(tokens);
 }

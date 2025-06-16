@@ -50,8 +50,6 @@ static int count_args(char *buffer)
     int count = 0;
     bool in_word = false;
 
-    if (buffer == NULL)
-        return 0;
     for (int i = 0; buffer[i] != '\0'; i++) {
         process_character(buffer, i, &count, &in_word);
     }
