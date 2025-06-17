@@ -31,14 +31,14 @@ void destroy_game(game_t *game)
 {
     if (game == NULL)
         return;
-    if (game->map != NULL)
-        destroy_map(game->map);
     if (game->teams != NULL) {
         for (int i = 0; game->teams[i] != NULL; i++) {
             destroy_team(game->teams[i]);
         }
         free(game->teams);
     }
+    if (game->map != NULL)
+        destroy_map(game->map);
     free(game);
     game = NULL;
 }
