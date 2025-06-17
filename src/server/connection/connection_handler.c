@@ -156,12 +156,14 @@ static void accept_new_connection(server_t *server)
  * @param fds Array of pollfd structures for monitoring file descriptors
  * @return true on success, false on failure (poll error)
  *
- * @note Uses a timeout defined by POLL_TIMEOUT constant
- * @note Monitors up to MAX_CLIENTS + 1 file descriptors
+ * @note Uses a timeout defined by the game tick rate to limit the
+ * polling duration
+ * @note Monitors up to MAX_CLIENTS + 2 file descriptors
  */
 bool process_connection(server_t *server)
 {
-    int result = poll(server->fds, MAX_CLIENTS + 2, POLL_TIMEOUT);
+    int result = poll(server->fds, MAX_CLIENTS + 2,
+        (1.0 / server->game->tick_rate) * 1000.0);
 
     if (result < 0) {
         if (errno != EINTR)

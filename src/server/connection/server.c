@@ -9,6 +9,7 @@
 #include "connection/connection_handler.h"
 #include "connection/signal_handler.h"
 #include "connection/socket.h"
+#include "connection/time.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
@@ -18,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/poll.h>
+#include <time.h>
 #include <unistd.h>
 
 /**
@@ -186,15 +188,19 @@ server_t *create_server(server_options_t *options)
  * @param server Pointer to the server structure containing configuration and
  * game state
  */
-// TODO: game_tick(server);
 void run_server(server_t *server)
 {
-    debug_server(server->options->debug, "Listening on port %u",
-        server->options->port);
+    long long tick_start_time = 0;
+
+    debug_server(
+        server->options->debug, "Listening on port %u", server->options->port);
     puts("Waiting for connections...");
     while (server->game->game_state == GAME_RUNNING) {
+        tick_start_time = get_current_time_ms();
         if (process_connection(server) == FAILURE)
             break;
+        wait_remaining_tick_time(server, tick_start_time);
+        game_tick(server->game, server->options->debug);
     }
     debug_server(server->options->debug, "Server stopped");
 }

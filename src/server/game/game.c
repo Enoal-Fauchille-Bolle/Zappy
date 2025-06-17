@@ -7,12 +7,14 @@
 
 #include "game/game.h"
 #include "constants.h"
+#include "debug_categories.h"
 #include "game/game_state.h"
 #include "game/teams.h"
 #include "map/map.h"
 #include "options_parser/options.h"
 #include "team/egg/egg.h"
 #include "team/team.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 /**
@@ -111,6 +113,22 @@ static bool setup_game(game_t *game, server_options_t *options)
         spawn_min_eggs(game->map, game->teams[i], options->clients_nb);
     }
     return SUCCESS;
+}
+
+/**
+ * @brief Advances the game tick counter
+ *
+ * This function increments the game tick counter, which is used to track
+ * the progression of the game state over time.
+ *
+ * @param game Pointer to the game structure containing the current tick count
+ */
+// TODO: Implement game tick logic
+void game_tick(game_t *game, bool debug)
+{
+    if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0)
+        debug_game(debug, "Game tick %u", game->game_tick);
+    game->game_tick++;
 }
 
 /**

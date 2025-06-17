@@ -20,4 +20,6 @@ extern const int EXIT_ERROR_CODE;
 
     #define DEFAULT_TICK_RATE 100
 
+    #define GAME_TICK_DEBUG_INTERVAL 100
+
 #endif /* !CONSTANTS_H_ */

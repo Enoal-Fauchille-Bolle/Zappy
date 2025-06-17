@@ -13,6 +13,7 @@
     #include "options_parser/options.h"
     #include "team/team.h"
     #include <stddef.h>
+    #include <stdbool.h>
 
 typedef unsigned int player_id_t;
 typedef unsigned int tick_t;
@@ -27,7 +28,8 @@ typedef struct game_s {
     game_state_t game_state;
 } game_t;
 
-void destroy_game(game_t *game);
 game_t *create_game(server_options_t *options);
+void game_tick(game_t *game, bool debug);
+void destroy_game(game_t *game);
 
 #endif /* !GAME_H_ */
