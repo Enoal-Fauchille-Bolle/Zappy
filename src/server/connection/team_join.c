@@ -35,14 +35,14 @@ static bool validate_team(
 {
     if (team == NULL) {
         debug_conn(server->options->debug,
-            "Client %d tried to join invalid team '%s'",
+            "Client %d tried to join invalid team '%s'\n",
             client_index - 2, team_name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
     if (get_egg_count(team) == 0) {
         debug_conn(server->options->debug,
-            "Client %d tried to join full team '%s'",
+            "Client %d tried to join full team '%s'\n",
             client_index - 2, team->name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
@@ -68,7 +68,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
     server->clients[client_index - 2] =
         create_client(server, team, client_index);
     debug_conn(server->options->debug,
-        "Player %d (Client %d) assigned to team '%s'",
+        "Player %d (Client %d) assigned to team '%s'\n",
         server->clients[client_index - 2]->player->id,
         client_index - 2,
         server->clients[client_index - 2]->team_name);
@@ -103,7 +103,7 @@ static bool validate_and_assign_team(
     }
     if (assign_team(server, team, client_index) == FAILURE) {
         debug_warning(server->options->debug,
-            "Failed to assign team '%s' to client %d", team_name,
+            "Failed to assign team '%s' to client %d\n", team_name,
             client_index - 2);
         return FAILURE;
     }
@@ -152,13 +152,13 @@ bool handle_team_join(
 {
     if (!validate_and_assign_team(server, team_name, client_index)) {
         debug_warning(server->options->debug,
-            "Failed to assign team '%s' to client %d", team_name,
+            "Failed to assign team '%s' to client %d\n", team_name,
             client_index - 2);
         return FAILURE;
     }
     if (send_welcome_message(server, client_index) == FAILURE) {
         debug_warning(server->options->debug,
-            "Failed to send welcome message to client %d",
+            "Failed to send welcome message to client %d\n",
             client_index - 2);
         return FAILURE;
     }

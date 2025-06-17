@@ -192,10 +192,10 @@ void run_server(server_t *server)
 {
     long long tick_start_time = 0;
 
-    debug_server(
-        server->options->debug, "Listening on port %u", server->options->port);
+    debug_server(server->options->debug, "Listening on port %u\n",
+        server->options->port);
     puts("Waiting for connections...");
-    debug_game(server->options->debug, "1 tick = %.2f ms",
+    debug_game(server->options->debug, "1 tick = %.2f ms\n",
         (1.0 / server->game->tick_rate) * 1000.0);
     while (server->game->game_state == GAME_RUNNING) {
         tick_start_time = get_current_time_ms();
@@ -204,5 +204,5 @@ void run_server(server_t *server)
         wait_remaining_tick_time(server, tick_start_time);
         game_tick(server->game, server->options->debug);
     }
-    debug_server(server->options->debug, "Server stopped");
+    debug_server(server->options->debug, "Server stopped\n");
 }

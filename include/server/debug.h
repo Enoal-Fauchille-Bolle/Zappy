@@ -22,7 +22,6 @@ static inline void debug_print(bool debug_enabled, const char *prefix,
     if (debug_enabled) {
         printf("%s", prefix);
         vprintf(format, args);
-        printf("\n");
     }
 }
 

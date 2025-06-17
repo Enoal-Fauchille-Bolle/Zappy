@@ -34,7 +34,7 @@ static bool handle_player_starvation(player_t *player)
     }
     if (player->inventory[FOOD] == 0) {
         debug_game(player->client->server->options->debug,
-            "Player %zu (Client %d) has starved", player->id,
+            "Player %zu (Client %d) has starved\n", player->id,
             player->client->index);
         write(player->client->sockfd, "dead\n", 5);
         remove_client(player->client->server, player->client->index + 2);
@@ -42,7 +42,7 @@ static bool handle_player_starvation(player_t *player)
     }
     player->inventory[FOOD]--;
     debug_player(player->client->server->options->debug,
-        "Player %zu has eaten, remaining food: %zu", player->id,
+        "Player %zu has eaten, remaining food: %zu\n", player->id,
         player->inventory[FOOD]);
     player->hunger_cooldown = 126;
     return false;

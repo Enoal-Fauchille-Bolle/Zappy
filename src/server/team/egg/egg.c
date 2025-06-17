@@ -36,7 +36,7 @@ egg_t *create_egg(const pos_t pos, team_t *team, bool debug)
     egg->pos = pos;
     egg->team = team;
     add_egg_to_team(team, egg);
-    debug_map(debug, "Egg created at (%zu, %zu) for team %s",
+    debug_map(debug, "Egg created at (%zu, %zu) for team %s\n",
         pos.x, pos.y, team->name);
     return egg;
 }

@@ -66,7 +66,7 @@ static bool handle_command(
 
     if (command == NULL) {
         debug_warning(server->options->debug,
-            "Failed to parse command from client %d", client_index - 2);
+            "Failed to parse command from client %d\n", client_index - 2);
         write(server->fds[client_index].fd, "ko\n", 3);
         return false;
     }
@@ -100,7 +100,7 @@ void handle_client_message(server_t *server, int client_index)
         handle_team_join(server, message, client_index);
     } else {
         to_lowercase(message);
-        debug_cmd(server->options->debug, "Player %d (Client %d): '%s'",
+        debug_cmd(server->options->debug, "Player %d (Client %d): '%s'\n",
             server->clients[client_index - 2]->player->id, client_index - 2,
             message);
         handle_command(server, message, client_index);
@@ -171,14 +171,14 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
 
     if (!client) {
         debug_warning(server->options->debug,
-            "Failed to allocate memory for new client");
+            "Failed to allocate memory for new client\n");
         return NULL;
     }
     setup_client(client, server, client_index);
     client->team_name = strdup(team->name);
     if (!client->team_name) {
-        debug_warning(
-            server->options->debug, "Failed to allocate memory for team name");
+        debug_warning(server->options->debug,
+            "Failed to allocate memory for team name\n");
         free(client);
         return NULL;
     }

@@ -72,7 +72,7 @@ map_t *create_map(size_t width, size_t height, bool debug)
     map->tiles = init_tiles_vector(width, height);
     for (size_t i = 0; i < width * height; i++)
         init_tile(get_tile_by_index(map, i));
-    debug_map(debug, "Map created with dimensions %zu x %zu", width, height);
+    debug_map(debug, "Map created with dimensions %zu x %zu\n", width, height);
     return map;
 }
 
