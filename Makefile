@@ -86,6 +86,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)map/tile.c									\
 			 	$(SRCDIR_SERVER)team/player/player.c						\
 			 	$(SRCDIR_SERVER)team/player/movement.c						\
+				$(SRCDIR_SERVER)team/player/look.c							\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
@@ -198,6 +199,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)map/tile.c										\
 			$(SRCDIR_SERVER)team/player/player.c							\
 			$(SRCDIR_SERVER)team/player/movement.c							\
+			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
