@@ -20,7 +20,7 @@
 //     cr_redirect_stdout();
 // }
 
-Test(map, get_tile_inside_size)
+Test(map, get_tile_inside_size, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile(map, (pos_t){5, 5});
@@ -32,7 +32,7 @@ Test(map, get_tile_inside_size)
     destroy_map(map);
 }
 
-Test(map, get_tile_outside_size)
+Test(map, get_tile_outside_size, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     // Accessing tile at 0, 0 due to wrapping
@@ -50,7 +50,7 @@ Test(map, get_tile_outside_size)
     destroy_map(map);
 }
 
-Test(map, modify_tile)
+Test(map, modify_tile, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile(map, (pos_t){5, 5});
@@ -67,14 +67,14 @@ Test(map, modify_tile)
     destroy_map(map);
 }
 
-Test(map, create_map_null)
+Test(map, create_map_null, .timeout = 2)
 {
     map_t *map = create_map(0, 0, false);
 
     cr_assert_null(map, "Map should be NULL for invalid dimensions");
 }
 
-Test(map, create_map_valid)
+Test(map, create_map_valid, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
 
@@ -90,7 +90,7 @@ Test(map, create_map_valid)
     destroy_map(map);
 }
 
-Test(map, destroy_map_null)
+Test(map, destroy_map_null, .timeout = 2)
 {
     map_t *map = NULL;
 
@@ -98,7 +98,7 @@ Test(map, destroy_map_null)
     cr_assert(true, "Destroying NULL map should not cause any issues");
 }
 
-Test(map, create_0_size)
+Test(map, create_0_size, .timeout = 2)
 {
     map_t *map = create_map(0, 10, false);
 
@@ -108,7 +108,7 @@ Test(map, create_0_size)
     destroy_map(map);
 }
 
-Test(wrap_coordinates, invalid_coordinates)
+Test(wrap_coordinates, invalid_coordinates, .timeout = 2)
 {
     pos_t pos = {5, 5};
     pos_t wrapped_pos = wrap_coordinates(pos, 0, 2);
@@ -120,7 +120,7 @@ Test(wrap_coordinates, invalid_coordinates)
     cr_assert_eq(wrapped_pos.y, 0, "Wrapped Y should be 0 for zero width");
 }
 
-Test(get_forward_position, invalid_coordinates)
+Test(get_forward_position, invalid_coordinates, .timeout = 2)
 {
     pos_t pos = {5, 6};
     pos_t new_pos = get_forward_position(pos, NORTH, NULL);
@@ -129,14 +129,14 @@ Test(get_forward_position, invalid_coordinates)
     cr_assert_eq(new_pos.y, 6, "Y should remain unchanged for zero size map");
 }
 
-Test(get_tile, null)
+Test(get_tile, null, .timeout = 2)
 {
     tile_t *tile = get_tile(NULL, (pos_t){0, 0});
 
     cr_assert_null(tile, "Tile should be NULL for NULL map");
 }
 
-Test(add_player_to_map, null)
+Test(add_player_to_map, null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     map_t *map = create_map(1, 1, false);
@@ -148,7 +148,7 @@ Test(add_player_to_map, null)
     destroy_map(map);
 }
 
-Test(remove_player_from_map, null)
+Test(remove_player_from_map, null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     map_t *map = create_map(1, 1, false);
@@ -160,14 +160,14 @@ Test(remove_player_from_map, null)
     destroy_map(map);
 }
 
-Test(access_tile_by_index, null_map)
+Test(access_tile_by_index, null_map, .timeout = 2)
 {
     tile_t *tile = get_tile_by_index(NULL, 0);
 
     cr_assert_null(tile, "Tile should be NULL for NULL map");
 }
 
-Test(access_tile_by_index, out_of_bounds)
+Test(access_tile_by_index, out_of_bounds, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile_by_index(map, 100);
@@ -176,7 +176,7 @@ Test(access_tile_by_index, out_of_bounds)
     destroy_map(map);
 }
 
-Test(add_player_to_tile, null)
+Test(add_player_to_tile, null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     map_t *map = create_map(1, 1, false);
@@ -190,7 +190,7 @@ Test(add_player_to_tile, null)
     destroy_map(map);
 }
 
-Test(remove_player_from_tile, null)
+Test(remove_player_from_tile, null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     map_t *map = create_map(1, 1, false);
@@ -204,7 +204,7 @@ Test(remove_player_from_tile, null)
     destroy_map(map);
 }
 
-Test(remove_player_from_tile, player_not_in_tile)
+Test(remove_player_from_tile, player_not_in_tile, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     player_t *another_player = create_player((pos_t){0, 0}, 1, NULL, NULL);
@@ -219,7 +219,7 @@ Test(remove_player_from_tile, player_not_in_tile)
     destroy_map(map);
 }
 
-Test(remove_player_from_tile, player_in_tile)
+Test(remove_player_from_tile, player_in_tile, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     map_t *map = create_map(1, 1, false);
@@ -232,7 +232,7 @@ Test(remove_player_from_tile, player_in_tile)
     destroy_map(map);
 }
 
-Test(init_tile, null)
+Test(init_tile, null, .timeout = 2)
 {
     init_tile(NULL);
     // No assertion here, just checking for crashes

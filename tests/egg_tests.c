@@ -27,7 +27,7 @@
 //     cr_redirect_stdout();
 // }
 
-Test(egg, create_egg)
+Test(egg, create_egg, .timeout = 2)
 {
     pos_t pos = {5, 4};
     void *team = NULL;      // Placeholder for team pointer
@@ -40,7 +40,7 @@ Test(egg, create_egg)
     destroy_egg(egg);
 }
 
-Test(egg, create_egg_null_team)
+Test(egg, create_egg_null_team, .timeout = 2)
 {
     pos_t pos = {5, 4};
     egg_t *egg = create_egg(pos, NULL, false);
@@ -52,7 +52,7 @@ Test(egg, create_egg_null_team)
     destroy_egg(egg);
 }
 
-Test(egg, destroy_egg_null)
+Test(egg, destroy_egg_null, .timeout = 2)
 {
     egg_t *egg = NULL;
 
@@ -60,7 +60,7 @@ Test(egg, destroy_egg_null)
     cr_assert(true, "Destroying NULL egg should not cause a crash");
 }
 
-Test(egg, destroy_egg_valid)
+Test(egg, destroy_egg_valid, .timeout = 2)
 {
     pos_t pos = {5, 4};
     void *team = NULL;      // Placeholder for team pointer
@@ -71,7 +71,7 @@ Test(egg, destroy_egg_valid)
     cr_assert(true, "Destroying valid egg should not cause a crash");
 }
 
-Test(egg, add_egg_to_tile_null)
+Test(egg, add_egg_to_tile_null, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -84,7 +84,7 @@ Test(egg, add_egg_to_tile_null)
     destroy_egg(egg);
 }
 
-Test(egg, remove_egg_from_tile_null)
+Test(egg, remove_egg_from_tile_null, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -97,7 +97,7 @@ Test(egg, remove_egg_from_tile_null)
     destroy_egg(egg);
 }
 
-Test(egg, add_egg_to_tile_valid)
+Test(egg, add_egg_to_tile_valid, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -111,7 +111,7 @@ Test(egg, add_egg_to_tile_valid)
     destroy_map(map);
 }
 
-Test(egg, remove_egg_from_tile_valid)
+Test(egg, remove_egg_from_tile_valid, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     egg_t *another_egg = create_egg((pos_t){1, 1}, NULL, false);
@@ -135,7 +135,7 @@ Test(egg, remove_egg_from_tile_valid)
     destroy_map(map);
 }
 
-Test(egg, remove_egg_from_tile_not_found)
+Test(egg, remove_egg_from_tile_not_found, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -147,7 +147,7 @@ Test(egg, remove_egg_from_tile_not_found)
     destroy_map(map);
 }
 
-Test(egg, add_egg_to_map_null)
+Test(egg, add_egg_to_map_null, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -160,7 +160,7 @@ Test(egg, add_egg_to_map_null)
     destroy_map(map);
 }
 
-Test(egg, remove_egg_from_map_null)
+Test(egg, remove_egg_from_map_null, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -173,7 +173,7 @@ Test(egg, remove_egg_from_map_null)
     destroy_map(map);
 }
 
-Test(egg, add_egg_to_map_valid)
+Test(egg, add_egg_to_map_valid, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -188,7 +188,7 @@ Test(egg, add_egg_to_map_valid)
     destroy_map(map);
 }
 
-Test(egg, remove_egg_from_map_valid)
+Test(egg, remove_egg_from_map_valid, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
     map_t *map = create_map(1, 1, false);
@@ -204,7 +204,7 @@ Test(egg, remove_egg_from_map_valid)
     destroy_map(map);
 }
 
-Test(egg, spawn_player_from_egg_null)
+Test(egg, spawn_player_from_egg_null, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     player_t *player = spawn_player_from_egg(NULL, map, 1, NULL);
@@ -220,7 +220,7 @@ Test(egg, spawn_player_from_egg_null)
     destroy_map(map);
 }
 
-Test(egg, spawn_player_from_egg_valid)
+Test(egg, spawn_player_from_egg_valid, .timeout = 2)
 {
     egg_t *egg = create_egg((pos_t){7, 4}, NULL, false);
     map_t *map = create_map(10, 10, false);
@@ -240,7 +240,7 @@ Test(egg, spawn_player_from_egg_valid)
     destroy_map(map);
 }
 
-Test(egg, spawn_minimum_eggs_null)
+Test(egg, spawn_minimum_eggs_null, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     team_t *team = create_team("TestTeam");
@@ -253,7 +253,7 @@ Test(egg, spawn_minimum_eggs_null)
     destroy_map(map);
 }
 
-Test(egg, spawn_minimum_eggs_valid)
+Test(egg, spawn_minimum_eggs_valid, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
@@ -275,7 +275,7 @@ Test(egg, spawn_minimum_eggs_valid)
     destroy_map(map);
 }
 
-Test(egg, spawn_minimum_eggs_twice)
+Test(egg, spawn_minimum_eggs_twice, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
@@ -300,7 +300,7 @@ Test(egg, spawn_minimum_eggs_twice)
     destroy_map(map);
 }
 
-Test(egg, player_lays_egg_null)
+Test(egg, player_lays_egg_null, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
@@ -316,7 +316,7 @@ Test(egg, player_lays_egg_null)
     destroy_map(map);
 }
 
-Test(egg, player_lays_egg_valid)
+Test(egg, player_lays_egg_valid, .timeout = 2)
 {
     char **teams = malloc(sizeof(char *) * 2);
     teams[0] = malloc(sizeof(char) * 9);

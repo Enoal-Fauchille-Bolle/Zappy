@@ -17,7 +17,7 @@
 //     cr_redirect_stdout();
 // }
 
-Test(resources, get_minimum_resource_count)
+Test(resources, get_minimum_resource_count, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     size_t count = get_minimum_resource_count(map, FOOD_DENSITY);
@@ -28,7 +28,7 @@ Test(resources, get_minimum_resource_count)
     destroy_map(map);
 }
 
-Test(resources, get_minimum_resource_count_not_whole)
+Test(resources, get_minimum_resource_count_not_whole, .timeout = 2)
 {
     map_t *map = create_map(5, 5, false);
     size_t count = get_minimum_resource_count(map, THYSTAME_DENSITY);
@@ -39,7 +39,7 @@ Test(resources, get_minimum_resource_count_not_whole)
     destroy_map(map);
 }
 
-Test(resources, count_resource)
+Test(resources, count_resource, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     size_t count;
@@ -54,7 +54,7 @@ Test(resources, count_resource)
     destroy_map(map);
 }
 
-Test(resources, spread_resource)
+Test(resources, spread_resource, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     size_t initial_count, new_count;
@@ -69,7 +69,7 @@ Test(resources, spread_resource)
     destroy_map(map);
 }
 
-Test(resources, spread_resources_count_all)
+Test(resources, spread_resources_count_all, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     size_t food_count, linemate_count, deraumere_count, sibur_count,
@@ -113,26 +113,26 @@ Test(resources, spread_resources_count_all)
     destroy_map(map);
 }
 
-Test(resources, get_minimum_resource_count_null)
+Test(resources, get_minimum_resource_count_null, .timeout = 2)
 {
     size_t count = get_minimum_resource_count(NULL, FOOD_DENSITY);
 
     cr_assert_eq(count, 0, "Count should be 0 for NULL map");
 }
 
-Test(resources, count_resource_null)
+Test(resources, count_resource_null, .timeout = 2)
 {
     size_t count = count_resource(NULL, FOOD);
 
     cr_assert_eq(count, 0, "Count should be 0 for NULL map");
 }
 
-Test(resources, spread_resource_null)
+Test(resources, spread_resource_null, .timeout = 2)
 {
     spread_resource(NULL, FOOD, false);
 }
 
-Test(resources, spread_resource_enough)
+Test(resources, spread_resource_enough, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
 
@@ -144,12 +144,12 @@ Test(resources, spread_resource_enough)
     destroy_map(map);
 }
 
-Test(resources, spread_resources_null)
+Test(resources, spread_resources_null, .timeout = 2)
 {
     spread_resources(NULL, false);
 }
 
-Test(resources, minimum_resource_count_one)
+Test(resources, minimum_resource_count_one, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     size_t count = get_minimum_resource_count(map, FOOD_DENSITY);
@@ -160,7 +160,7 @@ Test(resources, minimum_resource_count_one)
     destroy_map(map);
 }
 
-Test(resources, spread_resources_count_one)
+Test(resources, spread_resources_count_one, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     cr_assert_not_null(map, "Map should not be NULL");

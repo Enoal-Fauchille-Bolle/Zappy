@@ -17,7 +17,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-Test(team, create_team)
+Test(team, create_team, .timeout = 2)
 {
     const char *team_name = "TestTeam";
     team_t *team = create_team(team_name);
@@ -30,7 +30,7 @@ Test(team, create_team)
     destroy_team(team);
 }
 
-Test(team, create_team_null_name)
+Test(team, create_team_null_name, .timeout = 2)
 {
     team_t *team = create_team(NULL);
 
@@ -38,7 +38,7 @@ Test(team, create_team_null_name)
     destroy_team(team);
 }
 
-Test(team, destroy_team_null)
+Test(team, destroy_team_null, .timeout = 2)
 {
     team_t *team = NULL;
 
@@ -46,7 +46,7 @@ Test(team, destroy_team_null)
     cr_assert(true, "Destroying NULL team should not cause a crash");
 }
 
-Test(team, destroy_team_valid_with_players_and_eggs)
+Test(team, destroy_team_valid_with_players_and_eggs, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
@@ -58,7 +58,7 @@ Test(team, destroy_team_valid_with_players_and_eggs)
                     "cause a crash");
 }
 
-Test(team, destroy_team_valid_with_null_players_and_eggs)
+Test(team, destroy_team_valid_with_null_players_and_eggs, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
 
@@ -71,14 +71,14 @@ Test(team, destroy_team_valid_with_null_players_and_eggs)
                     "not cause a crash");
 }
 
-Test(team, get_egg_count_null_team)
+Test(team, get_egg_count_null_team, .timeout = 2)
 {
     size_t count = get_egg_count(NULL);
 
     cr_assert_eq(count, 0, "Count should be 0 for NULL team");
 }
 
-Test(team, get_egg_count_valid)
+Test(team, get_egg_count_valid, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     create_egg((pos_t){0, 0}, team, false);
@@ -89,7 +89,7 @@ Test(team, get_egg_count_valid)
     destroy_team(team);
 }
 
-Test(team, get_egg_count_valid_after_adding_eggs)
+Test(team, get_egg_count_valid_after_adding_eggs, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
@@ -100,14 +100,14 @@ Test(team, get_egg_count_valid_after_adding_eggs)
     destroy_team(team);
 }
 
-Test(team, hatch_player_null_team)
+Test(team, hatch_player_null_team, .timeout = 2)
 {
     bool result = hatch_player(NULL, NULL, 1, NULL);
 
     cr_assert_eq(result, false, "Hatching player from NULL team should fail");
 }
 
-Test(team, hatch_player_valid)
+Test(team, hatch_player_valid, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
@@ -131,7 +131,7 @@ Test(team, hatch_player_valid)
     destroy_map(map);
 }
 
-Test(team, hatch_player_no_eggs)
+Test(team, hatch_player_no_eggs, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
@@ -143,7 +143,7 @@ Test(team, hatch_player_no_eggs)
     destroy_map(map);
 }
 
-Test(team, add_player_to_team_null)
+Test(team, add_player_to_team_null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
     team_t *team = create_team("TestTeam");
@@ -158,7 +158,7 @@ Test(team, add_player_to_team_null)
     destroy_team(team);      // Should not crash
 }
 
-Test(team, remove_player_from_team_null)
+Test(team, remove_player_from_team_null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
     team_t *team = create_team("TestTeam");
@@ -172,7 +172,7 @@ Test(team, remove_player_from_team_null)
     destroy_team(team);      // Should not crash
 }
 
-Test(team, remove_player_from_team_valid)
+Test(team, remove_player_from_team_valid, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
@@ -185,7 +185,7 @@ Test(team, remove_player_from_team_valid)
     destroy_team(team);
 }
 
-Test(team, remove_player_from_team_not_found)
+Test(team, remove_player_from_team_not_found, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
@@ -197,7 +197,7 @@ Test(team, remove_player_from_team_not_found)
     destroy_team(team);
 }
 
-Test(team, remove_egg_from_team_not_found)
+Test(team, remove_egg_from_team_not_found, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
@@ -209,7 +209,7 @@ Test(team, remove_egg_from_team_not_found)
     destroy_team(team);
 }
 
-Test(team, get_egg_count_null_team_eggs)
+Test(team, get_egg_count_null_team_eggs, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     vector_destroy(team->eggs);
@@ -219,7 +219,7 @@ Test(team, get_egg_count_null_team_eggs)
     cr_assert_eq(count, 0, "Count should be 0 for NULL team");
 }
 
-Test(team, add_egg_to_team_null)
+Test(team, add_egg_to_team_null, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
 
@@ -231,7 +231,7 @@ Test(team, add_egg_to_team_null)
     destroy_team(team);
 }
 
-Test(team, remove_egg_from_team_null)
+Test(team, remove_egg_from_team_null, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
 
@@ -243,7 +243,7 @@ Test(team, remove_egg_from_team_null)
     destroy_team(team);
 }
 
-Test(team, hatch_player_null)
+Test(team, hatch_player_null, .timeout = 2)
 {
     map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
@@ -261,7 +261,7 @@ Test(team, hatch_player_null)
     destroy_map(map);
 }
 
-Test(team, create_player_with_team)
+Test(team, create_player_with_team, .timeout = 2)
 {
     team_t *team = create_team("TestTeam");
     player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
