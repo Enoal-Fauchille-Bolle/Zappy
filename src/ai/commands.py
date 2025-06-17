@@ -6,6 +6,7 @@
 ##
 
 import time
+import sys
 
 class Commands:
     def __init__(self, connexion):
@@ -136,25 +137,19 @@ class Commands:
             ai.inventory.update(inventory)
             print(f"Updated inventory: {ai.inventory}")
             ai.tick.append(elapsed_time)
-
         return inventory
 
     def Broadcast(self, message):
-        if self.connexion.connected:
-            start_time = time.time()
-            self.connexion.send(f"Broadcast {message}\n")
-        else:
+        if not self.connexion.connected:
             print("Not connected to the server.")
             return False
+        encrypted_message = self.encrypt_message(message, self.connexion.name)
+        print(f"Original message: {repr(message)}")
+        print(f"Encrypted message: {repr(encrypted_message)}")
+        self.connexion.send(f"Broadcast {encrypted_message}\n")
         response = self.connexion.receive()
-        end_time = time.time()
-        elapsed_time = (end_time - start_time) / 7
-        if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
-            ai = self.connexion.ai_instance
-            ai.tick.append(elapsed_time)
-        if response == "ko":
-            return False
-        return True
+        print(f"Broadcast response: {response}")
+        return response == "ok"
 
     def Connect_nbr(self):
         if self.connexion.connected:
@@ -192,6 +187,7 @@ class Commands:
             ai.tick.append(elapsed_time)
         if response == "ko":
             return False
+
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
             if item in ai.inventory:
@@ -277,3 +273,39 @@ class Commands:
         if response == "ko":
             return False
         return True
+
+    def encrypt_message(self, message, name):
+        """
+        Encrypt a message using a simple algorithm based on the name.
+        This is a basic implementation and can be replaced with a more sophisticated one.
+        """
+        if not name:
+            return message
+        shift = sum(ord(c) for c in name) % 26
+        encrypted = []
+        for char in message:
+            if char.isalpha():
+                ascii_offset = ord('a') if char.islower() else ord('A')
+                encrypted_char = chr((ord(char) - ascii_offset + shift) % 26 + ascii_offset)
+                encrypted.append(encrypted_char)
+            else:
+                encrypted.append(char)
+
+        return ''.join(encrypted)
+
+    def handle_death(self, ai_instance):
+        """Handle the AI death properly"""
+        print("AI IS DEAD - HANDLING TERMINATION")
+        with ai_instance.lock:
+            ai_instance.running = False
+        try:
+            if self.connexion and self.connexion.socket:
+                self.connexion.socket.close()
+                self.connexion.connected = False
+                print("Socket closed due to death")
+        except Exception as e:
+            print(f"Error closing socket: {e}")
+        if hasattr(ai_instance, 'monitor') and ai_instance.monitor:
+            ai_instance.monitor.running = False
+        print("AI process terminated due to death")
+        sys.exit(0)
