@@ -30,9 +30,6 @@ typedef enum resource_e {
     THYSTAME
 } resource_t;
 
-static const char *resource_names[7] = {"food", "linemate", "deraumere",
-    "sibur", "mendiane", "phiras", "thystame"};
-
 static const float resource_densities[7] = {FOOD_DENSITY, LINEMATE_DENSITY,
     DERAUMERE_DENSITY, SIBUR_DENSITY, MENDIANE_DENSITY, PHIRAS_DENSITY,
     THYSTAME_DENSITY};
