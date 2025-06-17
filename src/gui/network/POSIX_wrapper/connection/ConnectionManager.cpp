@@ -183,7 +183,7 @@ bool ConnectionManager::connectWithTimeout(
     if (pfd.revents & (POLLERR | POLLHUP)) {
         return false;
     }
-    if ((pfd.revents & POLLIN) && !(pfd.revents | POLLOUT)) {
+    if ((pfd.revents & POLLIN) && !(pfd.revents & POLLOUT)) {
         return false;
     }
 
