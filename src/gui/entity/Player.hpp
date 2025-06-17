@@ -29,12 +29,16 @@ class Player : public Entity {
         int getInventoryItem(const std::string &item) const;
         std::string getTeamName() const;
 
+        void evolve();
+
     private:
         int _playerId;
         std::string _teamName;
         int _level;
         Orientation _orientation;
         std::map<std::string, int> _inventory;
+
+        static std::map<int, std::string> playerMeshes;
 
         void updateVisualOrientation();
 };

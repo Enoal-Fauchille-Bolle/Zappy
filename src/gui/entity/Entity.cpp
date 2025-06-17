@@ -154,3 +154,20 @@ void Entity::initialize()
 {
     // Default: do nothing. Derived classes can override.
 }
+
+/**
+ * @brief Replace the mesh of the entity.
+ *
+ * @param newMeshName The name of the new mesh to use.
+ */
+void Entity::replaceMesh(const std::string &newMeshName)
+{
+    Ogre::SceneManager* sceneManager = _sceneNode->getCreator();
+
+    if (_ogreEntity) {
+        _meshName = newMeshName;
+        sceneManager->destroyEntity(_ogreEntity);
+        _ogreEntity = sceneManager->createEntity(_id, newMeshName);
+        _sceneNode->attachObject(_ogreEntity);
+    }
+}
