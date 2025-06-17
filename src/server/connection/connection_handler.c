@@ -36,6 +36,11 @@ void remove_client(server_t *server, int client_index)
 {
     if (client_index < 2 || client_index >= MAX_CLIENTS + 2)
         return;
+    if (server->fds[client_index].fd >= 0) {
+        debug_conn(server->options->debug, "Client %d disconnected",
+            server->fds[client_index].fd);
+        close(server->fds[client_index].fd);
+    }
     if (server->clients[client_index - 2] != NULL) {
         debug_conn(server->options->debug,
             "Player %d (Client %d) removed from team '%s'",
@@ -45,9 +50,6 @@ void remove_client(server_t *server, int client_index)
         destroy_client(server->clients[client_index - 2]);
         server->clients[client_index - 2] = NULL;
     }
-    debug_conn(server->options->debug, "Client %d disconnected",
-        server->fds[client_index].fd);
-    close(server->fds[client_index].fd);
     server->fds[client_index].fd = -1;
     server->fds[client_index].events = 0;
     server->fds[client_index].revents = 0;
