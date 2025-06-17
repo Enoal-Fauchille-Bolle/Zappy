@@ -25,7 +25,7 @@ extern const int EXIT_ERROR_CODE;
 
     #define MAX_MAP_SIZE 1000
 
-    #define MAX_MIN_CLIENTS 1000000
+    #define MAX_INITIAL_CLIENTS 1000000
 
     #define GAME_TICK_DEBUG_INTERVAL 100
 

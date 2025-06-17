@@ -36,10 +36,10 @@ void handle_clients(server_options_t *opts, int *i, int ac, char **av)
     if (*i + 1 < ac) {
         *i += 1;
         opts->clients_nb = atoi(av[*i]);
-        if (opts->clients_nb <= 0 || opts->clients_nb > MAX_MIN_CLIENTS) {
+        if (opts->clients_nb <= 0 || opts->clients_nb > MAX_INITIAL_CLIENTS) {
             fprintf(stderr,
                 "Error: Clients number must be a positive number up to %d\n",
-                MAX_MIN_CLIENTS);
+                MAX_INITIAL_CLIENTS);
             opts->error = true;
         }
     } else {
