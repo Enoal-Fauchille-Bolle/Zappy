@@ -6,6 +6,8 @@
 */
 
 #include "team/player/player.h"
+#include "connection/client.h"
+#include "connection/server.h"
 #include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
@@ -29,7 +31,8 @@
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if memory allocation fails
  */
-player_t *create_player(const pos_t pos, const size_t id, team_t *team)
+player_t *create_player(
+    const pos_t pos, const size_t id, team_t *team, client_t *client)
 {
     player_t *player = malloc(sizeof(player_t));
 
@@ -47,6 +50,7 @@ player_t *create_player(const pos_t pos, const size_t id, team_t *team)
     player->hunger_cooldown = 0;
     player->tick_cooldown = 0;
     add_player_to_team(team, player);
+    player->client = client;
     return player;
 }
 

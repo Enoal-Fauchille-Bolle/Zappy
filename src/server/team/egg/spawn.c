@@ -5,6 +5,7 @@
 ** spawn
 */
 
+#include "connection/client.h"
 #include "map/coordinates.h"
 #include "team/egg/egg.h"
 #include "team/player/player.h"
@@ -57,7 +58,8 @@ void spawn_min_eggs(map_t *map, team_t *team, size_t min)
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if egg or map is NULL or if player creation fails
  */
-player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
+player_t *spawn_player_from_egg(
+    egg_t *egg, map_t *map, const size_t player_id, client_t *client)
 {
     player_t *player;
 
@@ -65,7 +67,7 @@ player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
         fprintf(stderr, "Invalid egg or map pointer\n");
         return NULL;
     }
-    player = create_player(egg->pos, player_id, egg->team);
+    player = create_player(egg->pos, player_id, egg->team, client);
     if (player == NULL) {
         fprintf(stderr, "Failed to create player from egg\n");
         return NULL;
