@@ -19,7 +19,7 @@
 
 Test(resources, get_minimum_resource_count)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     size_t count = get_minimum_resource_count(map, FOOD_DENSITY);
 
     cr_assert_not_null(map, "Map should not be NULL");
@@ -30,7 +30,7 @@ Test(resources, get_minimum_resource_count)
 
 Test(resources, get_minimum_resource_count_not_whole)
 {
-    map_t *map = create_map(5, 5);
+    map_t *map = create_map(5, 5, false);
     size_t count = get_minimum_resource_count(map, THYSTAME_DENSITY);
 
     cr_assert_not_null(map, "Map should not be NULL");
@@ -41,11 +41,11 @@ Test(resources, get_minimum_resource_count_not_whole)
 
 Test(resources, count_resource)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     size_t count;
 
     cr_assert_not_null(map, "Map should not be NULL");
-    spread_resource(map, FOOD);
+    spread_resource(map, FOOD, false);
     count = count_resource(map, FOOD);
     cr_assert_gt(
         count, 0, "Food count should be greater than 0 after spreading");
@@ -56,12 +56,12 @@ Test(resources, count_resource)
 
 Test(resources, spread_resource)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     size_t initial_count, new_count;
 
     cr_assert_not_null(map, "Map should not be NULL");
     initial_count = count_resource(map, FOOD);
-    spread_resource(map, FOOD);
+    spread_resource(map, FOOD, false);
     new_count = count_resource(map, FOOD);
 
     cr_assert_gt(new_count, initial_count,
@@ -71,11 +71,11 @@ Test(resources, spread_resource)
 
 Test(resources, spread_resources_count_all)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     size_t food_count, linemate_count, deraumere_count, sibur_count,
         mendiane_count, phiras_count, thystame_count;
     cr_assert_not_null(map, "Map should not be NULL");
-    spread_resources(map);
+    spread_resources(map, false);
     food_count = count_resource(map, FOOD);
     linemate_count = count_resource(map, LINEMATE);
     deraumere_count = count_resource(map, DERAUMERE);
@@ -129,16 +129,16 @@ Test(resources, count_resource_null)
 
 Test(resources, spread_resource_null)
 {
-    spread_resource(NULL, FOOD);
+    spread_resource(NULL, FOOD, false);
 }
 
 Test(resources, spread_resource_enough)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
 
     cr_assert_not_null(map, "Map should not be NULL");
     get_tile_by_index(map, 0)->resources[FOOD] = 1000;
-    spread_resource(map, FOOD);
+    spread_resource(map, FOOD, false);
     cr_assert_eq(count_resource(map, FOOD), 1000,
         "Food count should not increase if already above minimum");
     destroy_map(map);
@@ -146,12 +146,12 @@ Test(resources, spread_resource_enough)
 
 Test(resources, spread_resources_null)
 {
-    spread_resources(NULL);
+    spread_resources(NULL, false);
 }
 
 Test(resources, minimum_resource_count_one)
 {
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     size_t count = get_minimum_resource_count(map, FOOD_DENSITY);
 
     cr_assert_not_null(map, "Map should not be NULL");
@@ -162,9 +162,9 @@ Test(resources, minimum_resource_count_one)
 
 Test(resources, spread_resources_count_one)
 {
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     cr_assert_not_null(map, "Map should not be NULL");
-    spread_resources(map);
+    spread_resources(map, false);
     cr_assert_eq(count_resource(map, FOOD), 1, "Food count should be 1");
     cr_assert_eq(
         count_resource(map, LINEMATE), 1, "Linemate count should be 1");

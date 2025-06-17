@@ -87,7 +87,7 @@ Test(player, move_player_forward_basic)
 {
     pos_t pos = {0, 0};
     player_t *player = create_player(pos, 0, NULL, NULL);
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");
@@ -112,7 +112,7 @@ Test(player, move_player_forward_wrap)
 {
     pos_t pos = {0, 0};
     player_t *player = create_player(pos, 0, NULL, NULL);
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");
@@ -155,7 +155,7 @@ Test(player, move_player_on_map)
 {
     pos_t pos = {5, 5};
     player_t *player = create_player(pos, 0, NULL, NULL);
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     tile_t *prev_tile;
 
     cr_assert_not_null(player, "Player should not be NULL");
@@ -183,7 +183,7 @@ Test(player, move_two_player_on_map)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     player_t *player2 = create_player((pos_t){1, 0}, 0, NULL, NULL);
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     tile_t *prev_tile_A;
     tile_t *prev_tile_B;
 
@@ -233,7 +233,7 @@ Test(player, move_player_forward_in_each_direction)
 {
     pos_t pos = {5, 5};
     player_t *player = create_player(pos, 0, NULL, NULL);
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");
@@ -277,7 +277,7 @@ Test(player, move_player_forward_in_each_direction)
 
 Test(player, west_wraps_correctly)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     pos_t pos = {0, 5};
     pos_t new_pos = get_forward_position(pos, WEST, map);
 
@@ -289,7 +289,7 @@ Test(player, west_wraps_correctly)
 Test(player, move_forward_null)
 {
     player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");

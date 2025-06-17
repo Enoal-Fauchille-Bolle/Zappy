@@ -51,7 +51,7 @@ Test(team, destroy_team_valid_with_players_and_eggs)
     team_t *team = create_team("TestTeam");
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
 
-    create_egg((pos_t){0, 0}, team);
+    create_egg((pos_t){0, 0}, team, false);
     add_player_to_team(team, player);
     destroy_team(team);      // Should not crash
     cr_assert(true, "Destroying valid team with players and eggs should not "
@@ -81,8 +81,8 @@ Test(team, get_egg_count_null_team)
 Test(team, get_egg_count_valid)
 {
     team_t *team = create_team("TestTeam");
-    create_egg((pos_t){0, 0}, team);
-    create_egg((pos_t){1, 1}, team);
+    create_egg((pos_t){0, 0}, team, false);
+    create_egg((pos_t){1, 1}, team, false);
     size_t count = get_egg_count(team);
 
     cr_assert_eq(count, 2, "Team should have 2 eggs");
@@ -91,9 +91,9 @@ Test(team, get_egg_count_valid)
 
 Test(team, get_egg_count_valid_after_adding_eggs)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
-    spawn_min_eggs(map, team, 20);
+    spawn_min_eggs(map, team, 20, false);
     size_t count = get_egg_count(team);
 
     cr_assert_eq(count, 20, "Team should have 20 eggs");
@@ -109,9 +109,9 @@ Test(team, hatch_player_null_team)
 
 Test(team, hatch_player_valid)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
-    spawn_min_eggs(map, team, 1);
+    spawn_min_eggs(map, team, 1, false);
     size_t initial_player_count = 0;
 
     bool result = hatch_player(team, map, 1, NULL);
@@ -133,7 +133,7 @@ Test(team, hatch_player_valid)
 
 Test(team, hatch_player_no_eggs)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
 
     bool result = hatch_player(team, map, 1, NULL);
@@ -200,9 +200,9 @@ Test(team, remove_player_from_team_not_found)
 Test(team, remove_egg_from_team_not_found)
 {
     team_t *team = create_team("TestTeam");
-    egg_t *egg = create_egg((pos_t){0, 0}, NULL);
+    egg_t *egg = create_egg((pos_t){0, 0}, NULL, false);
 
-    create_egg((pos_t){1, 1}, team);
+    create_egg((pos_t){1, 1}, team, false);
     remove_egg_from_team(team, egg);      // Should not crash
     // No assertion here, just checking for crashes
     destroy_egg(egg);
@@ -245,7 +245,7 @@ Test(team, remove_egg_from_team_null)
 
 Test(team, hatch_player_null)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     team_t *team = create_team("TestTeam");
 
     hatch_player(NULL, map, 1, NULL);

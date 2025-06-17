@@ -22,7 +22,7 @@
 
 Test(map, get_tile_inside_size)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile(map, (pos_t){5, 5});
 
     cr_assert_not_null(tile, "Tile should not be NULL");
@@ -34,7 +34,7 @@ Test(map, get_tile_inside_size)
 
 Test(map, get_tile_outside_size)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     // Accessing tile at 0, 0 due to wrapping
     tile_t *tile = get_tile(map, (pos_t){10, 10});
     // Same as above, accessing tile at 0, 0
@@ -52,7 +52,7 @@ Test(map, get_tile_outside_size)
 
 Test(map, modify_tile)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile(map, (pos_t){5, 5});
 
     cr_assert_not_null(tile, "Tile should not be NULL");
@@ -69,14 +69,14 @@ Test(map, modify_tile)
 
 Test(map, create_map_null)
 {
-    map_t *map = create_map(0, 0);
+    map_t *map = create_map(0, 0, false);
 
     cr_assert_null(map, "Map should be NULL for invalid dimensions");
 }
 
 Test(map, create_map_valid)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
 
     cr_assert_not_null(map, "Map should not be NULL for valid dimensions");
     cr_assert_eq(map->width, 10, "Map width should be 10");
@@ -100,10 +100,10 @@ Test(map, destroy_map_null)
 
 Test(map, create_0_size)
 {
-    map_t *map = create_map(0, 10);
+    map_t *map = create_map(0, 10, false);
 
     cr_assert_null(map, "Map should be NULL for zero width");
-    map = create_map(10, 0);
+    map = create_map(10, 0, false);
     cr_assert_null(map, "Map should be NULL for zero height");
     destroy_map(map);
 }
@@ -139,7 +139,7 @@ Test(get_tile, null)
 Test(add_player_to_map, null)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
 
     add_player_to_map(map, NULL);
     add_player_to_map(NULL, player);
@@ -151,7 +151,7 @@ Test(add_player_to_map, null)
 Test(remove_player_from_map, null)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
 
     remove_player_from_map(map, NULL);
     remove_player_from_map(NULL, player);
@@ -169,7 +169,7 @@ Test(access_tile_by_index, null_map)
 
 Test(access_tile_by_index, out_of_bounds)
 {
-    map_t *map = create_map(10, 10);
+    map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile_by_index(map, 100);
 
     cr_assert_null(tile, "Tile should be NULL for out of bounds index");
@@ -179,7 +179,7 @@ Test(access_tile_by_index, out_of_bounds)
 Test(add_player_to_tile, null)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
     add_player_to_tile(NULL, player);
@@ -193,7 +193,7 @@ Test(add_player_to_tile, null)
 Test(remove_player_from_tile, null)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
     remove_player_from_tile(NULL, player);
@@ -208,7 +208,7 @@ Test(remove_player_from_tile, player_not_in_tile)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     player_t *another_player = create_player((pos_t){0, 0}, 1, NULL, NULL);
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
     add_player_to_tile(tile, another_player);
@@ -222,7 +222,7 @@ Test(remove_player_from_tile, player_not_in_tile)
 Test(remove_player_from_tile, player_in_tile)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     tile_t *tile = get_tile(map, (pos_t){0, 0});
 
     add_player_to_tile(tile, player);

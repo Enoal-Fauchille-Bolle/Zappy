@@ -207,6 +207,30 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
 			$(SRCDIR_SERVER)team/team_egg.c									\
 			$(SRCDIR_SERVER)team/team_player.c								\
+			$(SRCDIR_SERVER)constants.c										\
+			$(SRCDIR_SERVER)connection/server.c								\
+			$(SRCDIR_SERVER)connection/client.c								\
+			$(SRCDIR_SERVER)connection/socket.c								\
+			$(SRCDIR_SERVER)connection/time.c								\
+			$(SRCDIR_SERVER)connection/connection_handler.c					\
+			$(SRCDIR_SERVER)connection/signal_handler.c						\
+			$(SRCDIR_SERVER)connection/team_join.c							\
+			$(SRCDIR_SERVER)options_parser/options.c						\
+			$(SRCDIR_SERVER)options_parser/parser.c							\
+			$(SRCDIR_SERVER)options_parser/processor.c						\
+			$(SRCDIR_SERVER)options_parser/options/port.c					\
+			$(SRCDIR_SERVER)options_parser/options/width.c					\
+			$(SRCDIR_SERVER)options_parser/options/height.c					\
+			$(SRCDIR_SERVER)options_parser/options/teams.c					\
+			$(SRCDIR_SERVER)options_parser/options/clients.c				\
+			$(SRCDIR_SERVER)options_parser/options/frequency.c				\
+			$(SRCDIR_SERVER)options_parser/options/help.c					\
+			$(SRCDIR_SERVER)options_parser/options/debug.c					\
+			$(SRCDIR_SERVER)command_handler/command_executor.c				\
+			$(SRCDIR_SERVER)game/game.c										\
+			$(SRCDIR_SERVER)game/tick.c										\
+			$(SRCDIR_SERVER)game/teams.c									\
+			$(SRCDIR_SERVER)commands/dummy.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\
