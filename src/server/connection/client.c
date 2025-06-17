@@ -66,12 +66,11 @@ static bool handle_command(
 
     if (command == NULL) {
         debug_warning(server->options->debug,
-            "Failed to parse command from client %d",
-            client_index - 2);
+            "Failed to parse command from client %d", client_index - 2);
         write(server->fds[client_index].fd, "ko\n", 3);
         return false;
     }
-    execute_command(server, command, server->fds[client_index].fd);
+    execute_command(server->clients[client_index - 2], command);
     destroy_command(command);
     return true;
 }
@@ -102,8 +101,8 @@ void handle_client_message(server_t *server, int client_index)
     } else {
         to_lowercase(message);
         debug_cmd(server->options->debug, "Player %d (Client %d): '%s'",
-            server->clients[client_index - 2]->player->id,
-            client_index - 2, message);
+            server->clients[client_index - 2]->player->id, client_index - 2,
+            message);
         handle_command(server, message, client_index);
     }
     free(message);

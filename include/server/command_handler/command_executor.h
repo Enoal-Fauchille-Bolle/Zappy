@@ -10,16 +10,14 @@
 
     #include "command_handler/command.h"
     #include "command_handler/command_status.h"
-    #include "connection/server.h"
+    #include "connection/client.h"
     #include <stdbool.h>
 
 typedef struct command_registry_entry_s {
     char *command_name;
-    command_status_t (*handler)(server_t *server, command_t *command,
-        int client_sockfd);
+    command_status_t (*handler)(client_t *client, command_t *command);
 } command_registry_entry_t;
 
-command_status_t execute_command(
-    server_t *server, command_t *command, int client_sockfd);
+command_status_t execute_command(client_t *client, command_t *command);
 
 #endif /* !COMMAND_EXECUTOR_H_ */
