@@ -190,6 +190,27 @@ Test(add_player_to_tile, null)
     destroy_map(map);
 }
 
+Test(add_player_to_tile, player_count)
+{
+    player_t *player = create_player((pos_t){0, 0}, 0, NULL);
+    map_t *map = create_map(1, 1);
+    tile_t *tile = get_tile(map, (pos_t){0, 0});
+
+    add_player_to_tile(tile, player);
+    cr_assert_eq(get_nb_players_on_tile(tile), 1,
+        "Player count should be 1 after adding a player");
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(get_nb_players_on_tile, null)
+{
+    tile_t *tile = get_tile(NULL, (pos_t){0, 0});
+
+    cr_assert_eq(get_nb_players_on_tile(tile), 0,
+        "Player count should be 0 for NULL tile");
+}
+
 Test(remove_player_from_tile, null)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL);
