@@ -74,7 +74,9 @@ player_t *spawn_player_from_egg(
     }
     add_player_to_map(map, player);
     remove_egg_from_map(map, egg);
-    remove_egg_from_team(egg->team, egg);
+    if (egg->team != NULL) {
+        remove_egg_from_team(egg->team, egg);
+    }
     destroy_egg(egg);
     return player;
 }

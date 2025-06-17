@@ -149,12 +149,10 @@ egg_t *lay_egg(player_t *player, map_t *map)
 {
     egg_t *egg;
 
-    if (player == NULL || map == NULL) {
-        fprintf(stderr, "Invalid player or map pointer\n");
-        return NULL;
-    }
-    if (player->team == NULL) {
-        fprintf(stderr, "Player is not part of a team\n");
+    if (player == NULL || map == NULL || player->team == NULL ||
+        player->client == NULL || player->client->server == NULL ||
+        player->client->server->options == NULL) {
+        fprintf(stderr, "Player, map, client or server pointer is NULL\n");
         return NULL;
     }
     egg = create_egg(

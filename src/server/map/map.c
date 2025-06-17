@@ -29,13 +29,14 @@ static vector_t *init_tiles_vector(size_t width, size_t height)
 {
     vector_t *tiles = vector_new(sizeof(tile_t));
     const vector_vtable_t *vtable = vector_get_vtable(tiles);
+    tile_t empty_tile = {0};
 
     if (tiles == NULL) {
         perror("Failed to allocate memory for tiles vector");
         return NULL;
     }
     for (size_t i = 0; i < width * height; i++)
-        vtable->push_back(tiles, &(tile_t){0});
+        vtable->push_back(tiles, &empty_tile);
     return tiles;
 }
 
