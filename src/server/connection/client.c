@@ -175,7 +175,8 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
         return NULL;
     }
     setup_client(client, server, client_index);
-    client->team_name = strdup(team->name);
+    if (team && team->name)
+        client->team_name = strdup(team->name);
     if (!client->team_name) {
         debug_warning(server->options->debug,
             "Failed to allocate memory for team name\n");
