@@ -61,7 +61,7 @@ bool handle_signal(int signal_fd, bool debug)
     }
     if (si.ssi_signo == SIGINT) {
         printf("\n");
-        debug_server(debug, "Received SIGINT, shutting down gracefully\n");
+        debug_server(debug, "Received SIGINT, shutting down gracefully");
         return false;
     }
     return true;

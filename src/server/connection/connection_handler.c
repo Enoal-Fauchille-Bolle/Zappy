@@ -38,14 +38,14 @@ void remove_client(server_t *server, int client_index)
         return;
     if (server->clients[client_index - 2] != NULL) {
         debug_conn(server->options->debug,
-            "Player %d (Client %d) removed from team '%s'\n",
+            "Player %d (Client %d) removed from team '%s'",
             server->clients[client_index - 2]->player->id,
             server->fds[client_index].fd,
             server->clients[client_index - 2]->team_name);
         destroy_client(server->clients[client_index - 2]);
         server->clients[client_index - 2] = NULL;
     }
-    debug_conn(server->options->debug, "Client %d disconnected\n",
+    debug_conn(server->options->debug, "Client %d disconnected",
         server->fds[client_index].fd);
     close(server->fds[client_index].fd);
     server->fds[client_index].fd = -1;
@@ -72,12 +72,12 @@ static void process_client_events(server_t *server, int max_fds)
             continue;
         if (server->fds[i].revents & POLLHUP) {
             debug_conn(server->options->debug,
-                "Client %d disconnected (POLLHUP)\n", server->fds[i].fd);
+                "Client %d disconnected (POLLHUP)", server->fds[i].fd);
             remove_client(server, i);
             continue;
         }
         if (server->fds[i].revents & POLLERR) {
-            debug_conn(server->options->debug, "Client %d error (POLLERR)\n",
+            debug_conn(server->options->debug, "Client %d error (POLLERR)",
                 server->fds[i].fd);
             remove_client(server, i);
             continue;
@@ -133,7 +133,7 @@ static void accept_new_connection(server_t *server)
 
     if (client_sockfd == -1)
         return perror("accept");
-    debug_conn(server->options->debug, "Connection from %s:%d (Client %d)\n",
+    debug_conn(server->options->debug, "Connection from %s:%d (Client %d)",
         inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port),
         client_sockfd);
     for (int i = 2; i < MAX_CLIENTS + 2; i++) {

@@ -17,6 +17,6 @@ command_status_t dummy_command(
 {
     (void)command;
     write(client_sockfd, "ok\n", 3);
-    debug_info(server->options->debug, "Executed dummy command\n");
+    debug_info(server->options->debug, "Executed dummy command");
     return COMMAND_SUCCESS;
 }

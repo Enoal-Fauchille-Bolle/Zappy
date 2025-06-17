@@ -35,14 +35,14 @@ static bool validate_team(
 {
     if (team == NULL) {
         debug_conn(server->options->debug,
-            "Client %d tried to join invalid team '%s'\n",
+            "Client %d tried to join invalid team '%s'",
             server->fds[client_index].fd, team_name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
     if (get_egg_count(team) == 0) {
         debug_conn(server->options->debug,
-            "Client %d tried to join full team '%s'\n",
+            "Client %d tried to join full team '%s'",
             server->fds[client_index].fd, team->name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
@@ -67,7 +67,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
 {
     server->clients[client_index - 2] = create_client(server, team);
     debug_conn(server->options->debug,
-        "Player %d (Client %d) assigned to team '%s'\n",
+        "Player %d (Client %d) assigned to team '%s'",
         server->clients[client_index - 2]->player->id,
         server->fds[client_index].fd,
         server->clients[client_index - 2]->team_name);
@@ -102,7 +102,7 @@ static bool validate_and_assign_team(
     }
     if (assign_team(server, team, client_index) == FAILURE) {
         debug_warning(server->options->debug,
-            "Failed to assign team '%s' to client %d\n", team_name,
+            "Failed to assign team '%s' to client %d", team_name,
             server->fds[client_index].fd);
         return FAILURE;
     }
@@ -151,13 +151,13 @@ bool handle_team_join(
 {
     if (!validate_and_assign_team(server, team_name, client_index)) {
         debug_warning(server->options->debug,
-            "Failed to assign team '%s' to client %d\n", team_name,
+            "Failed to assign team '%s' to client %d", team_name,
             server->fds[client_index].fd);
         return FAILURE;
     }
     if (send_welcome_message(server, client_index) == FAILURE) {
         debug_warning(server->options->debug,
-            "Failed to send welcome message to client %d\n",
+            "Failed to send welcome message to client %d",
             server->fds[client_index].fd);
         return FAILURE;
     }

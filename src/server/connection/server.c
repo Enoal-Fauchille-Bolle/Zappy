@@ -187,12 +187,12 @@ server_t *create_server(server_options_t *options)
 // TODO: game_tick(server);
 void run_server(server_t *server)
 {
-    debug_server(server->options->debug, "Listening on port %u\n",
+    debug_server(server->options->debug, "Listening on port %u",
         server->options->port);
     puts("Waiting for connections...");
     while (server->game->game_state == GAME_RUNNING) {
         if (process_connection(server) == FAILURE)
             break;
     }
-    debug_server(server->options->debug, "Server stopped\n");
+    debug_server(server->options->debug, "Server stopped");
 }

@@ -57,7 +57,7 @@ command_status_t execute_command(
     handler = get_command_registry_entry(command);
     if (!handler.handler) {
         debug_warning(
-            server->options->debug, "Invalid command: '%s'\n", command->name);
+            server->options->debug, "Invalid command: '%s'", command->name);
         write(client_sockfd, "ko\n", 3);
         return COMMAND_NOT_FOUND;
     }
