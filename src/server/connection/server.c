@@ -195,6 +195,8 @@ void run_server(server_t *server)
     debug_server(
         server->options->debug, "Listening on port %u", server->options->port);
     puts("Waiting for connections...");
+    debug_game(server->options->debug, "1 tick = %.2f ms",
+        (1.0 / server->game->tick_rate) * 1000.0);
     while (server->game->game_state == GAME_RUNNING) {
         tick_start_time = get_current_time_ms();
         if (process_connection(server) == FAILURE)
