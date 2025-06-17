@@ -12,6 +12,7 @@
 #include "game/teams.h"
 #include "game/tick.h"
 #include "map/map.h"
+#include "map/resources.h"
 #include "options_parser/options.h"
 #include "team/egg/egg.h"
 #include "team/team.h"
@@ -113,6 +114,7 @@ static bool setup_game(game_t *game, server_options_t *options)
     for (int i = 0; game->teams[i] != NULL; i++) {
         spawn_min_eggs(game->map, game->teams[i], options->clients_nb);
     }
+    spread_resources(game->map, options->debug);
     return SUCCESS;
 }
 
@@ -130,6 +132,7 @@ void game_tick(game_t *game, bool debug)
     if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0)
         debug_game(debug, "Game tick %u", game->game_tick);
     update_players_ticks(game);
+    spread_resources(game->map, debug);
     game->game_tick++;
 }
 
