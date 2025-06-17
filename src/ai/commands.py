@@ -190,14 +190,16 @@ class Commands:
 
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
-            if item in ai.inventory:
-                ai.inventory[item] += 1
-            else:
-                ai.inventory[item] = 1
-            if ai.look and len(ai.look) > 0 and item in ai.look[0]:
-                ai.look[0].remove(item)
-                print(f"Removed {item} from look[0] after taking it")
-            print(f"Picked up {item}. Updated inventory: {ai.inventory}")
+            with ai.inventory_lock:
+                if item in ai.inventory:
+                    ai.inventory[item] += 1
+                else:
+                    ai.inventory[item] = 1
+                with ai.lock:
+                    if ai.look and len(ai.look) > 0 and item in ai.look[0]:
+                        ai.look[0].remove(item)
+                        print(f"Removed {item} from look[0] after taking it")
+                print(f"Picked up {item}. Updated inventory: {ai.inventory}")
         return True
 
     def Set(self, item):
@@ -216,14 +218,16 @@ class Commands:
             return False
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
-            if item in ai.inventory and ai.inventory[item] > 0:
-                ai.inventory[item] -= 1
-                if ai.look and len(ai.look) > 0:
-                    ai.look[0].append(item)
-                    print(f"Added {item} to look[0] after setting it")
-                print(f"Dropped {item}. Updated inventory: {ai.inventory}")
-            else:
-                print(f"Warning: Dropped {item} but wasn't in local inventory")
+            with ai.inventory_lock:
+                if item in ai.inventory and ai.inventory[item] > 0:
+                    ai.inventory[item] -= 1
+                    with ai.lock:
+                        if ai.look and len(ai.look) > 0:
+                            ai.look[0].append(item)
+                            print(f"Added {item} to look[0] after setting it")
+                    print(f"Dropped {item}. Updated inventory: {ai.inventory}")
+                else:
+                    print(f"Warning: Dropped {item} but wasn't in local inventory")
         return True
 
     def Incantation(self):
