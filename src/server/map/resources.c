@@ -7,6 +7,7 @@
 
 #include "map/resources.h"
 #include "debug_categories.h"
+#include "map/resource_names.h"
 #include "map/tile.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -116,7 +117,7 @@ void spread_resource(map_t *map, const resource_t resource, bool debug)
     bool show_comma;
 
     debug_map(debug && target_count != 0,
-        "Spread resource %d to tile at positions [", resource);
+        "Spread resource %s to tile at positions [", resource_names[resource]);
     for (size_t i = 0; i < target_count; i++) {
         show_comma = (i < target_count - 1);
         place_resource_at_random_position(
