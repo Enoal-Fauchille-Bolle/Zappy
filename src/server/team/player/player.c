@@ -69,6 +69,10 @@ void destroy_player(player_t *player)
 {
     if (player == NULL)
         return;
+    if (player->client && player->client->server &&
+        player->client->server->game) {
+        remove_player_from_map(player->client->server->game->map, player);
+    }
     if (player->team != NULL) {
         remove_player_from_team(player->team, player);
     }
