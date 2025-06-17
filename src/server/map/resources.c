@@ -68,6 +68,35 @@ size_t count_resource(const map_t *map, const resource_t resource)
 }
 
 /**
+ * @brief Place a specific resource at a random position on the map.
+ *
+ * This function selects a random tile on the map and increments the count of
+ * the specified resource type on that tile. It also prints the coordinates of
+ * the tile if debugging is enabled.
+ *
+ * @param map Pointer to the map structure where resources will be placed
+ * @param resource The type of resource to place (e.g., FOOD, LINEMATE, etc.)
+ * @param show_comma Flag to indicate whether to print a comma after the
+ * coordinates (for formatting purposes)
+ * @param debug Flag to enable debug output
+ */
+static void place_resource_at_random_position(
+    map_t *map, const resource_t resource, bool show_comma, bool debug)
+{
+    size_t tile_index = rand() % (map->width * map->height);
+    size_t x = tile_index % map->width;
+    size_t y = tile_index / map->width;
+    tile_t *current_tile = get_tile_by_index(map, tile_index);
+
+    current_tile->resources[resource]++;
+    if (debug) {
+        printf("(%zu, %zu)", x, y);
+        if (show_comma)
+            printf(", ");
+    }
+}
+
+/**
  * @brief Spread a specific resource across the map to meet minimum density.
  *
  * This function checks the current count of a specified resource in the map
@@ -84,22 +113,17 @@ void spread_resource(map_t *map, const resource_t resource, bool debug)
     size_t min = get_minimum_resource_count(map, resource_densities[resource]);
     size_t current_count = count_resource(map, resource);
     size_t target_count = min - current_count;
-    tile_t *current_tile;
-    size_t tile_index;
-    size_t x;
-    size_t y;
+    bool show_comma;
 
-    if (map == NULL || current_count >= min)
-        return;
+    debug_map(debug && target_count != 0,
+        "Spread resource %d to tile at positions [", resource);
     for (size_t i = 0; i < target_count; i++) {
-        tile_index = rand() % (map->width * map->height);
-        x = tile_index % map->width;
-        y = tile_index / map->width;
-        current_tile = get_tile_by_index(map, tile_index);
-        current_tile->resources[resource]++;
-        debug_map(debug, "Spread resource %d to tile at position (%zu, %zu)", 
-                   resource, x, y);
+        show_comma = (i < target_count - 1);
+        place_resource_at_random_position(
+            map, resource, show_comma, debug && target_count != 0);
     }
+    if (debug && target_count != 0)
+        printf("]\n");
 }
 
 /**
