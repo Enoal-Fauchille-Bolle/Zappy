@@ -11,6 +11,14 @@
 
 namespace gui {
 
+/**
+ * @brief Constructor for the Parser class.
+ *
+ * Initializes the parser with command line arguments and validates them.
+ *
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ */
 Parser::Parser(int argc, char **argv)
 {
     if (argc < 3) {
@@ -23,16 +31,34 @@ Parser::Parser(int argc, char **argv)
     }
 }
 
+/**
+ * @brief Gets the parsed port number.
+ *
+ * @return int The port number.
+ */
 int Parser::getPort()
 {
     return port_;
 }
 
+/**
+ * @brief Gets the parsed host name.
+ *
+ * @return std::string The host name.
+ */
 std::string Parser::getHost()
 {
     return host_;
 }
 
+/**
+ * @brief Parses command line arguments.
+ *
+ * Processes command line arguments to extract port and host information.
+ *
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ */
 void Parser::parseArgs(int argc, char **argv)
 {
     for (int i = 1; i < argc; ++i) {
@@ -50,6 +76,15 @@ void Parser::parseArgs(int argc, char **argv)
     }
 }
 
+/**
+ * @brief Handles port argument parsing.
+ *
+ * Validates and sets the port number from command line arguments.
+ *
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ * @param i Reference to current argument index.
+ */
 void Parser::handlePortArgument(int argc, char **argv, int &i)
 {
     if (i + 1 < argc && isValidPort(std::stoi(argv[++i]))) {
@@ -59,6 +94,15 @@ void Parser::handlePortArgument(int argc, char **argv, int &i)
     }
 }
 
+/**
+ * @brief Handles host argument parsing.
+ *
+ * Validates and sets the host name from command line arguments.
+ *
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ * @param i Reference to current argument index.
+ */
 void Parser::handleHostArgument(int argc, char **argv, int &i)
 {
     if (i + 1 < argc && isValidHost(argv[++i])) {
@@ -68,11 +112,25 @@ void Parser::handleHostArgument(int argc, char **argv, int &i)
     }
 }
 
+/**
+ * @brief Validates if a port number is within the valid range.
+ *
+ * @param port The port number to validate.
+ * @return bool True if port is valid (1024-65535), false otherwise.
+ */
 bool Parser::isValidPort(const int &port)
 {
     return port > 1024 && port <= 65535;
 }
 
+/**
+ * @brief Validates if a host name is valid.
+ *
+ * Checks if the host is either "localhost" or a valid IP address.
+ *
+ * @param host The host name to validate.
+ * @return bool True if host is valid, false otherwise.
+ */
 bool Parser::isValidHost(const std::string &host)
 {
     if (host == "localhost") {
@@ -99,6 +157,11 @@ bool Parser::isValidHost(const std::string &host)
     return count == 4;
 }
 
+/**
+ * @brief Prints usage information to console.
+ *
+ * Displays help information showing how to use the application.
+ */
 void Parser::printUsage() const
 {
     std::cout << "Usage: ./zappy -p <port> -h <host>" << std::endl;
@@ -107,6 +170,13 @@ void Parser::printUsage() const
     std::cout << "  -h, --host <host>   Specify the host name (default: localhost)." << std::endl;
 }
 
+/**
+ * @brief Prints error message and exits application.
+ *
+ * Displays error message to stderr and terminates the program.
+ *
+ * @param message The error message to display.
+ */
 void Parser::printError(const std::string &message) const
 {
     std::cerr << "Error: " << message << std::endl;

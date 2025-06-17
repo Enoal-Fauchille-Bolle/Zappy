@@ -21,31 +21,25 @@ public:
     TileContentManager(int x, int y);
     ~TileContentManager();
 
-    // Player management
     void addPlayer(Player* player);
     void removePlayer(Player* player);
     const std::vector<Player*>& getPlayers() const;
 
-    // Resource management
     void addResource(Resources* resource);
     void removeResource(Resources* resource);
     const std::vector<Resources*>& getResources() const;
 
-    // Egg management
     void addEgg(Egg* egg);
     void removeEgg(Egg* egg);
     const std::vector<Egg*>& getEggs() const;
 
-    // Entity management
     void addEntity(Entity* entity);
     void removeEntity(Entity* entity);
     const std::vector<Entity*>& getEntities() const;
 
-    // Resource quantities (for compatibility with existing code)
     void setResourceQuantity(const std::string& resourceName, int quantity);
     int getResourceQuantity(const std::string& resourceName) const;
 
-    // Utility
     Position getPosition() const;
     std::pair<int, int> getCoordinates() const;
     bool isEmpty() const;
@@ -56,7 +50,7 @@ private:
     std::vector<Resources*> _resources;
     std::vector<Egg*> _eggs;
     std::vector<Entity*> _entities;
-    std::map<std::string, int> _resourceQuantities; // For compatibility with existing code
+    std::map<std::string, int> _resourceQuantities;
 };
 
 #endif /* !TILE_CONTENT_MANAGER_HPP_ */
