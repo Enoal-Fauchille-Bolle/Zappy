@@ -10,6 +10,7 @@
 #include "debug_categories.h"
 #include "game/game_state.h"
 #include "game/teams.h"
+#include "game/tick.h"
 #include "map/map.h"
 #include "options_parser/options.h"
 #include "team/egg/egg.h"
@@ -128,6 +129,7 @@ void game_tick(game_t *game, bool debug)
 {
     if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0)
         debug_game(debug, "Game tick %u", game->game_tick);
+    update_players_ticks(game);
     game->game_tick++;
 }
 

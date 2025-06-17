@@ -102,6 +102,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/dummy.c							\
 				$(SRCDIR_SERVER)game/game.c									\
 				$(SRCDIR_SERVER)game/teams.c								\
+				$(SRCDIR_SERVER)game/tick.c								\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)

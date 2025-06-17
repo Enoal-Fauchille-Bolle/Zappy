@@ -64,3 +64,15 @@ void remove_player_from_team(team_t *team, player_t *player)
     }
     fprintf(stderr, "Player not found on team\n");
 }
+
+size_t get_team_player_count(const team_t *team)
+{
+    const vector_vtable_t *vtable;
+
+    if (team == NULL || team->players == NULL) {
+        fprintf(stderr, "Invalid team pointer\n");
+        return 0;
+    }
+    vtable = vector_get_vtable(team->players);
+    return vtable->size(team->players);
+}

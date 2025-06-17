@@ -26,6 +26,7 @@ void destroy_team(team_t *team);
 
 void add_player_to_team(team_t *team, player_t *player);
 void remove_player_from_team(team_t *team, player_t *player);
+size_t get_team_player_count(const team_t *team);
 void add_egg_to_team(team_t *team, egg_t *egg);
 void remove_egg_from_team(team_t *team, egg_t *egg);
 size_t get_egg_count(const team_t *team);
