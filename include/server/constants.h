@@ -20,6 +20,9 @@ extern const int EXIT_ERROR_CODE;
 
     #define DEFAULT_TICK_RATE 100
 
+    #define MIN_FREQUENCY 1
+    #define MAX_FREQUENCY 1000
+
     #define MAX_MAP_SIZE 1000
 
     #define MAX_MIN_CLIENTS 1000000

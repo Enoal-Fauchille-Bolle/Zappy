@@ -5,6 +5,7 @@
 ** Frequency Option
 */
 
+#include "constants.h"
 #include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,8 +15,8 @@
  *
  * This function processes the "-f" option to set the server frequency
  * (time units per second). It validates that the frequency value is
- * within the valid range (10-10000) and sets an error flag if validation
- * fails.
+ * within the valid range (MIN_FREQUENCY-MAX_FREQUENCY) and sets an error flag
+ * if validation fails.
  *
  * @param options Pointer to the server options structure to modify
  * @param i Pointer to the current argument index (will be incremented)
@@ -36,9 +37,11 @@ void handle_frequency(server_options_t *options, int *i, int ac, char **av)
     if (*i + 1 < ac) {
         *i += 1;
         options->frequency = atoi(av[*i]);
-        if (options->frequency < 10 || options->frequency > 10000) {
-            fputs("Error: Frequency must be a number between 10 and 10000\n",
-                stderr);
+        if (options->frequency < MIN_FREQUENCY ||
+            options->frequency > MAX_FREQUENCY) {
+            fprintf(stderr,
+                "Error: Frequency must be a number between %d and %d\n",
+                MIN_FREQUENCY, MAX_FREQUENCY);
             options->error = true;
         }
     } else {
