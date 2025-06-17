@@ -22,10 +22,10 @@ typedef struct egg_s {
     team_t *team;
 } egg_t;
 
-egg_t *create_egg(const pos_t pos, team_t *team);
+egg_t *create_egg(const pos_t pos, team_t *team, bool debug);
 void destroy_egg(egg_t *egg);
 
-void spawn_min_eggs(map_t *map, team_t *team, size_t min);
+void spawn_min_eggs(map_t *map, team_t *team, size_t min, bool debug);
 player_t *spawn_player_from_egg(
     egg_t *egg, map_t *map, const size_t player_id, client_t *client);
 

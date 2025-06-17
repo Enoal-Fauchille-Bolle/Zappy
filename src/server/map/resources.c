@@ -6,6 +6,7 @@
 */
 
 #include "map/resources.h"
+#include "debug_categories.h"
 #include "map/tile.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -78,19 +79,26 @@ size_t count_resource(const map_t *map, const resource_t resource)
  * @param resource The type of resource to spread (e.g., FOOD, LINEMATE, etc.)
  * @note If the map pointer is NULL, it prints an error message and returns
  */
-void spread_resource(map_t *map, const resource_t resource)
+void spread_resource(map_t *map, const resource_t resource, bool debug)
 {
     size_t min = get_minimum_resource_count(map, resource_densities[resource]);
     size_t current_count = count_resource(map, resource);
     size_t target_count = min - current_count;
     tile_t *current_tile;
+    size_t tile_index;
+    size_t x;
+    size_t y;
 
     if (map == NULL || current_count >= min)
         return;
     for (size_t i = 0; i < target_count; i++) {
-        current_tile =
-            get_tile_by_index(map, rand() % (map->width * map->height));
+        tile_index = rand() % (map->width * map->height);
+        x = tile_index % map->width;
+        y = tile_index / map->width;
+        current_tile = get_tile_by_index(map, tile_index);
         current_tile->resources[resource]++;
+        debug_map(debug, "Spread resource %d to tile at position (%zu, %zu)", 
+                   resource, x, y);
     }
 }
 
@@ -105,12 +113,12 @@ void spread_resource(map_t *map, const resource_t resource)
  * @param map Pointer to the map structure where resources will be spread
  * @note If the map pointer is NULL, it prints an error message and returns
  */
-void spread_resources(map_t *map)
+void spread_resources(map_t *map, bool debug)
 {
     if (map == NULL) {
         fprintf(stderr, "Invalid map pointer\n");
         return;
     }
     for (resource_t resource = FOOD; resource <= THYSTAME; resource++)
-        spread_resource(map, resource);
+        spread_resource(map, resource, debug);
 }

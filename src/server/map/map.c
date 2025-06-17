@@ -5,6 +5,7 @@
 ** map
 */
 
+#include "debug_categories.h"
 #include "map/tile.h"
 #include "vector.h"
 #include <stddef.h>
@@ -52,7 +53,7 @@ static vector_t *init_tiles_vector(size_t width, size_t height)
  * @note Caller is responsible for freeing the returned structure using
  *       destroy_map() when it is no longer needed.
  */
-map_t *create_map(size_t width, size_t height)
+map_t *create_map(size_t width, size_t height, bool debug)
 {
     map_t *map = malloc(sizeof(map_t));
 
@@ -71,6 +72,7 @@ map_t *create_map(size_t width, size_t height)
     map->tiles = init_tiles_vector(width, height);
     for (size_t i = 0; i < width * height; i++)
         init_tile(get_tile_by_index(map, i));
+    debug_map(debug, "Map created with dimensions %zu x %zu", width, height);
     return map;
 }
 

@@ -8,7 +8,9 @@
 
 #ifndef RESOURCES_H_
     #define RESOURCES_H_
+
     #include <stddef.h>
+    #include <stdbool.h>
 
     #define FOOD_DENSITY 0.5f
     #define LINEMATE_DENSITY 0.3f
@@ -39,7 +41,7 @@ typedef resources_t inventory_t;
 
 size_t get_minimum_resource_count(const map_t *map, const float density);
 size_t count_resource(const map_t *map, const resource_t resource);
-void spread_resource(map_t *map, const resource_t resource);
-void spread_resources(map_t *map);
+void spread_resource(map_t *map, const resource_t resource, bool debug);
+void spread_resources(map_t *map, bool debug);
 
 #endif /* !RESOURCES_H_ */

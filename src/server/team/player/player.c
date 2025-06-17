@@ -157,7 +157,8 @@ egg_t *lay_egg(player_t *player, map_t *map)
         fprintf(stderr, "Player is not part of a team\n");
         return NULL;
     }
-    egg = create_egg(player->pos, player->team);
+    egg = create_egg(
+        player->pos, player->team, player->client->server->options->debug);
     if (egg == NULL) {
         fprintf(stderr, "Failed to create egg\n");
         return NULL;

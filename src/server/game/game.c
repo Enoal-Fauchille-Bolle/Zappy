@@ -81,7 +81,7 @@ static team_t **create_teams(char **teams_name)
  */
 static bool init_game(game_t *game, server_options_t *options)
 {
-    game->map = create_map(options->width, options->height);
+    game->map = create_map(options->width, options->height, options->debug);
     if (!game->map) {
         destroy_game(game);
         return FAILURE;
@@ -112,7 +112,7 @@ static bool init_game(game_t *game, server_options_t *options)
 static bool setup_game(game_t *game, server_options_t *options)
 {
     for (int i = 0; game->teams[i] != NULL; i++) {
-        spawn_min_eggs(game->map, game->teams[i], options->clients_nb);
+        spawn_min_eggs(game->map, game->teams[i], options->clients_nb, options->debug);
     }
     spread_resources(game->map, options->debug);
     return SUCCESS;

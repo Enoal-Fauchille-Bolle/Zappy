@@ -24,7 +24,7 @@
  * @param team Pointer to the team structure for which eggs will be spawned
  * @param count Number of eggs to spawn
  */
-void spawn_min_eggs(map_t *map, team_t *team, size_t min)
+void spawn_min_eggs(map_t *map, team_t *team, size_t min, bool debug)
 {
     pos_t random_pos;
     egg_t *current_egg;
@@ -37,7 +37,7 @@ void spawn_min_eggs(map_t *map, team_t *team, size_t min)
         if (get_egg_count(team) >= min)
             break;
         random_pos = (pos_t){rand() % map->width, rand() % map->height};
-        current_egg = create_egg(random_pos, team);
+        current_egg = create_egg(random_pos, team, debug);
         if (current_egg == NULL) {
             fprintf(stderr, "Failed to create egg\n");
             continue;
