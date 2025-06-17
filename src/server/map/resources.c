@@ -85,13 +85,11 @@ static void place_resource_at_random_position(
     map_t *map, const resource_t resource, bool show_comma, bool debug)
 {
     size_t tile_index = rand() % (map->width * map->height);
-    size_t x = tile_index % map->width;
-    size_t y = tile_index / map->width;
     tile_t *current_tile = get_tile_by_index(map, tile_index);
 
     current_tile->resources[resource]++;
     if (debug) {
-        printf("(%zu, %zu)", x, y);
+        printf("(%zu, %zu)", tile_index % map->width, tile_index / map->width);
         if (show_comma)
             printf(", ");
     }
@@ -113,17 +111,17 @@ void spread_resource(map_t *map, const resource_t resource, bool debug)
 {
     size_t min = get_minimum_resource_count(map, resource_densities[resource]);
     size_t current_count = count_resource(map, resource);
-    size_t target_count = min - current_count;
+    long long target_count = min - current_count;
     bool show_comma;
 
-    debug_map(debug && target_count != 0,
+    debug_map(debug && target_count > 0,
         "Spread resource %s to tile at positions [", resource_names[resource]);
-    for (size_t i = 0; i < target_count; i++) {
+    for (long long i = 0; i < target_count; i++) {
         show_comma = (i < target_count - 1);
         place_resource_at_random_position(
             map, resource, show_comma, debug && target_count != 0);
     }
-    if (debug && target_count != 0)
+    if (debug && target_count > 0)
         printf("]\n");
 }
 
