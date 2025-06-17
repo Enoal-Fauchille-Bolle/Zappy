@@ -8,10 +8,12 @@
 
 #ifndef STRING_H_
     #define STRING_H_
+    #include <stddef.h>
 
 void to_lowercase(char *str);
 void trim(char *str);
 char *dyn_strcat(char *dest, const char *src);
 char *empty_string(void);
+char *repeat_string(const char *str, const char *delim, size_t count);
 
 #endif /* !STRING_H_ */
