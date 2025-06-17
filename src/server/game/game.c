@@ -37,6 +37,7 @@ void destroy_game(game_t *game)
         free(game->teams);
     }
     free(game);
+    game = NULL;
 }
 
 /**

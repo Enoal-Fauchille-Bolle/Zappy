@@ -54,6 +54,7 @@ void destroy_egg(egg_t *egg)
     if (egg == NULL)
         return;
     free(egg);
+    egg = NULL;
 }
 
 /**

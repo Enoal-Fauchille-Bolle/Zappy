@@ -100,4 +100,5 @@ void destroy_map(map_t *map)
     }
     vector_destroy(map->tiles);
     free(map);
+    map = NULL;
 }

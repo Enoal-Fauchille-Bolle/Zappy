@@ -40,6 +40,7 @@ static void destroy_clients(server_t *server)
             free(server->clients[i]->team_name);
         }
         free(server->clients[i]);
+        server->clients[i] = NULL;
     }
 }
 
@@ -84,6 +85,7 @@ void destroy_server(server_t *server)
     destroy_server_options(server->options);
     destroy_clients(server);
     free(server);
+    server = NULL;
 }
 
 /**

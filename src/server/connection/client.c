@@ -41,6 +41,7 @@ static void destroy_command(command_t *command)
         free(command->tokens);
     }
     free(command);
+    command = NULL;
 }
 
 /**
