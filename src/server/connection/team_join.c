@@ -65,7 +65,8 @@ static bool validate_team(
  */
 static bool assign_team(server_t *server, team_t *team, int client_index)
 {
-    server->clients[client_index - 2] = create_client(server, team);
+    server->clients[client_index - 2] =
+        create_client(server, team, client_index);
     debug_conn(server->options->debug,
         "Player %d (Client %d) assigned to team '%s'",
         server->clients[client_index - 2]->player->id,

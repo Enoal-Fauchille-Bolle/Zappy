@@ -71,8 +71,7 @@ static bool handle_command(
         write(server->fds[client_index].fd, "ko\n", 3);
         return false;
     }
-    execute_command(
-        server, command, server->fds[client_index].fd);
+    execute_command(server, command, server->fds[client_index].fd);
     destroy_command(command);
     return true;
 }
@@ -127,14 +126,33 @@ void destroy_client(client_t *client)
 {
     if (client == NULL)
         return;
-    if (client->team_name != NULL) {
-        free(client->team_name);
-    }
     if (client->player != NULL) {
         destroy_player(client->player);
+        client->player = NULL;
+    }
+    if (client->team_name != NULL) {
+        free(client->team_name);
+        client->team_name = NULL;
     }
     free(client);
     client = NULL;
+}
+
+/**
+ * @brief Initializes a client structure with server connection details
+ *
+ * @param client Pointer to the client structure to initialize
+ * @param server Pointer to the server instance
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ */
+static void setup_client(client_t *client, server_t *server, int client_index)
+{
+    client->server = server;
+    client->index = client_index - 2;
+    client->sockfd = server->fds[client_index].fd;
+    client->team_name = NULL;
+    client->player = NULL;
 }
 
 /**
@@ -148,7 +166,7 @@ void destroy_client(client_t *client)
  * @param team Pointer to the team structure to associate with the client
  * @return Pointer to the newly created client, or NULL on failure
  */
-client_t *create_client(server_t *server, team_t *team)
+client_t *create_client(server_t *server, team_t *team, int client_index)
 {
     client_t *client = malloc(sizeof(client_t));
 
@@ -157,15 +175,16 @@ client_t *create_client(server_t *server, team_t *team)
             "Failed to allocate memory for new client");
         return NULL;
     }
+    setup_client(client, server, client_index);
     client->team_name = strdup(team->name);
     if (!client->team_name) {
-        debug_warning(server->options->debug,
-            "Failed to allocate memory for team name");
+        debug_warning(
+            server->options->debug, "Failed to allocate memory for team name");
         free(client);
         return NULL;
     }
-    client->player =
-        hatch_player(team, server->game->map, server->game->next_player_id);
+    client->player = hatch_player(
+        team, server->game->map, server->game->next_player_id, client);
     server->game->next_player_id++;
     return client;
 }
