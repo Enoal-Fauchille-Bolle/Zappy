@@ -47,7 +47,7 @@ player_t *create_player(
     for (size_t i = 0; i <= THYSTAME; i++)
         player->inventory[i] = 0;
     player->inventory[FOOD] = 10;
-    player->hunger_cooldown = 0;
+    player->hunger_cooldown = 126;
     player->tick_cooldown = 0;
     add_player_to_team(team, player);
     player->client = client;
