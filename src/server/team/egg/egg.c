@@ -39,8 +39,9 @@ egg_t *create_egg(const pos_t pos, team_t *team, bool debug)
         perror("Team pointer is NULL, egg will not be associated with a team");
     } else {
         add_egg_to_team(team, egg);
-        debug_map(debug, "Egg created at (%zu, %zu) for team %s\n",
-            pos.x, pos.y, team->name);
+        if (team->name)
+            debug_map(debug, "Egg created at (%zu, %zu) for team %s\n", pos.x,
+                pos.y, team->name);
     }
     return egg;
 }
