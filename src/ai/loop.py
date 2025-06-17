@@ -7,6 +7,9 @@
 
 import random
 from commands import Commands
+import threading
+import time
+from utils import ContinuousMonitor
 
 class Loop:
     def __init__(self, connexion):
@@ -21,39 +24,42 @@ class Loop:
         self.level = 1
         self.time_look = 9
         self.tick = []
-        self.time_tick = 0
-        self.food_tick = 0
+        self.lock = threading.Lock()
+        self.inventory_lock = threading.Lock()
+        self.tick_counter = 0
+        self.tick_duration = 0
         self.current_path = []
+        self.elevation_requirements = [
+            { "players": 1, "linemate": 1, "deraumere": 0, "sibur": 0, "mendiane": 0, "phiras": 0, "thystame": 0},
+            { "players": 2, "linemate": 1, "deraumere": 1, "sibur": 1, "mendiane": 0, "phiras": 0, "thystame": 0},
+            { "players": 2, "linemate": 2, "deraumere": 0, "sibur": 1, "mendiane": 0, "phiras": 2, "thystame": 0},
+            { "players": 4, "linemate": 1, "deraumere": 1, "sibur": 2, "mendiane": 0, "phiras": 1, "thystame": 0},
+            { "players": 4, "linemate": 1, "deraumere": 2, "sibur": 1, "mendiane": 3, "phiras": 0, "thystame": 0},
+            { "players": 6, "linemate": 1, "deraumere": 2, "sibur": 3, "mendiane": 0, "phiras": 1, "thystame": 0},
+            { "players": 6, "linemate": 2, "deraumere": 2, "sibur": 2, "mendiane": 2, "phiras": 2, "thystame": 1}]
 
     def run(self, map_size=None):
-        if not self.connexion.connected:
-            # print("Failed to connect. Exiting loop.")
-            return
-
+        """Main AI execution loop"""
+        print("AI starting")
+        self.running = True
+        self.is_dead = False
         self.map_size = map_size
-        if map_size:
-            self.position = (0, 0)
-        while self.running:
-            try:
-                if not self.connexion.connected:
-                    # print("Connection lost. Attempting to reconnect...")
-                    if not self.connexion.connect():
-                        # print("Reconnection failed. Exiting loop.")
-                        break
+        self.commands.Look()
+        self.commands.Inventory()
+        self.monitor = ContinuousMonitor(self)
+        self.monitor.start()
+        try:
+            while self.running:
                 self.make_decision()
-                # print("\nLook content:")
-                # print(f"Type: {type(self.look)}")
-                self.commands.Connect_nbr()
-                self.get_tick()
-                # print(f"Time tick: {self.time_tick}")
-                if self.look:
-                    for idx, item in enumerate(self.look):
-                        print(f"Item {idx}: {item}")
-                else:
-                    print("Look is empty")
-            except KeyboardInterrupt:
-                # print("\nExiting loop.")
-                self.running = False
+                # self.commands.Broadcast("\"AI is running\"")
+                time.sleep(0.1)
+        except Exception as e:
+            print(f"Error in main AI loop: {e}")
+        finally:
+            print("AI shutting down")
+            if hasattr(self, 'monitor'):
+                self.monitor.stop()
+                self.monitor.join(timeout=1)
 
     def get_tick(self):
         if not self.tick:
@@ -70,25 +76,24 @@ class Loop:
 
     def make_decision(self):
         """Main decision-making function that orchestrates AI behavior"""
-        self.check_and_update_look()
-        if self.inventory["food"] < 3:
-            if self.current_path:
-                success = self.execute_next_command()
-                if not success:
-                    self.current_path = []
-                return
-            self.plan_next_action()
-        else:
-            return
+        # if self.inventory["food"] < 3:
+        #     if self.current_path:
+        #         success = self.execute_next_command()
+        #         if not success:
+        #             self.current_path = []
+        #         return
+        #     self.plan_next_action("food")
+        # else:
+        self.time_look += 1
+        if self.time_look == 10:
+            self.check_and_update_look()
 
     def check_and_update_look(self):
         """Check if it's time to perform a look action"""
-        self.time_look += 1
-        if self.time_look == 10:
-            self.commands.Look()
-            self.time_look = 0
-            # print(f"Look content:")
-            # print(f"Type: {type(self.look)}")
+        self.commands.Look()
+        self.time_look = 0
+        # print(f"Look content:")
+        # print(f"Type: {type(self.look)}")
 
     def execute_next_command(self):
         """Execute the next command in the current path"""
@@ -141,9 +146,9 @@ class Loop:
             # print(f"Left result: {success}, new orientation: {self.orientation}")
         return success
 
-    def plan_next_action(self):
+    def plan_next_action(self, resource_name):
         """Plan the next action when there's no current path"""
-        path = self.find_resource_path("food")
+        path = self.find_resource_path(resource_name)
         if path:
             # print(f"Path to food: {path}")
             self.current_path = path
@@ -281,3 +286,18 @@ class Loop:
             path.append(f"Take {resource_name}")
         # print(f"Generated path: {path}")
         return path
+
+    # Add this method to safely handle the "dead" state
+    def set_dead(self):
+        """Set the AI as dead and perform proper cleanup"""
+        with self.lock:
+            print("AI DEATH DETECTED - SHUTTING DOWN")
+            self.running = False
+            # Close the socket safely to prevent further send attempts
+            try:
+                if self.connexion and self.connexion.socket:
+                    self.connexion.socket.close()
+                    self.connexion.connected = False
+                    print("Socket closed due to death")
+            except Exception as e:
+                print(f"Error closing socket: {e}")
