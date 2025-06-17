@@ -9,8 +9,8 @@
 #ifndef RESOURCES_H_
     #define RESOURCES_H_
 
-    #include <stddef.h>
     #include <stdbool.h>
+    #include <stddef.h>
 
     #define FOOD_DENSITY 0.5f
     #define LINEMATE_DENSITY 0.3f
@@ -29,6 +29,9 @@ typedef enum resource_e {
     PHIRAS,
     THYSTAME
 } resource_t;
+
+static const char *resource_names[7] = {"food", "linemate", "deraumere",
+    "sibur", "mendiane", "phiras", "thystame"};
 
 static const float resource_densities[7] = {FOOD_DENSITY, LINEMATE_DENSITY,
     DERAUMERE_DENSITY, SIBUR_DENSITY, MENDIANE_DENSITY, PHIRAS_DENSITY,
