@@ -38,7 +38,7 @@ int main(int argc, char **argv)
             parser.getPort());
         NetworkManager::send("GRAPHICS");
         std::string response = NetworkManager::receive();
-        std::cout << "resonse: " << response << std::endl;
+        std::cout << "response: " << response << std::endl;
 
         ZappyApp app;
         app.initApp();
