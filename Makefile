@@ -158,6 +158,7 @@ SRC_AI = $(SRCDIR_AI)main.py	\
 		$(SRCDIR_AI)connexions.py	\
 		$(SRCDIR_AI)loop.py	\
 		$(SRCDIR_AI)parser.py	\
+		$(SRCDIR_AI)utils.py	\
 
 # Objects
 OBJ_AI =
