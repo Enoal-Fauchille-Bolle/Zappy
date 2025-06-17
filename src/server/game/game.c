@@ -79,7 +79,7 @@ static bool init_game(game_t *game, server_options_t *options)
 {
     game->map = create_map(options->width, options->height);
     if (!game->map) {
-        free(game);
+        destroy_game(game);
         return FAILURE;
     }
     game->teams = create_teams(options->teams);
