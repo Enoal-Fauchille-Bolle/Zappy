@@ -9,7 +9,6 @@
 #define GUI_PARSING_HPP_
 
 #include <string>
-#include <vector>
 
 namespace gui {
 

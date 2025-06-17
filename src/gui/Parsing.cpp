@@ -6,6 +6,7 @@
 */
 
 #include "Parsing.hpp"
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -48,6 +49,9 @@ int Parser::getPort()
  */
 std::string Parser::getHost()
 {
+    if (host_ == "localhost") {
+        return "127.0.0.1";
+    }
     return host_;
 }
 

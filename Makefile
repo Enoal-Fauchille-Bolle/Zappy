@@ -82,6 +82,8 @@ NAME_GUI = zappy_gui
 
 # Folder name
 SRCDIR_GUI = ${SRCDIR}gui/
+NET_GUI	=	$(SRCDIR_GUI)network/
+POSIX	=	$(NET_GUI)POSIX_wrapper/
 
 # Sources
 SRC_GUI = $(SRCDIR_GUI)main.cpp	\
@@ -94,7 +96,13 @@ SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(SRCDIR_GUI)entity/Resources.cpp \
 		$(SRCDIR_GUI)entity/Player.cpp \
 		$(SRCDIR_GUI)entity/TileContentManager.cpp \
-		$(SRCDIR_GUI)entity/TileDisplay.cpp
+		$(SRCDIR_GUI)entity/TileDisplay.cpp	\
+		$(NET_GUI)NetworkWorker.cpp	\
+		$(NET_GUI)NetworkManager.cpp	\
+		$(NET_GUI)message/MessageProtocol.cpp	\
+		$(POSIX)SocketTransport.cpp	\
+		$(POSIX)connection/ReconnectionService.cpp	\
+		$(POSIX)connection/ConnectionManager.cpp
 
 # Objects
 OBJ_GUI = $(SRC_GUI:.cpp=.o)
