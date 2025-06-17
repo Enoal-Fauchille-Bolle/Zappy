@@ -203,14 +203,14 @@ Test(egg, remove_egg_from_map_valid)
 Test(egg, spawn_player_from_egg_null)
 {
     map_t *map = create_map(1, 1);
-    player_t *player = spawn_player_from_egg(NULL, map, 1);
+    player_t *player = spawn_player_from_egg(NULL, map, 1, NULL);
     egg_t *egg = create_egg((pos_t){0, 0}, NULL);
 
     cr_assert_null(player, "Player should be NULL when egg is NULL");
-    player = spawn_player_from_egg(NULL, NULL, 1);
+    player = spawn_player_from_egg(NULL, NULL, 1, NULL);
     cr_assert_null(
         player, "Player should be NULL when both egg and map are NULL");
-    player = spawn_player_from_egg(egg, NULL, 1);
+    player = spawn_player_from_egg(egg, NULL, 1, NULL);
     cr_assert_null(
         player, "Player should be NULL when egg is NULL but map is valid");
     destroy_map(map);
@@ -225,7 +225,7 @@ Test(egg, spawn_player_from_egg_valid)
 
     cr_assert_eq(vector_get_vtable(tile->players)->size(tile->players), 0,
         "Tile should have zero players");
-    player = spawn_player_from_egg(egg, map, 1);
+    player = spawn_player_from_egg(egg, map, 1, NULL);
     cr_assert_not_null(player, "Player should not be NULL after spawning");
     cr_assert_eq(player->pos.x, 7, "Player X position should match egg");
     cr_assert_eq(player->pos.y, 4, "Player Y position should match egg");
@@ -299,7 +299,7 @@ Test(egg, spawn_minimum_eggs_twice)
 Test(egg, player_lays_egg_null)
 {
     team_t *team = create_team("TestTeam");
-    player_t *player = create_player((pos_t){0, 0}, 1, team);
+    player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
     map_t *map = create_map(1, 1);
 
     lay_egg(NULL, map);         // Should not crash
@@ -315,7 +315,7 @@ Test(egg, player_lays_egg_null)
 Test(egg, player_lays_egg_valid)
 {
     team_t *team = create_team("TestTeam");
-    player_t *player = create_player((pos_t){3, 7}, 1, team);
+    player_t *player = create_player((pos_t){3, 7}, 1, team, NULL);
     map_t *map = create_map(10, 10);
     egg_t *egg;
 
