@@ -258,3 +258,32 @@ Test(init_tile, null)
     init_tile(NULL);
     // No assertion here, just checking for crashes
 }
+
+Test(wrap_coordinates, negative_coordinates)
+{
+    pos_t pos = {-1, -1};
+    pos_t wrapped_pos = wrap_coordinates(pos, 5, 5);
+
+    cr_assert_eq(wrapped_pos.x, 4, "Wrapped X should be 4 for negative X");
+    cr_assert_eq(wrapped_pos.y, 4, "Wrapped Y should be 4 for negative Y");
+}
+
+Test(wrap_coordinates, high_negative_coordinates)
+{
+    pos_t pos = {-6, -6};
+    pos_t wrapped_pos = wrap_coordinates(pos, 5, 5);
+
+    cr_assert_eq(
+        wrapped_pos.x, 4, "Wrapped X should be 4 for high negative X");
+    cr_assert_eq(
+        wrapped_pos.y, 4, "Wrapped Y should be 4 for high negative Y");
+}
+
+Test(wrap_coordinates, large_coordinates)
+{
+    pos_t pos = {12, 15};
+    pos_t wrapped_pos = wrap_coordinates(pos, 10, 10);
+
+    cr_assert_eq(wrapped_pos.x, 2, "Wrapped X should be 2 for large X");
+    cr_assert_eq(wrapped_pos.y, 5, "Wrapped Y should be 5 for large Y");
+}

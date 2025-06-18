@@ -20,10 +20,14 @@
  * @param height The height of the map.
  * @return Wrapped position.
  */
-pos_t wrap_coordinates(const pos_t pos, size_t width, size_t height)
+pos_t wrap_coordinates(pos_t pos, size_t width, size_t height)
 {
     if (width == 0 || height == 0)
         return (pos_t){0, 0};
+    while (pos.x < 0)
+        pos.x += width;
+    while (pos.y < 0)
+        pos.y += height;
     return (pos_t){pos.x % width, pos.y % height};
 }
 
@@ -82,4 +86,36 @@ pos_t get_forward_position(
     if (orientation == WEST)
         new_pos.x = new_pos.x + map->width - 1;
     return wrap_coordinates(new_pos, map->width, map->height);
+}
+
+/**
+ * @brief Gets the position relative to the current position based on
+ * orientation.
+ *
+ * This function calculates a new position based on the current position,
+ * orientation, and an offset. The offset is applied in the direction of the
+ * orientation. With a positive offset.y you go forward relative to the
+ * direction and position, positive offset.x = right, negative offset.y =
+ * backward, negative offset.x = left
+ *
+ * @param pos The current position.
+ * @param orientation The current orientation.
+ * @param offset The offset to apply in the direction of the orientation.
+ * @param map Pointer to the map structure to check boundaries.
+ * @return The new position after applying the offset in the given orientation.
+ */
+pos_t get_relative_position(
+    const pos_t pos, orientation_t orientation, pos_t offset, const map_t *map)
+{
+    pos_t final_pos;
+
+    if (orientation == NORTH)
+        final_pos = (pos_t){pos.x + offset.x, pos.y - offset.y};
+    if (orientation == EAST)
+        final_pos = (pos_t){pos.x + offset.y, pos.y + offset.x};
+    if (orientation == SOUTH)
+        final_pos = (pos_t){pos.x - offset.x, pos.y + offset.y};
+    if (orientation == WEST)
+        final_pos = (pos_t){pos.x - offset.y, pos.y - offset.x};
+    return wrap_coordinates(final_pos, map->width, map->height);
 }
