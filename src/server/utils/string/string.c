@@ -72,19 +72,21 @@ void trim(char *str)
  * @return Pointer to the newly allocated concatenated string, or NULL on
  * failure
  */
-char *dyn_strcat(char *dest, const char *src)
+char *dyn_strcat(char **original_dest, const char *src)
 {
+    char *dest = *original_dest;
+
     if (dest == NULL || src == NULL) {
         fprintf(stderr, "Invalid string pointer\n");
         return NULL;
     }
-    dest = realloc(dest, strlen(dest) + strlen(src) + 1);
-    if (dest == NULL) {
+    *original_dest = realloc(dest, strlen(dest) + strlen(src) + 1);
+    if (*original_dest == NULL) {
         perror("Failed to reallocate memory for string concatenation");
         return NULL;
     }
-    strcat(dest, src);
-    return dest;
+    strcat(*original_dest, src);
+    return *original_dest;
 }
 
 /**

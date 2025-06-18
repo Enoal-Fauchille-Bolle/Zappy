@@ -12,7 +12,7 @@
 
 void to_lowercase(char *str);
 void trim(char *str);
-char *dyn_strcat(char *dest, const char *src);
+char *dyn_strcat(char **original_dest, const char *src);
 char *empty_string(void);
 char *repeat_string(const char *str, const char *delim, size_t count);
 
