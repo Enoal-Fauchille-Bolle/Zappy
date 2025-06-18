@@ -7,6 +7,7 @@
 
 import time
 import sys
+import os
 
 class Commands:
     def __init__(self, connexion):
@@ -22,7 +23,8 @@ class Commands:
         response = self.connexion.receive()
         end_time = time.time()
         elapsed_time = (end_time - start_time) / 128
-        print(f"Forward elapsed time: {elapsed_time}")  # Debugging line
+        print(f"Forward elapsed time: {elapsed_time}", flush=True)  # Debugging line
+        sys.stdout.flush()
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
             ai.tick.append(elapsed_time)
@@ -39,8 +41,9 @@ class Commands:
             return False
         response = self.connexion.receive()
         end_time = time.time()
-        elapsed_time = (end_time - start_time) / 7
-        print(f"Right elapsed time: {elapsed_time}")  # Debugging line
+        elapsed_time = (end_time - start_time) / 128
+        print(f"Right elapsed time: {elapsed_time}", flush=True)  # Debugging line
+        sys.stdout.flush()
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
             ai.tick.append(elapsed_time)
@@ -58,7 +61,8 @@ class Commands:
         response = self.connexion.receive()
         end_time = time.time()
         elapsed_time = (end_time - start_time) / 7
-        print(f"Left elapsed time: {elapsed_time}")
+        print(f"Left elapsed time: {elapsed_time}", flush=True)
+        sys.stdout.flush()
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
             ai.tick.append(elapsed_time)
@@ -75,14 +79,14 @@ class Commands:
             return None
         response = self.connexion.receive()
         end_time = time.time()
-        elapsed_time = (end_time - start_time) / 7
-        print(f"Look response: {response}") # Line added to respect binary protocol
-        print(f"Look elapsed time: {elapsed_time}")  # Debugging line to see the elapsed time
+        elapsed_time = (end_time - start_time) / 128
+        # print(f"Look response: {response}") # Line added to respect binary protocol
+        print(f"Look elapsed time: {elapsed_time}", flush=True)  # Debugging line to see the elapsed time
         if response is None or response == "ko":
             return None
         if response == "ok":
             response = self.connexion.receive()
-        print(f"Look response: {response}")
+        # print(f"Look response: {response}")
         if response.startswith('[') and response.endswith(']'):
             response = response[1:-1]
         tiles = []
@@ -92,7 +96,7 @@ class Commands:
         for tile in raw_tiles:
             tile_objects = [obj for obj in tile.strip().split() if obj]
             tiles.append(tile_objects)
-        print(f"Look tiles: {tiles}")  # Debugging line to see the tiles
+        # print(f"Look tiles: {tiles}")  # Debugging line to see the tiles
         if tiles and len(tiles) > 0 and "player" in tiles[0]:
             tiles[0].remove("player")
             tiles[0].append("self")
@@ -140,16 +144,34 @@ class Commands:
         return inventory
 
     def Broadcast(self, message):
-        if not self.connexion.connected:
-            print("Not connected to the server.")
+        if not self.connexion.connected or not self.connexion.socket:
+            print("Not connected to server, can't broadcast")
             return False
-        encrypted_message = self.encrypt_message(message, self.connexion.name)
-        print(f"Original message: {repr(message)}")
-        print(f"Encrypted message: {repr(encrypted_message)}")
-        self.connexion.send(f"Broadcast {encrypted_message}\n")
-        response = self.connexion.receive()
-        print(f"Broadcast response: {response}")
-        return response == "ok"
+        try:
+            encrypted_message = self.encrypt_message(message, self.connexion.name)
+            print(f"Original message: {repr(message)}")
+            print(f"Encrypted message: {repr(encrypted_message)}")
+            self.connexion.waiting_for_response = True
+            result = self.connexion.send(f"Broadcast {encrypted_message}\n")
+            if not result:
+                print("Send failed")
+                self.connexion.waiting_for_response = False
+                return False
+            response = self.connexion.receive(timeout=2.0)
+            self.connexion.waiting_for_response = False
+            if response is None or response == "dead":
+                print("Connection likely broken or AI is dead")
+                if response == "dead":
+                    self.handle_death(self.connexion.ai_instance)
+                return False
+            return response == "ok"
+        except Exception as e:
+            print(f"Broadcast error: {e}")
+            self.connexion.waiting_for_response = False
+            if "Broken pipe" in str(e):
+                print("Connection broken - marking as disconnected")
+                self.connexion.connected = False
+            return False
 
     def Connect_nbr(self):
         if self.connexion.connected:
@@ -180,7 +202,7 @@ class Commands:
             print("Not connected to the server.")
         response = self.connexion.receive()
         end_time = time.time()
-        elapsed_time = (end_time - start_time) / 7
+        elapsed_time = (end_time - start_time) / 128
         print(f"Take elapsed time: {elapsed_time}")  # Debugging line
         if hasattr(self.connexion, 'ai_instance') and self.connexion.ai_instance:
             ai = self.connexion.ai_instance
@@ -298,18 +320,8 @@ class Commands:
         return ''.join(encrypted)
 
     def handle_death(self, ai_instance):
-        """Handle the AI death properly"""
-        print("AI IS DEAD - HANDLING TERMINATION")
-        with ai_instance.lock:
-            ai_instance.running = False
-        try:
-            if self.connexion and self.connexion.socket:
-                self.connexion.socket.close()
-                self.connexion.connected = False
-                print("Socket closed due to death")
-        except Exception as e:
-            print(f"Error closing socket: {e}")
-        if hasattr(ai_instance, 'monitor') and ai_instance.monitor:
-            ai_instance.monitor.running = False
-        print("AI process terminated due to death")
-        sys.exit(0)
+        """Handle the AI's death by terminating immediately"""
+        print("\n!!! DEATH DETECTED IN COMMAND - TERMINATING !!!\n")
+        
+        # Force immediate exit
+        os._exit(0)
