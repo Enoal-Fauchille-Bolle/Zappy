@@ -107,6 +107,7 @@ static egg_t *get_random_egg(team_t *team)
  * @param team Pointer to the team structure
  * @param map Pointer to the map structure where the player will be spawned
  * @param id The ID of the player to be spawned
+ * @param client Pointer to the client managing the player
  * @return player_t* Pointer to the newly spawned player, or NULL if spawning
  * failed
  */

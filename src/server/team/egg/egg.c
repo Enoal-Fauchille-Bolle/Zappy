@@ -22,6 +22,7 @@
  *
  * @param pos The position where the egg will be created
  * @param team Pointer to the team associated with the egg
+ * @param debug Boolean flag to enable debug messages
  * @return Pointer to the newly created egg_t structure on success,
  *         NULL if memory allocation fails
  */

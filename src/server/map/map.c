@@ -48,6 +48,7 @@ static vector_t *init_tiles_vector(size_t width, size_t height)
  *
  * @param width Width of the map
  * @param height Height of the map
+ * @param debug Boolean flag to enable debug messages
  * @return Pointer to the initialized map_t structure on success,
  *         NULL if memory allocation fails
  *

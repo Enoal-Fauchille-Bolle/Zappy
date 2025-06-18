@@ -29,7 +29,7 @@ typedef struct player_s {
     tick_t tick_cooldown;        // If 0, player can act
     size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
     team_t *team;
-    client_t *client;
+    client_t *client;   // Pointer to the client managing this player
 } player_t;
 
 player_t *create_player(

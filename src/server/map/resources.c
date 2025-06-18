@@ -105,6 +105,7 @@ static void place_resource_at_random_position(
  *
  * @param map Pointer to the map structure where resources will be spread
  * @param resource The type of resource to spread (e.g., FOOD, LINEMATE, etc.)
+ * @param debug Flag to enable debug output
  * @note If the map pointer is NULL, it prints an error message and returns
  */
 void spread_resource(map_t *map, const resource_t resource, bool debug)
