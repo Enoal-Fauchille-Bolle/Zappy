@@ -100,9 +100,29 @@ static void update_players_team_ticks(team_t *team)
  *
  * @param game Pointer to the game structure containing teams and players
  */
-void update_players_ticks(game_t *game)
+static void update_players_ticks(game_t *game)
 {
     for (int i = 0; game->teams[i] != NULL; i++) {
         update_players_team_ticks(game->teams[i]);
     }
+}
+
+/**
+ * @brief Advances the game tick counter
+ *
+ * This function increments the game tick counter, which is used to track
+ * the progression of the game state over time.
+ *
+ * @param game Pointer to the game structure containing the current tick count
+ */
+void game_tick(game_t *game, server_options_t *options)
+{
+    if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0)
+        debug_game(options->debug, "Game tick %u\n", game->game_tick);
+    update_players_ticks(game);
+    for (int i = 0; game->teams[i] != NULL; i++) {
+        spawn_min_eggs(
+            game->map, game->teams[i], options->clients_nb, options->debug);
+    }
+    game->game_tick++;
 }

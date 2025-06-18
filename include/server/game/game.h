@@ -29,7 +29,7 @@ typedef struct game_s {
 } game_t;
 
 game_t *create_game(server_options_t *options);
-void game_tick(game_t *game, bool debug);
+void game_tick(game_t *game, server_options_t *options);
 void destroy_game(game_t *game);
 
 #endif /* !GAME_H_ */

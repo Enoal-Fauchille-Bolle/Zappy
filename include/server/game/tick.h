@@ -9,7 +9,8 @@
     #define TICK_H_
 
     #include "game/game.h"
+    #include "options_parser/options.h"
 
-void update_players_ticks(game_t *game);
+void game_tick(game_t *game, server_options_t *options);
 
 #endif /* !TICK_H_ */
