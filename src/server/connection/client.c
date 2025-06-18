@@ -129,10 +129,6 @@ void destroy_client(client_t *client)
         destroy_player(client->player);
         client->player = NULL;
     }
-    if (client->team_name != NULL) {
-        free(client->team_name);
-        client->team_name = NULL;
-    }
     free(client);
     client = NULL;
 }
@@ -150,7 +146,6 @@ static void setup_client(client_t *client, server_t *server, int client_index)
     client->server = server;
     client->index = client_index - 2;
     client->sockfd = server->fds[client_index].fd;
-    client->team_name = NULL;
     client->player = NULL;
 }
 
@@ -175,14 +170,6 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
         return NULL;
     }
     setup_client(client, server, client_index);
-    if (team && team->name)
-        client->team_name = strdup(team->name);
-    if (!client->team_name) {
-        debug_warning(server->options->debug,
-            "Failed to allocate memory for team name\n");
-        free(client);
-        return NULL;
-    }
     client->player = hatch_player(
         team, server->game->map, server->game->next_player_id, client);
     server->game->next_player_id++;

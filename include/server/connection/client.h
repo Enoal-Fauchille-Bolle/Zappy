@@ -18,7 +18,6 @@ typedef struct client_s {
     server_t *server;
     int index;
     int sockfd;
-    char *team_name;
     player_t *player;
 } client_t;
 

@@ -71,7 +71,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         "Player %d (Client %d) assigned to team '%s'\n",
         server->clients[client_index - 2]->player->id,
         client_index - 2,
-        server->clients[client_index - 2]->team_name);
+        team->name);
     return SUCCESS;
 }
 
@@ -124,8 +124,7 @@ static bool validate_and_assign_team(
  */
 static bool send_welcome_message(server_t *server, int client_index)
 {
-    team_t *team = get_team_from_name(
-        server->game->teams, server->clients[client_index - 2]->team_name);
+    team_t *team = server->clients[client_index - 2]->player->team;
 
     dprintf(server->fds[client_index].fd, "%ld\n", get_egg_count(team));
     dprintf(server->fds[client_index].fd, "%ld %ld\n", server->options->width,

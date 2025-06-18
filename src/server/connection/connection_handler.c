@@ -45,7 +45,7 @@ void remove_client(server_t *server, int client_index)
         debug_conn(server->options->debug,
             "Player %d (Client %d) removed from team '%s'\n",
             server->clients[client_index - 2]->player->id, client_index - 2,
-            server->clients[client_index - 2]->team_name);
+            server->clients[client_index - 2]->player->team->name);
         destroy_client(server->clients[client_index - 2]);
         server->clients[client_index - 2] = NULL;
     }

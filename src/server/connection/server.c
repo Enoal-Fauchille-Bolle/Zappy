@@ -38,9 +38,6 @@ static void destroy_clients(server_t *server)
         if (server->clients[i] == NULL) {
             continue;
         }
-        if (server->clients[i]->team_name != NULL) {
-            free(server->clients[i]->team_name);
-        }
         free(server->clients[i]);
         server->clients[i] = NULL;
     }
