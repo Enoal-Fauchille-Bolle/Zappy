@@ -210,6 +210,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}map_tests.c												\
 			${TESTS}egg_tests.c												\
 			${TESTS}team_tests.c											\
+			${TESTS}look_tests.c											\
 			$(SRCDIR_SERVER)utils/string/string.c							\
 			$(SRCDIR_SERVER)utils/string/repeat_string.c					\
 			$(SRCDIR_SERVER)command_handler/command_parser.c				\
