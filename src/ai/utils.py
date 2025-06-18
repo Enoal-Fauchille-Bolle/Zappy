@@ -72,6 +72,25 @@ class ContinuousMonitor(threading.Thread):
         except Exception as e:
             print(f"Error consuming food: {e}")
 
+    def decrypt_message(self, encrypted_message, name):
+                    """
+                    Decrypt a message that was encrypted with the encrypt_message method.
+                    Uses the reverse of the encryption algorithm.
+                    """
+                    if not name:
+                        return encrypted_message
+                    shift = sum(ord(c) for c in name) % 26
+                    decrypted = []
+                    for char in encrypted_message:
+                        if char.isalpha():
+                            ascii_offset = ord('a') if char.islower() else ord('A')
+                            decrypted_char = chr((ord(char) - ascii_offset - shift) % 26 + ascii_offset)
+                            decrypted.append(decrypted_char)
+                        else:
+                            decrypted.append(char)
+
+                    return ''.join(decrypted)
+
     def check_for_messages(self):
         """Check for incoming messages without blocking"""
         if not self.connexion.connected:
