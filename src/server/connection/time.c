@@ -37,8 +37,7 @@ long long get_current_time_ms(void)
  */
 void wait_remaining_tick_time(server_t *server, long long tick_start_time)
 {
-    long long current_time = get_current_time_ms();
-    long long elapsed = current_time - tick_start_time;
+    long long elapsed = get_current_time_ms() - tick_start_time;
     long long tick_duration_ms = (1.0 / server->game->tick_rate) * 1000.0;
     long long remaining = 0;
     struct timespec sleep_time = {0};
