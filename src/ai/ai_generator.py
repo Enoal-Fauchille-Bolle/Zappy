@@ -91,8 +91,13 @@ class AIGenerator:
             signal.signal(signal.SIGTERM, signal.SIG_DFL)
             connection = Connection(port, name, machine)
             if connection.connect():
-                print(connection.receive())
-                connection.send(name)
+                welcome = connection.receive()
+                print(f"Server says: {welcome}")
+                
+                # Actually send the team name to the server
+                connection.send(name)  # Your Connection.send() already adds newlines as needed
+                print(f"Sent team name: {name}")
+                
                 self.re_fork(port, name, machine, connection)
                 ai_loop = Loop(connection)
                 ai_loop.run(connection.map_size if hasattr(connection, 'map_size') else None)
