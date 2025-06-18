@@ -42,7 +42,7 @@ player_t *create_player(
     }
     player->id = id;
     player->pos = pos;
-    player->orientation = (rand() % 4) + 1;
+    player->orientation = rand() % ORIENTATION_COUNT;
     player->level = 1;
     for (size_t i = 0; i <= THYSTAME; i++)
         player->inventory[i] = 0;
