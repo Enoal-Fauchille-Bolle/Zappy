@@ -7,6 +7,9 @@
 ##
 
 import socket
+import threading
+import time
+import os
 
 """This module provides a class to manage connections for AI clients in the Zappy game server.
 It includes methods for connecting to the server, sending messages, and handling connection states.
@@ -18,6 +21,9 @@ class Connection:
         self.machine = machine
         self.socket = None
         self.connected = False
+        self.buffer = ""
+        self.waiting_for_response = False
+        self.socket_lock = threading.Lock()
 
     """@brief Connects to the Zappy server.
         Checks if the connection is already established, and if not,
@@ -52,38 +58,74 @@ class Connection:
         @return True if the message was sent successfully, False otherwise.
         """
     def send(self, message):
-        if not self.connected:
-            if not self.connect():
-                print("Not connected to the server.")
-                return False
-            return self.send(message)
-        try:
-            message = message.strip() + "\n"
-            self.socket.sendall(message.encode('ascii'))
-            return True
-        except socket.error as e:
-            print(f"Send error: {e}")
+        if not self.connected or not self.socket:
+            print("Not connected to the server.")
             return False
+        
+        with self.socket_lock:
+            try:
+                if not message.endswith('\n'):
+                    message += '\n'
+                self.socket.send(message.encode('ascii'))
+                return True
+            except BrokenPipeError:
+                print("Connection broken (Broken pipe)")
+                self.connected = False
+                return False
+            except Exception as e:
+                print(f"Send error: {e}")
+                return False
 
     """@brief Receives a complete message from the server.
         Uses a buffer to handle partial messages and returns complete lines.
         @param buffer_size: The size of the buffer to read data from the socket.
         @return The received complete message as a string, or None if an error occurs.
         """
-    def receive(self, buffer_size=1024):
-        if not self.connected:
+    def receive(self, buffer_size=1024, timeout=5.0):
+        if not self.connected or not self.socket:
             print("Not connected to the server.")
             return None
+        
         try:
-            while '\n' not in self.buffer:
-                data = self.socket.recv(buffer_size)
-                if not data:
+            # Set a timeout for blocking operations
+            self.socket.settimeout(timeout)
+            
+            # Wait for a complete line with timeout
+            start_time = time.time()
+            while '\n' not in self.buffer and time.time() - start_time < timeout:
+                try:
+                    data = self.socket.recv(buffer_size).decode('ascii', errors='replace')
+                    if not data:  # Connection closed by server
+                        self.connected = False
+                        return None
+                        
+                    self.buffer += data
+                    
+                    # Check for death message
+                    if "dead" in data:
+                        print("Death message detected in receive")
+                        self.connected = False
+                        return "dead"
+                except socket.timeout:
+                    # Timeout on recv is expected
+                    continue
+                except Exception as e:
+                    print(f"Receive error: {e}")
                     return None
-                self.buffer += data.decode('ascii')
-            lines = self.buffer.split('\n', 1)
-            message = lines[0]
-            self.buffer = lines[1] if len(lines) > 1 else ""
-            return message
-        except socket.error as e:
-            print(f"Receive error: {e}")
-            return None
+            
+            # Extract the first line
+            if '\n' in self.buffer:
+                line, self.buffer = self.buffer.split('\n', 1)
+                return line
+            else:
+                # Timeout without complete line
+                return None
+        finally:
+            # Reset timeout to default
+            self.socket.settimeout(None)
+
+    def check_connection(self):
+        """Check if connection is still valid and terminate if not"""
+        if not self.connected:
+            print("\n!!! CONNECTION LOST - TERMINATING AI !!!\n")
+            os._exit(0)  # Force immediate termination
