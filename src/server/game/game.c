@@ -17,6 +17,7 @@
 #include "team/egg/egg.h"
 #include "team/team.h"
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /**
@@ -58,8 +59,10 @@ static team_t **create_teams(char **teams_name)
     int teams_count = get_teams_name_count(teams_name);
     team_t **team_array = malloc(sizeof(team_t) * (teams_count + 1));
 
-    if (!team_array)
+    if (!team_array) {
+        perror("Failed to allocate memory for teams array");
         return NULL;
+    }
     for (int i = 0; i < teams_count; i++) {
         team_array[i] = create_team(teams_name[i]);
     }
