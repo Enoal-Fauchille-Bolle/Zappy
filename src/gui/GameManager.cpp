@@ -187,7 +187,8 @@ void SimpleGameManager::createEgg(int id, int parentId, int x, int y) {
  */
 void SimpleGameManager::removeEgg(int id) {
     auto it = _eggs.find(id);
-    if (it == _eggs.end()) return;
+    if (it == _eggs.end())
+        return;
 
     Egg* egg = it->second;
 
@@ -225,11 +226,20 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
 
     for (int i = 0; i < quantity; ++i) {
         int resourceIndex = currentResourceCount + i;
-        Resources* resource = new Resources(Utils::generateResourceId(x, y, resourceIndex), "knot.mesh", type);
-        resource->attachToScene(_scene->getSceneManager());
-        resource->initialize();
-        positionResourceOnTile(resource, x, y, resourceIndex);
-        tile->getContentManager()->addResource(resource);
+        if (type == ResourceType::FOOD) {
+            Resources* resource = new Resources(Utils::generateResourceId(x, y, resourceIndex), "fish.mesh", type);
+            resource->attachToScene(_scene->getSceneManager());
+            resource->initialize();
+            resource->setScale(0.5f, 0.5f, 0.5f);
+            positionResourceOnTile(resource, x, y, resourceIndex);
+            tile->getContentManager()->addResource(resource);
+        } else {
+            Resources* resource = new Resources(Utils::generateResourceId(x, y, resourceIndex), "knot.mesh", type);
+            resource->attachToScene(_scene->getSceneManager());
+            resource->initialize();
+            positionResourceOnTile(resource, x, y, resourceIndex);
+            tile->getContentManager()->addResource(resource);
+        }
     }
 }
 
