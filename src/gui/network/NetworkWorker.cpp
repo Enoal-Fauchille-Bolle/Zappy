@@ -7,6 +7,13 @@
 
 #include "NetworkWorker.hpp"
 
+/**
+ * @brief Construct a new NetworkWorker object.
+ * @param connection_manager Shared pointer to the ConnectionManager.
+ * @param socket_transport Shared pointer to the SocketTransport.
+ * @param message_protocol Shared pointer to the MessageProtocol.
+ * @param send_buffer Shared pointer to the send buffer.
+ */
 NetworkWorker::NetworkWorker(
     std::shared_ptr<ConnectionManager> connection_manager,
     std::shared_ptr<SocketTransport> socket_transport,
@@ -21,11 +28,17 @@ NetworkWorker::NetworkWorker(
     start();
 }
 
+/**
+ * @brief Destroy the NetworkWorker object and stop the worker thread.
+ */
 NetworkWorker::~NetworkWorker()
 {
     stop();
 }
 
+/**
+ * @brief Start the network worker thread.
+ */
 void NetworkWorker::start()
 {
     if (!running_.load()) {
@@ -34,6 +47,9 @@ void NetworkWorker::start()
     }
 }
 
+/**
+ * @brief Stop the network worker thread.
+ */
 void NetworkWorker::stop() {
     running_.store(false);
     if (worker_thread_.joinable()) {
@@ -41,6 +57,9 @@ void NetworkWorker::stop() {
     }
 }
 
+/**
+ * @brief Main loop for the network worker thread. Handles receiving and sending messages.
+ */
 void NetworkWorker::worker_loop() {
     while (running_.load()) {
         if (!connection_manager_->isConnected()) {

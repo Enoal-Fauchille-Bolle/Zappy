@@ -22,7 +22,8 @@ SimpleGameManager::SimpleGameManager() : _scene(nullptr), _mapWidth(0), _mapHeig
  * 
  * Cleans up all allocated resources including players, eggs, and tiles.
  */
-SimpleGameManager::~SimpleGameManager() {
+SimpleGameManager::~SimpleGameManager()
+{
     for (auto& [id, player] : _players) {
         delete player;
     }
@@ -43,7 +44,8 @@ SimpleGameManager::~SimpleGameManager() {
  * 
  * @param scene Pointer to the scene object that will be used for rendering.
  */
-void SimpleGameManager::initialize(Scenne* scene) {
+void SimpleGameManager::initialize(Scenne* scene)
+{
     _scene = scene;
 }
 
@@ -53,7 +55,8 @@ void SimpleGameManager::initialize(Scenne* scene) {
  * @param width The width of the map in tiles.
  * @param height The height of the map in tiles.
  */
-void SimpleGameManager::setMapSize(int width, int height) {
+void SimpleGameManager::setMapSize(int width, int height)
+{
     _mapWidth = width;
     _mapHeight = height;
     _tiles.resize(height);
@@ -72,7 +75,8 @@ void SimpleGameManager::setMapSize(int width, int height) {
  * @param y Y coordinate on the map.
  * @param orientation Initial orientation of the player.
  */
-void SimpleGameManager::createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation) {
+void SimpleGameManager::createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation)
+{
     if (_players.find(id) != _players.end()) {
         std::cerr << "Player " << id << " already exists" << std::endl;
         return;

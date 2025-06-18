@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** Zappy_mirror
+** Zappy
 ** File description:
 ** ConnectionManager
 */
@@ -22,6 +22,11 @@
 #include <fcntl.h>
 #include <poll.h>
 
+/**
+ * @brief Construct a new ConnectionManager object.
+ * @param host The server host address.
+ * @param port The server port.
+ */
 ConnectionManager::ConnectionManager(const std::string &host, int port)
     : host_(host),
       port_(port),
@@ -31,11 +36,18 @@ ConnectionManager::ConnectionManager(const std::string &host, int port)
     connect();
 }
 
+/**
+ * @brief Destroy the ConnectionManager object and close the connection if open.
+ */
 ConnectionManager::~ConnectionManager()
 {
    disconnect();
 }
 
+/**
+ * @brief Attempt to connect to the server.
+ * @return true if the connection was successful, false otherwise.
+ */
 bool ConnectionManager::connect()
 {
     if (socket_fd_.load() != -1) {
@@ -78,6 +90,9 @@ bool ConnectionManager::connect()
     return true;
 }
 
+/**
+ * @brief Disconnect from the server and clean up resources.
+ */
 void ConnectionManager::disconnect()
 {
     int current_socket = socket_fd_.load();
@@ -100,6 +115,9 @@ void ConnectionManager::disconnect()
     }
 }
 
+/**
+ * @brief Set the socket receive and send timeout.
+ */
 void ConnectionManager::setSocketTimeout()
 {
     struct timeval timeout = {SOCKET_TIMEOUT_MS / 1000,
@@ -112,6 +130,10 @@ void ConnectionManager::setSocketTimeout()
         &timeout, sizeof(timeout));
 }
 
+/**
+ * @brief Configure various socket options for the connection.
+ * @return true if the configuration was successful, false otherwise.
+ */
 bool ConnectionManager::configureSocketOptions()
 {
     int set_true = 1;
@@ -159,6 +181,12 @@ bool ConnectionManager::configureSocketOptions()
     return true;
 }
 
+/**
+ * @brief Connect to the server with a timeout.
+ * @param addr The server address.
+ * @param len The address length.
+ * @return true if the connection was successful, false otherwise.
+ */
 bool ConnectionManager::connectWithTimeout(
     const struct sockaddr *addr, socklen_t len)
 {
@@ -202,6 +230,11 @@ bool ConnectionManager::connectWithTimeout(
     return true;
 }
 
+/**
+ * @brief Set the socket to non-blocking or blocking mode.
+ * @param non_block true to set non-blocking mode, false to set blocking mode.
+ * @return true if the operation was successful, false otherwise.
+ */
 bool ConnectionManager::setNonBlocking(bool non_block)
 {
     int current_socket = socket_fd_.load();
@@ -220,6 +253,10 @@ bool ConnectionManager::setNonBlocking(bool non_block)
     return fcntl(current_socket, F_SETFL, flags) != -1;
 }
 
+/**
+ * @brief Check if the socket is valid and connected.
+ * @return true if the socket is valid, false otherwise.
+ */
 bool ConnectionManager::isSocketValid() const
 {
     int current_socket = socket_fd_.load();
@@ -249,6 +286,10 @@ bool ConnectionManager::isSocketValid() const
     return true;
 }
 
+/**
+ * @brief Check if the connection to the server is currently active.
+ * @return true if connected, false otherwise.
+ */
 bool ConnectionManager::testConnection() const
 {
     if (!isSocketValid()) {
@@ -260,6 +301,10 @@ bool ConnectionManager::testConnection() const
         MSG_NOSIGNAL | MSG_DONTWAIT) == 0;
 }
 
+/**
+ * @brief Get the underlying socket file descriptor.
+ * @return The socket file descriptor.
+ */
 std::string ConnectionManager::getConnectionInfo() const
 {
     std::string info = "Connection: ";

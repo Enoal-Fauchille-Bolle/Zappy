@@ -7,17 +7,27 @@
 
 #include "ReconnectionService.hpp"
 
+/**
+ * @brief Construct a new ReconnectionService object.
+ * @param connection_manager Shared pointer to the ConnectionManager.
+ */
 ReconnectionService::ReconnectionService(
     std::shared_ptr<ConnectionManager> connection_manager)
     : connection_manager_(connection_manager), running_(false)
 {
 }
 
+/**
+ * @brief Destroy the ReconnectionService object and stop the reconnection thread.
+ */
 ReconnectionService::~ReconnectionService()
 {
     stop();
 }
 
+/**
+ * @brief Start the reconnection monitoring thread.
+ */
 void ReconnectionService::start()
 {
     if (!running_.load()) {
@@ -27,6 +37,9 @@ void ReconnectionService::start()
     }
 }
 
+/**
+ * @brief Stop the reconnection monitoring thread.
+ */
 void ReconnectionService::stop()
 {
     running_.store(false);
@@ -35,6 +48,9 @@ void ReconnectionService::stop()
     }
 }
 
+/**
+ * @brief Monitor the connection and attempt reconnection if disconnected.
+ */
 void ReconnectionService::connection_monitor()
 {
     while (running_.load()) {
