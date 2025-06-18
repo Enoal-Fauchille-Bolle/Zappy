@@ -199,7 +199,7 @@ void run_server(server_t *server)
         if (process_connection(server) == FAILURE)
             break;
         wait_remaining_tick_time(server, tick_start_time);
-        game_tick(server->game, server->options->debug);
+        game_tick(server->game, server->options);
     }
     debug_server(server->options->debug, "Server stopped\n");
 }

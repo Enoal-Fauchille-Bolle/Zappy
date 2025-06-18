@@ -8,6 +8,7 @@
 #include "connection/client.h"
 #include "command_handler/command.h"
 #include "command_handler/command_executor.h"
+#include "command_handler/command_factory.h"
 #include "command_handler/command_parser.h"
 #include "connection/connection_handler.h"
 #include "connection/server.h"
