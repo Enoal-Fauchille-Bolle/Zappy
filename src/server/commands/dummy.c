@@ -6,17 +6,15 @@
 */
 
 #include "command_handler/command.h"
-#include "command_handler/command_status.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "debug.h"
 #include <stdbool.h>
 #include <unistd.h>
 
-command_status_t dummy_command(client_t *client, command_t *command)
+void dummy_command(client_t *client, command_t *command)
 {
     (void)command;
     write(client->sockfd, "ok\n", 3);
     debug_info(client->server->options->debug, "Executed dummy command\n");
-    return COMMAND_SUCCESS;
 }

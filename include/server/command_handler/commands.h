@@ -9,10 +9,9 @@
     #define COMMANDS_H_
 
     #include "command_handler/command.h"
-    #include "command_handler/command_status.h"
     #include "connection/client.h"
     #include <stdbool.h>
 
-command_status_t dummy_command(client_t *client, command_t *command);
+void dummy_command(client_t *client, command_t *command);
 
 #endif /* !COMMANDS_H_ */
