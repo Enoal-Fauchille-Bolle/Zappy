@@ -24,9 +24,12 @@
 char *repeat_string(const char *str, const char *delim, size_t count)
 {
     size_t delim_len = strlen(delim);
-    size_t total_len = (strlen(str) + delim_len) * count - delim_len;
-    char *result = malloc(total_len + 1);
+    long total_len = (strlen(str) + delim_len) * count - delim_len;
+    char *result;
 
+    if (total_len < 0)
+        total_len = 0;
+    result = malloc(sizeof(char) * (total_len + 1));
     if (result == NULL) {
         perror("Failed to allocate memory for repeated string");
         return NULL;
