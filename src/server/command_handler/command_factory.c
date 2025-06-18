@@ -11,6 +11,28 @@
 #include <stdlib.h>
 
 /**
+ * @brief Destroy a command and free allocated resources.
+ *
+ * This function frees the memory associated with the command structure
+ * and its arguments.
+ *
+ * @param command The command structure to destroy.
+ */
+void destroy_command(command_t *command)
+{
+    if (command == NULL)
+        return;
+    if (command->tokens != NULL) {
+        for (int i = 0; command->tokens[i] != NULL; i++) {
+            free(command->tokens[i]);
+        }
+        free(command->tokens);
+    }
+    free(command);
+    command = NULL;
+}
+
+/**
  * @brief Initialize a command structure.
  *
  * This function allocates memory for a command structure and initializes
