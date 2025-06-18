@@ -10,6 +10,7 @@ from commands import Commands
 import threading
 import time
 from utils import ContinuousMonitor
+import sys
 
 class Loop:
     def __init__(self, connexion):
@@ -44,22 +45,32 @@ class Loop:
         self.running = True
         self.is_dead = False
         self.map_size = map_size
-        self.commands.Look()
-        self.commands.Inventory()
         self.monitor = ContinuousMonitor(self)
         self.monitor.start()
         try:
-            while self.running:
-                self.make_decision()
-                # self.commands.Broadcast("\"AI is running\"")
-                time.sleep(0.1)
+            while self.running and not self.is_dead:
+                if hasattr(self, 'is_dead') and self.is_dead:
+                    print("Death detected in main loop - exiting")
+                    break
+                try:
+                    self.make_decision()
+                    # self.commands.Broadcast("\"AI is running\"")
+                except Exception as e:
+                    if "Not connected" in str(e):
+                        print("Connection lost - stopping AI")
+                        break
+                    print(f"Decision error: {e}")
         except Exception as e:
-            print(f"Error in main AI loop: {e}")
+            print(f"Error in main loop: {e}")
         finally:
-            print("AI shutting down")
+            print("AI shutting down - cleanup")
             if hasattr(self, 'monitor'):
                 self.monitor.stop()
-                self.monitor.join(timeout=1)
+                try:
+                    # Now this will work!
+                    self.monitor.join(timeout=1)
+                except Exception as e:
+                    print(f"Error joining monitor: {e}")
 
     def get_tick(self):
         if not self.tick:
@@ -76,31 +87,37 @@ class Loop:
 
     def make_decision(self):
         """Main decision-making function that orchestrates AI behavior"""
-        # if self.inventory["food"] < 3:
-        #     if self.current_path:
-        #         success = self.execute_next_command()
-        #         if not success:
-        #             self.current_path = []
-        #         return
-        #     self.plan_next_action("food")
-        # else:
-        self.time_look += 1
-        if self.time_look == 10:
+        self.connexion.check_connection()
+        if not self.connexion.connected:
+            print("Connection lost - skipping decision cycle")
+            return
+        if self.inventory["food"] <= 3:
+            while self.inventory["food"] < 10:
+                print("Low food level, planning to find food", flush=True)
+                print(f"Current path: {self.current_path}", flush=True)
+                if self.current_path:
+                    success = self.execute_next_command()
+                    if not success:
+                        self.current_path = []
+                    return
+                self.plan_next_action("food")
+        else:
+            # self.time_look += 1
+            # if self.time_look == 10:
             self.check_and_update_look()
 
     def check_and_update_look(self):
         """Check if it's time to perform a look action"""
         self.commands.Look()
         self.time_look = 0
-        # print(f"Look content:")
-        # print(f"Type: {type(self.look)}")
+        print(f"Look content: {self.look}", flush=True)
 
     def execute_next_command(self):
         """Execute the next command in the current path"""
         if not self.current_path:
             return True
         next_command = self.current_path.pop(0)
-        # print(f"Executing command: {next_command}")
+        print(f"Executing command: {next_command}", flush=True)
         if next_command.startswith("Take"):
             return self.handle_take_command(next_command)
         else:
@@ -150,20 +167,13 @@ class Loop:
         """Plan the next action when there's no current path"""
         path = self.find_resource_path(resource_name)
         if path:
-            # print(f"Path to food: {path}")
+            print(f"Path to food: {path}", flush=True)
             self.current_path = path
         else:
-            # print("No path to food found, moving randomly")
-            directions = ["Forward", "Right", "Left"]
-            move = random.choice(directions)
-            if move == "Forward":
-                self.commands.Forward()
-            elif move == "Right":
-                self.commands.Right()
-                self.orientation = (self.orientation + 1) % 4
-            elif move == "Left":
-                self.commands.Left()
-                self.orientation = (self.orientation - 1) % 4
+            self.commands.Right()
+            self.orientation = (self.orientation + 1) % 4
+            self.commands.Forward()
+            self.commands.Look()
 
     def search_line(self):
         tile_count, boundary, line_number = 0, 0, 1
@@ -204,9 +214,10 @@ class Loop:
 
     def find_resource_path(self, resource_name: str):
         coords = self.get_tile_relative_coords()
-        # print(f"Looking for {resource_name}...")
+        print(f"Looking for {resource_name}...")
         closest_idx = None
         min_distance = float('inf')
+        print(f"Titles contents: {self.look}", flush=True)
         for idx, tile in enumerate(self.look):
             # print(f"Item {idx}: {tile}")
             if resource_name in tile:
@@ -215,19 +226,19 @@ class Loop:
                     return ["Take " + resource_name]
                 x, y = coords[idx]
                 distance = abs(x) + abs(y)
-                # print(f"Found {resource_name} at ({x}, {y}) with distance {distance}")
+                print(f"Found {resource_name} at ({x}, {y}) with distance {distance}")
                 if distance < min_distance:
                     min_distance = distance
                     closest_idx = idx
         if closest_idx is not None:
             x, y = coords[closest_idx]
-            # print(f"Closest {resource_name} is at ({x}, {y}) with distance {min_distance}")
+            print(f"Closest {resource_name} is at ({x}, {y}) with distance {min_distance}")
             path = self.plan_cardinal_path_to((x, y), resource_name)
             if path:
-                # print(f"Path to closest {resource_name}: {path}")
+                print(f"Path to closest {resource_name}: {path}")
                 return path
             else:
-                print(f"Failed to calculate path to closest {resource_name}")
+                print(f"Failed to calculate path to closest {resource_name}", flush=True)
         # print(f"No {resource_name} found in visible tiles")
         return []
 
@@ -249,9 +260,6 @@ class Loop:
         """Generate a series of commands to reach the target coordinates"""
         x, y = target
         path = []
-
-        # print(f"Planning path to ({x}, {y}) with orientation {self.orientation}")
-
         if self.orientation == 0:
             if y < 0:
                 path = ["Forward"] * abs(y)
@@ -287,13 +295,11 @@ class Loop:
         # print(f"Generated path: {path}")
         return path
 
-    # Add this method to safely handle the "dead" state
     def set_dead(self):
         """Set the AI as dead and perform proper cleanup"""
         with self.lock:
             print("AI DEATH DETECTED - SHUTTING DOWN")
             self.running = False
-            # Close the socket safely to prevent further send attempts
             try:
                 if self.connexion and self.connexion.socket:
                     self.connexion.socket.close()
