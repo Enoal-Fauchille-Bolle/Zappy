@@ -9,6 +9,7 @@ import threading
 import time
 import socket
 import queue
+import os
 
 class ContinuousMonitor(threading.Thread):
     """Thread dedicated to continuously monitoring ticks and receiving messages"""
@@ -22,16 +23,17 @@ class ContinuousMonitor(threading.Thread):
         self.last_food_tick = 0
         self.socket_lock = threading.Lock() if not hasattr(self.connexion, 'socket_lock') else self.connexion.socket_lock
         self.start_time = time.time()
-        self.ticks_per_second = 252
-        
-        print("ContinuousMonitor initialized")
+        self.ticks_per_second = 72 #value to change handly for the moment
 
     def run(self):
         """Main thread execution loop"""
-        print("Continuous monitor started")
-        
+        # print("Continuous monitor started")
         while self.running:
             try:
+                if not self.connexion.connected:
+                    # print("\n!!! CONNECTION LOST - TERMINATING AI !!!\n")
+                    import os
+                    os._exit(0)
                 current_time = time.time()
                 elapsed_seconds = current_time - self.start_time
                 new_tick = int(elapsed_seconds * self.ticks_per_second)
@@ -48,9 +50,9 @@ class ContinuousMonitor(threading.Thread):
                 sleep_time = min(time_per_tick / 2, 0.05)
                 time.sleep(sleep_time)
             except Exception as e:
-                print(f"Error in monitor thread: {e}")
+                # print(f"Error in monitor thread: {e}")
                 time.sleep(0.1)
-        print("Continuous monitor stopped")
+        # print("Continuous monitor stopped")
 
     def consume_food(self):
         """Consume food every 126 ticks"""
@@ -65,10 +67,9 @@ class ContinuousMonitor(threading.Thread):
                 else:
                     self.ai_instance.inventory['food'] = max(0, self.ai_instance.inventory['food'] - 1)
                 new_count = self.ai_instance.inventory.get('food', 0)
-                print(f"FOOD CONSUMED! Tick {self.tick_counter}. Previous: {food_count}, New: {new_count}")
+                print(f"FOOD CONSUMED! Tick {self.tick_counter}. Previous: {food_count}, New: {new_count}", flush=True)
             else:
                 print(f"No food to consume at tick {self.tick_counter}. Player may starve!")
-                
         except Exception as e:
             print(f"Error consuming food: {e}")
 
@@ -95,33 +96,42 @@ class ContinuousMonitor(threading.Thread):
         """Check for incoming messages without blocking"""
         if not self.connexion.connected:
             return
-        with self.socket_lock:
+        if hasattr(self.connexion, 'waiting_for_response') and self.connexion.waiting_for_response:
+            return
+        if not self.socket_lock.acquire(blocking=False):
+            return
+        try:
+            socket_copy = self.connexion.socket
+            if not socket_copy:
+                return
             try:
-                socket_copy = self.connexion.socket
-                if not socket_copy:
-                    return
                 was_blocking = socket_copy.getblocking()
                 socket_copy.setblocking(False)
                 try:
                     data = socket_copy.recv(1024)
                     if data:
                         decoded_data = data.decode('ascii', errors='replace')
-                        print(f"Monitor received raw data: {decoded_data}")
+                        # print(f"Monitor received raw data: {decoded_data}")
+                        decoded_data = self.decrypt_message(decoded_data, self.connexion.name)
+                        # print(f"Monitor decrypted data: {decoded_data}")
                         self.process_received_data(decoded_data)
                 except (socket.error, BlockingIOError) as e:
-                    pass
+                    if "Resource temporarily unavailable" not in str(e) and "Errno 11" not in str(e):
+                        print(f"Socket recv error: {e}")
                 except Exception as e:
                     print(f"Error receiving data: {e}")
                 finally:
                     if was_blocking:
                         socket_copy.setblocking(True)
             except Exception as e:
-                print(f"Socket error in check_for_messages: {e}")
+                print(f"Socket access error: {e}")
+        finally:
+            self.socket_lock.release()
 
     def process_received_data(self, data):
         """Process incoming data from the server"""
         if "dead" in data:
-            print("DEATH DETECTED BY MONITOR: 'dead' found in received data")
+            # print("DEATH DETECTED BY MONITOR: 'dead' found in received data")
             self.handle_death()
             return
         self.connexion.buffer += data
@@ -133,9 +143,9 @@ class ContinuousMonitor(threading.Thread):
 
     def process_message(self, message):
         """Process a complete message"""
-        print(f"Monitor processing message: {message}")
+        # print(f"Monitor processing message: {message}")
         if message == "dead":
-            print("DEATH DETECTED BY MONITOR: direct 'dead' message")
+            # print("DEATH DETECTED BY MONITOR: direct 'dead' message")
             self.handle_death()
             return
         if message.startswith("message"):
@@ -164,4 +174,3 @@ class ContinuousMonitor(threading.Thread):
         print("Terminating process due to player death")
         import os, signal
         os.kill(os.getpid(), signal.SIGTERM)
-
