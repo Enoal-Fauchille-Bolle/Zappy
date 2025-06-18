@@ -13,9 +13,12 @@
  */
 
 #include <iostream>
+#include <ostream>
+#include <string>
 #include "Parsing.hpp"
 #include "ZappyApp.hpp"
 #include "GameManager.hpp"
+#include "network/NetworkManager.hpp"
 
 /**
  * @brief Main entry point for the Zappy GUI application.
@@ -30,6 +33,12 @@ int main(int argc, char **argv)
 {
     try {
         gui::Parser parser(argc, argv);
+
+        NetworkManager::initialize(parser.getHost(),
+            parser.getPort());
+        NetworkManager::send("GRAPHICS");
+        std::string response = NetworkManager::receive();
+        std::cout << "response: " << response << std::endl;
 
         ZappyApp app;
         app.initApp();
