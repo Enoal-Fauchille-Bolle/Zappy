@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
-Test(look, null_player)
+Test(look, null_player, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
@@ -34,7 +34,7 @@ static const char *expected_look_results[] = {"[player]",
     "[player,,,deraumere,,food,,,,,thystame,,,,,]",
     "[player,,,deraumere,,food,,,,,thystame,,,,,,,,,,,,,,]"};
 
-Test(look, valid)
+Test(look, valid, .timeout = 2)
 {
     map_t *map = create_map(7, 7, false);
     team_t *team = create_team("Team1");
@@ -63,7 +63,7 @@ Test(look, valid)
     destroy_team(team);
 }
 
-Test(look, empty_map)
+Test(look, empty_map, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     team_t *team = create_team("Team1");
@@ -83,7 +83,7 @@ Test(look, empty_map)
     destroy_team(team);
 }
 
-Test(look, player_on_one_by_one_map)
+Test(look, player_on_one_by_one_map, .timeout = 2)
 {
     map_t *map = create_map(1, 1, false);
     team_t *team = create_team("Team1");
@@ -113,7 +113,7 @@ Test(look, player_on_one_by_one_map)
 // ensures that the look function works correctly with various configurations
 // of resources and player levels. I hope you have a good sense of
 // visualization of the 2D map to understand this test.
-Test(look, object_in_each_direction)
+Test(look, object_in_each_direction, .timeout = 2)
 {
     map_t *map = create_map(3, 3, false);
     team_t *team = create_team("Team1");
