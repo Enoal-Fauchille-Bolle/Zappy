@@ -22,8 +22,8 @@ typedef enum orientation_e {
 } orientation_t;
 
 typedef struct pos_s {
-    long x;
-    long y;
+    long int x;
+    long int y;
 } pos_t;
 
 pos_t wrap_coordinates(pos_t pos, size_t width, size_t height);
