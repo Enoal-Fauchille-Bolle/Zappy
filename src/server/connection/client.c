@@ -156,9 +156,9 @@ void destroy_client(client_t *client)
     if (client == NULL)
         return;
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command[i] != NULL) {
-            destroy_command(client->command[i]);
-            client->command[i] = NULL;
+        if (client->command_buffer[i] != NULL) {
+            destroy_command(client->command_buffer[i]);
+            client->command_buffer[i] = NULL;
         }
     }
     if (client->player != NULL && client->server != NULL &&
@@ -250,7 +250,7 @@ static void setup_client(client_t *client, server_t *server, int client_index)
     client->sockfd = server->fds[client_index].fd;
     client->player = NULL;
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command[i] = NULL;
+        client->command_buffer[i] = NULL;
     }
 }
 

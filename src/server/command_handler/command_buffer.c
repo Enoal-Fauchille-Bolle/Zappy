@@ -26,8 +26,8 @@
 static void shift_commands_left(client_t *client, int start_index)
 {
     for (int i = start_index; i < MAX_COMMAND_BUFFER_SIZE - 1; i++) {
-        client->command[i] = client->command[i + 1];
-        client->command[i + 1] = NULL;
+        client->command_buffer[i] = client->command_buffer[i + 1];
+        client->command_buffer[i + 1] = NULL;
     }
 }
 
@@ -50,9 +50,9 @@ command_t *pop_command_from_buffer(client_t *client)
         return NULL;
     }
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command[i] != NULL) {
-            command = client->command[i];
-            client->command[i] = NULL;
+        if (client->command_buffer[i] != NULL) {
+            command = client->command_buffer[i];
+            client->command_buffer[i] = NULL;
             shift_commands_left(client, i);
             return command;
         }
@@ -78,8 +78,8 @@ void add_command_to_buffer(client_t *client, command_t *command)
         return;
     }
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command[i] == NULL) {
-            client->command[i] = command;
+        if (client->command_buffer[i] == NULL) {
+            client->command_buffer[i] = command;
             return;
         }
     }

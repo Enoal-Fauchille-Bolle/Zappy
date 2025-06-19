@@ -200,9 +200,9 @@ static void cleanup_test_client(client_t *client)
         return;
 
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command[i] != NULL) {
-            free(client->command[i]);
-            client->command[i] = NULL;
+        if (client->command_buffer[i] != NULL) {
+            free(client->command_buffer[i]);
+            client->command_buffer[i] = NULL;
         }
     }
 
@@ -245,7 +245,7 @@ Test(client, create_client_valid)
     // Verify command buffer is initialized
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         cr_assert_null(
-            client->command[i], "Command slot %d should be NULL", i);
+            client->command_buffer[i], "Command slot %d should be NULL", i);
     }
 
     cleanup_test_client(client);
@@ -330,7 +330,7 @@ Test(client, destroy_client_with_commands)
             command->argc = 0;
             command->argv = NULL;
             command->tokens = NULL;
-            client->command[i] = command;
+            client->command_buffer[i] = command;
         }
     }
 

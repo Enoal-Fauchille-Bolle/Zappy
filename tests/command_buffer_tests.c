@@ -100,7 +100,7 @@ static client_t *create_test_client(void)
     client->player = NULL;
 
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command[i] = NULL;
+        client->command_buffer[i] = NULL;
     }
 
     return client;
@@ -164,9 +164,9 @@ static void cleanup_test_client(client_t *client)
         return;
 
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command[i] != NULL) {
-            cleanup_test_command(client->command[i]);
-            client->command[i] = NULL;
+        if (client->command_buffer[i] != NULL) {
+            cleanup_test_command(client->command_buffer[i]);
+            client->command_buffer[i] = NULL;
         }
     }
 
@@ -185,9 +185,9 @@ Test(command_buffer, add_command_to_buffer_valid)
     add_command_to_buffer(client, command);
 
     cr_assert_not_null(
-        client->command[0], "First command slot should not be NULL");
+        client->command_buffer[0], "First command slot should not be NULL");
     cr_assert_str_eq(
-        client->command[0]->name, "dummy", "Command name should be 'dummy'");
+        client->command_buffer[0]->name, "dummy", "Command name should be 'dummy'");
 
     cleanup_test_client(client);
 }
@@ -216,7 +216,7 @@ Test(command_buffer, add_command_to_buffer_null_command)
     // All command slots should still be NULL
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         cr_assert_null(
-            client->command[i], "Command slot %d should be NULL", i);
+            client->command_buffer[i], "Command slot %d should be NULL", i);
     }
 
     cleanup_test_client(client);
@@ -245,18 +245,18 @@ Test(command_buffer, add_multiple_commands)
     add_command_to_buffer(client, command3);
 
     cr_assert_not_null(
-        client->command[0], "First command slot should not be NULL");
+        client->command_buffer[0], "First command slot should not be NULL");
     cr_assert_not_null(
-        client->command[1], "Second command slot should not be NULL");
+        client->command_buffer[1], "Second command slot should not be NULL");
     cr_assert_not_null(
-        client->command[2], "Third command slot should not be NULL");
+        client->command_buffer[2], "Third command slot should not be NULL");
 
-    cr_assert_str_eq(client->command[0]->name, "forward",
+    cr_assert_str_eq(client->command_buffer[0]->name, "forward",
         "First command should be 'forward'");
     cr_assert_str_eq(
-        client->command[1]->name, "left", "Second command should be 'left'");
+        client->command_buffer[1]->name, "left", "Second command should be 'left'");
     cr_assert_str_eq(
-        client->command[2]->name, "right", "Third command should be 'right'");
+        client->command_buffer[2]->name, "right", "Third command should be 'right'");
 
     cleanup_test_client(client);
 }
@@ -277,7 +277,7 @@ Test(command_buffer, add_command_to_full_buffer)
     // Verify buffer is full
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         cr_assert_not_null(
-            client->command[i], "Command slot %d should not be NULL", i);
+            client->command_buffer[i], "Command slot %d should not be NULL", i);
     }
 
     // Try to add one more command (should not crash, but won't be added)
@@ -289,8 +289,8 @@ Test(command_buffer, add_command_to_full_buffer)
     // Buffer should still be full with original commands
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         cr_assert_not_null(
-            client->command[i], "Command slot %d should not be NULL", i);
-        cr_assert_str_eq(client->command[i]->name, "dummy",
+            client->command_buffer[i], "Command slot %d should not be NULL", i);
+        cr_assert_str_eq(client->command_buffer[i]->name, "dummy",
             "Command %d should be 'dummy'", i);
     }
 
@@ -314,7 +314,7 @@ Test(command_buffer, pop_command_from_buffer_valid)
     cr_assert_str_eq(
         popped->name, "dummy", "Popped command name should be 'dummy'");
     cr_assert_null(
-        client->command[0], "First command slot should be NULL after pop");
+        client->command_buffer[0], "First command slot should be NULL after pop");
 
     cleanup_test_command(popped);
     cleanup_test_client(client);
@@ -374,7 +374,7 @@ Test(command_buffer, pop_command_fifo_order)
     // Buffer should be empty
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         cr_assert_null(
-            client->command[i], "Command slot %d should be NULL", i);
+            client->command_buffer[i], "Command slot %d should be NULL", i);
     }
 
     cleanup_test_command(popped1);
@@ -408,15 +408,15 @@ Test(command_buffer, pop_command_shifts_remaining)
 
     // Remaining commands should shift left
     cr_assert_not_null(
-        client->command[0], "First slot should contain second command");
+        client->command_buffer[0], "First slot should contain second command");
     cr_assert_not_null(
-        client->command[1], "Second slot should contain third command");
-    cr_assert_null(client->command[2], "Third slot should be NULL");
+        client->command_buffer[1], "Second slot should contain third command");
+    cr_assert_null(client->command_buffer[2], "Third slot should be NULL");
 
     cr_assert_str_eq(
-        client->command[0]->name, "second", "First slot should be 'second'");
+        client->command_buffer[0]->name, "second", "First slot should be 'second'");
     cr_assert_str_eq(
-        client->command[1]->name, "third", "Second slot should be 'third'");
+        client->command_buffer[1]->name, "third", "Second slot should be 'third'");
 
     cleanup_test_command(popped);
     cleanup_test_client(client);
@@ -486,7 +486,7 @@ Test(command_buffer, fill_and_empty_full_buffer)
     // Verify buffer is full
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         cr_assert_not_null(
-            client->command[i], "Buffer slot %d should not be NULL", i);
+            client->command_buffer[i], "Buffer slot %d should not be NULL", i);
     }
 
     // Empty buffer completely
@@ -500,7 +500,7 @@ Test(command_buffer, fill_and_empty_full_buffer)
 
     // Verify buffer is empty
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        cr_assert_null(client->command[i], "Buffer slot %d should be NULL", i);
+        cr_assert_null(client->command_buffer[i], "Buffer slot %d should be NULL", i);
     }
 
     // One more pop should return NULL

@@ -180,7 +180,7 @@ static client_t *create_test_client(void)
     client->sockfd = -1;      // We'll use -1 to avoid actual socket operations
 
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command[i] = NULL;
+        client->command_buffer[i] = NULL;
     }
 
     return client;
@@ -254,9 +254,9 @@ static void cleanup_test_client(client_t *client)
     }
 
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command[i] != NULL) {
-            cleanup_test_command(client->command[i]);
-            client->command[i] = NULL;
+        if (client->command_buffer[i] != NULL) {
+            cleanup_test_command(client->command_buffer[i]);
+            client->command_buffer[i] = NULL;
         }
     }
 
