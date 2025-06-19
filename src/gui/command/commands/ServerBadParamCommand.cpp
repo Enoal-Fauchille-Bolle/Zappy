@@ -6,6 +6,6 @@ ServerBadParamCommand::ServerBadParamCommand()
 }
 
 void ServerBadParamCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "ServerBadParamCommand " << args << std::endl;
 }

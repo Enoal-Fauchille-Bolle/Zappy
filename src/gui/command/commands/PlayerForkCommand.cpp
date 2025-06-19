@@ -6,6 +6,6 @@ PlayerForkCommand::PlayerForkCommand()
 }
 
 void PlayerForkCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "PlayerForkCommand " << args << std::endl;
 }

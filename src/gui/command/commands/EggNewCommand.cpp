@@ -6,6 +6,6 @@ EggNewCommand::EggNewCommand()
 }
 
 void EggNewCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "EggNewCommand " << args << std::endl;
 }

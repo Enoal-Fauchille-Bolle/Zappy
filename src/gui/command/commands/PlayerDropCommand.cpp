@@ -6,6 +6,6 @@ PlayerDropCommand::PlayerDropCommand()
 }
 
 void PlayerDropCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "PlayerDropCommand " << args << std::endl;
 }

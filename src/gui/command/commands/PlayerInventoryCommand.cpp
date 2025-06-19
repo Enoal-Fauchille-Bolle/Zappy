@@ -6,6 +6,6 @@ PlayerInventoryCommand::PlayerInventoryCommand()
 }
 
 void PlayerInventoryCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "PlayerInventoryCommand " << args << std::endl;
 }

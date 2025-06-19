@@ -6,6 +6,6 @@ PlayerDieCommand::PlayerDieCommand()
 }
 
 void PlayerDieCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "PlayerDieCommand " << args << std::endl;
 }

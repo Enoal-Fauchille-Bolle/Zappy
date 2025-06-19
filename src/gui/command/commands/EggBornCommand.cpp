@@ -6,6 +6,6 @@ EggBornCommand::EggBornCommand()
 }
 
 void EggBornCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "EggBornCommand " << args << std::endl;
 }

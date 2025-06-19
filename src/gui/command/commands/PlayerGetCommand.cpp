@@ -6,6 +6,6 @@ PlayerGetCommand::PlayerGetCommand()
 }
 
 void PlayerGetCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "PlayerGetCommand " << args << std::endl;
 }

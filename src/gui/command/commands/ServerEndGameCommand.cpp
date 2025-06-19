@@ -6,6 +6,6 @@ ServerEndGameCommand::ServerEndGameCommand()
 }
 
 void ServerEndGameCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "ServerEndGameCommand " << args << std::endl;
 }

@@ -6,6 +6,6 @@ PlayerLevelCommand::PlayerLevelCommand()
 }
 
 void PlayerLevelCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager;
+    (void)gameManager;
     std::cout << "PlayerLevelCommand " << args << std::endl;
 }
