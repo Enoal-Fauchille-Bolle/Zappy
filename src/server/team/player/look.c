@@ -36,20 +36,17 @@ static char *dyn_strcat_free(char **original_dest, char *src)
  */
 static void concat_resources(char **contents, tile_t *tile)
 {
-    char *temp;
-
     if (*contents == NULL || tile == NULL) {
         fprintf(stderr, "Invalid contents or tile pointer\n");
         return;
     }
     for (int i = 0; i <= THYSTAME; i++) {
-        temp = repeat_string(resource_names[i], " ", tile->resources[i]);
         if (strlen(*contents) > 0 &&
             (*contents)[strlen(*contents) - 1] != ' ' &&
             tile->resources[i] > 0)
             dyn_strcat(contents, " ");
-        dyn_strcat(contents, temp);
-        free(temp);
+        dyn_strcat_free(contents,
+            repeat_string(resource_names[i], " ", tile->resources[i]));
     }
 }
 
@@ -70,6 +67,7 @@ static char *get_tile_contents(tile_t *tile)
 
     if (tile == NULL) {
         fprintf(stderr, "Invalid tile pointer\n");
+        free(contents);
         return NULL;
     }
     if (!contents)
@@ -147,6 +145,7 @@ char *look(player_t *player, map_t *map)
 
     if (player == NULL || map == NULL) {
         fprintf(stderr, "Invalid player or map pointer\n");
+        free(contents);
         return NULL;
     }
     if (!contents)
