@@ -11,7 +11,6 @@
 #include "map/tile.h"
 #include "team/player/player.h"
 #include "utils/string.h"
-#include <cstddef>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
