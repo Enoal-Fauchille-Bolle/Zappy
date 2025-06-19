@@ -151,6 +151,9 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
     setup_client(client, server, client_index);
     client->player = hatch_player(
         team, server->game->map, server->game->next_player_id, client);
+    debug_map(server->options->debug,
+        "Player %zu spawned at position (%d, %d)\n", client->player->id,
+        client->player->pos.x, client->player->pos.y);
     server->game->next_player_id++;
     return client;
 }
