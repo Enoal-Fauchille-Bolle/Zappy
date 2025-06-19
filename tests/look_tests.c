@@ -12,7 +12,6 @@
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 #include <stdio.h>
-#include <string.h>
 
 Test(look, null_player, .timeout = 2)
 {
