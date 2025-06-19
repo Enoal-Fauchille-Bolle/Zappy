@@ -2,15 +2,14 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Commands Function Header
+** AI Commands Header
 */
 
-#ifndef COMMANDS_H_
-    #define COMMANDS_H_
+#ifndef AI_COMMANDS_H_
+    #define AI_COMMANDS_H_
 
     #include "command_handler/command.h"
     #include "connection/client.h"
-    #include <stdbool.h>
 
     #define FORWARD_COMMAND_COOLDOWN 7
     #define LEFT_COMMAND_COOLDOWN 7
@@ -29,4 +28,4 @@ void forward_command(client_t *client, command_t *command);
 void left_command(client_t *client, command_t *command);
 void right_command(client_t *client, command_t *command);
 
-#endif /* !COMMANDS_H_ */
+#endif /* !AI_COMMANDS_H_ */

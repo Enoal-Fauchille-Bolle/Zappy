@@ -8,7 +8,7 @@
 #include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
-#include "command_handler/commands.h"
+#include "command_handler/ai_commands.h"
 #include "debug_categories.h"
 #include "map/orientation_names.h"
 #include "team/player/player.h"

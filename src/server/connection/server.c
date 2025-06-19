@@ -6,6 +6,7 @@
 */
 
 #include "connection/server.h"
+#include "connection/client.h"
 #include "connection/connection_handler.h"
 #include "connection/signal_handler.h"
 #include "connection/socket.h"
@@ -164,7 +165,7 @@ server_t *create_server(server_options_t *options)
     if (setup_server(server, options) == FAILURE) {
         return NULL;
     }
-    server->game = create_game(server->options);
+    server->game = create_game(server);
     if (!server->game) {
         destroy_server(server);
         return NULL;

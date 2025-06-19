@@ -75,6 +75,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)options_parser/options/debug.c				\
 			 	$(SRCDIR_SERVER)connection/server.c							\
 			 	$(SRCDIR_SERVER)connection/client.c							\
+			 	$(SRCDIR_SERVER)connection/client_message.c					\
 			 	$(SRCDIR_SERVER)connection/team_join.c						\
 			 	$(SRCDIR_SERVER)connection/socket.c							\
 			 	$(SRCDIR_SERVER)connection/connection_handler.c				\
@@ -96,18 +97,19 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)team/team_player.c							\
 				$(SRCDIR_SERVER)utils/string/string.c						\
 				$(SRCDIR_SERVER)utils/string/repeat_string.c				\
+				$(SRCDIR_SERVER)game/game.c									\
+				$(SRCDIR_SERVER)game/teams_util.c							\
+				$(SRCDIR_SERVER)game/tick.c									\
 				$(SRCDIR_SERVER)command_handler/command_parser.c			\
 				$(SRCDIR_SERVER)command_handler/command_factory.c			\
 				$(SRCDIR_SERVER)command_handler/command_tokenizer.c			\
 				$(SRCDIR_SERVER)command_handler/command_validator.c			\
 				$(SRCDIR_SERVER)command_handler/command_executor.c			\
 				$(SRCDIR_SERVER)command_handler/command_buffer.c			\
-				$(SRCDIR_SERVER)commands/forward.c							\
-				$(SRCDIR_SERVER)commands/left.c								\
-				$(SRCDIR_SERVER)commands/right.c							\
-				$(SRCDIR_SERVER)game/game.c									\
-				$(SRCDIR_SERVER)game/teams_util.c							\
-				$(SRCDIR_SERVER)game/tick.c									\
+				$(SRCDIR_SERVER)commands/ai/forward.c						\
+				$(SRCDIR_SERVER)commands/ai/left.c							\
+				$(SRCDIR_SERVER)commands/ai/right.c							\
+				$(SRCDIR_SERVER)commands/gui/msz.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -216,6 +218,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)constants.c										\
 			$(SRCDIR_SERVER)connection/server.c								\
 			$(SRCDIR_SERVER)connection/client.c								\
+			$(SRCDIR_SERVER)connection/client_message.c						\
 			$(SRCDIR_SERVER)connection/socket.c								\
 			$(SRCDIR_SERVER)connection/time.c								\
 			$(SRCDIR_SERVER)connection/connection_handler.c					\
@@ -236,9 +239,10 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)game/game.c										\
 			$(SRCDIR_SERVER)game/tick.c										\
 			$(SRCDIR_SERVER)game/teams_util.c								\
-			$(SRCDIR_SERVER)commands/forward.c								\
-			$(SRCDIR_SERVER)commands/left.c									\
-			$(SRCDIR_SERVER)commands/right.c								\
+			$(SRCDIR_SERVER)commands/ai/forward.c							\
+			$(SRCDIR_SERVER)commands/ai/left.c								\
+			$(SRCDIR_SERVER)commands/ai/right.c								\
+			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\
