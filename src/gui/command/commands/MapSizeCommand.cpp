@@ -1,10 +1,17 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** MapSizeCommand
+*/
+
 #include "MapSizeCommand.hpp"
 
 MapSizeCommand::MapSizeCommand()
 {
 }
 
-void MapSizeCommand::execute(const std::string& args, SimpleGameManager gameManager)
+void MapSizeCommand::execute(const std::string& args, SimpleGameManager& gameManager)
 {
     int width, height;
     std::istringstream iss(args);

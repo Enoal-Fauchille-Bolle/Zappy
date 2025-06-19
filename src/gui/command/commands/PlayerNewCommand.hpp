@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerNewCommand
+*/
+
 #ifndef PLAYER_NEW_COMMAND_HPP
 #define PLAYER_NEW_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerNewCommand : public ICommand {
 public:
     PlayerNewCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_NEW_COMMAND_HPP

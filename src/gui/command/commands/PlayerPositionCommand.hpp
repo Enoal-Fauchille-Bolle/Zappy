@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerPositionCommand
+*/
+
 #ifndef PLAYER_POSITION_COMMAND_HPP
 #define PLAYER_POSITION_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerPositionCommand : public ICommand {
 public:
     PlayerPositionCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_POSITION_COMMAND_HPP

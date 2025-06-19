@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerInventoryCommand
+*/
+
 #ifndef PLAYER_INVENTORY_COMMAND_HPP
 #define PLAYER_INVENTORY_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerInventoryCommand : public ICommand {
 public:
     PlayerInventoryCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_INVENTORY_COMMAND_HPP

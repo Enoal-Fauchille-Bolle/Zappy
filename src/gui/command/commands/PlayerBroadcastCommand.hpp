@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerBroadcastCommand
+*/
+
 #ifndef PLAYER_BROADCAST_COMMAND_HPP
 #define PLAYER_BROADCAST_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerBroadcastCommand : public ICommand {
 public:
     PlayerBroadcastCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_BROADCAST_COMMAND_HPP

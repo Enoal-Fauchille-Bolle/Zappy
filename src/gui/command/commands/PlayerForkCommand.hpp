@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerForkCommand
+*/
+
 #ifndef PLAYER_FORK_COMMAND_HPP
 #define PLAYER_FORK_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerForkCommand : public ICommand {
 public:
     PlayerForkCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_FORK_COMMAND_HPP

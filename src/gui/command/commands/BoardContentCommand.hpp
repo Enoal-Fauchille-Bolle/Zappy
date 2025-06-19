@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** BoardContentCommand
+*/
+
 #ifndef BOARD_CONTENT_COMMAND_HPP
 #define BOARD_CONTENT_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class BoardContentCommand : public ICommand {
 public:
     BoardContentCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // BOARD_CONTENT_COMMAND_HPP

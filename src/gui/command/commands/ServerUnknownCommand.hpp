@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** ServerUnknownCommand
+*/
+
 #ifndef SERVER_UNKNOWN_COMMAND_HPP
 #define SERVER_UNKNOWN_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class ServerUnknownCommand : public ICommand {
 public:
     ServerUnknownCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // SERVER_UNKNOWN_COMMAND_HPP

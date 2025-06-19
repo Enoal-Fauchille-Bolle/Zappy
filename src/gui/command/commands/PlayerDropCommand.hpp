@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerDropCommand
+*/
+
 #ifndef PLAYER_DROP_COMMAND_HPP
 #define PLAYER_DROP_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerDropCommand : public ICommand {
 public:
     PlayerDropCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_DROP_COMMAND_HPP

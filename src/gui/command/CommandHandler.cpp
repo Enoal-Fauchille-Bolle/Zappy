@@ -1,4 +1,12 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** CommandHandler
+*/
+
 #include <iostream>
+#include <string>
 #include "CommandHandler.hpp"
 #include "commands/MapSizeCommand.hpp"
 #include "commands/BoardContentCommand.hpp"
@@ -73,7 +81,7 @@ CommandHandler::~CommandHandler()
  * @param command The command string to handle.
  * @param args The arguments associated with the command.
  */
-void CommandHandler::handleCommand(const std::string& command, const std::string& args, SimpleGameManager gameManager) {
+void CommandHandler::handleCommand(const std::string& command, const std::string& args, SimpleGameManager& gameManager) {
     auto it = _commands.find(command);
     if (it != _commands.end()) {
         it->second->execute(args, gameManager);

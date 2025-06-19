@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** ServerSetTimeCommand
+*/
+
 #ifndef SERVER_SET_TIME_COMMAND_HPP
 #define SERVER_SET_TIME_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class ServerSetTimeCommand : public ICommand {
 public:
     ServerSetTimeCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // SERVER_SET_TIME_COMMAND_HPP

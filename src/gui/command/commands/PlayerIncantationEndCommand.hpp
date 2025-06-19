@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerIncantationEndCommand
+*/
+
 #ifndef PLAYER_INCANTATION_END_COMMAND_HPP
 #define PLAYER_INCANTATION_END_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerIncantationEndCommand : public ICommand {
 public:
     PlayerIncantationEndCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_INCANTATION_END_COMMAND_HPP

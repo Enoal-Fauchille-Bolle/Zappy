@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** ServerMessageCommand
+*/
+
 #ifndef SERVER_MESSAGE_COMMAND_HPP
 #define SERVER_MESSAGE_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class ServerMessageCommand : public ICommand {
 public:
     ServerMessageCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // SERVER_MESSAGE_COMMAND_HPP

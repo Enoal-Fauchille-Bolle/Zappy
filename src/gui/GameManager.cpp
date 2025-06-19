@@ -263,12 +263,14 @@ void SimpleGameManager::readResponse(const std::string& response) {
     if (response.length() < 3)  {
         return;
     }
+    std::string args {};
     std::string command = response.substr(0, 3);
-    std::string args = response.substr(4);
+    if (response.length() > 4)
+        args = response.substr(4);
     _commandHandler->handleCommand(command, args, *this);
 }
 
-/**
+/*
  * @brief Get the current map size.
  * 
  * @return A pair containing the width and height of the map.

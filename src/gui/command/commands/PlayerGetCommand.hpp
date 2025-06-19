@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** PlayerGetCommand
+*/
+
 #ifndef PLAYER_GET_COMMAND_HPP
 #define PLAYER_GET_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class PlayerGetCommand : public ICommand {
 public:
     PlayerGetCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // PLAYER_GET_COMMAND_HPP

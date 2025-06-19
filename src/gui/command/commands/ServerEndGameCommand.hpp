@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** ServerEndGameCommand
+*/
+
 #ifndef SERVER_END_GAME_COMMAND_HPP
 #define SERVER_END_GAME_COMMAND_HPP
 
@@ -8,7 +15,7 @@
 class ServerEndGameCommand : public ICommand {
 public:
     ServerEndGameCommand();
-    void execute(const std::string& args, SimpleGameManager gameManager) override;
+    void execute(const std::string& args, SimpleGameManager& gameManager) override;
 };
 
 #endif // SERVER_END_GAME_COMMAND_HPP
