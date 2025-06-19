@@ -6,8 +6,8 @@
 */
 
 #include "command_handler/command.h"
-#include "connection/server.h"
 #include "connection/client.h"
+#include "connection/server.h"
 #include <stdbool.h>
 #include <stdio.h>
 

@@ -6,8 +6,8 @@
 */
 
 #include "command_handler/command.h"
-#include "connection/server.h"
 #include "connection/client.h"
+#include "connection/server.h"
 #include "team/player/player.h"
 #include <stdbool.h>
 #include <stddef.h>
