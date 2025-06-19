@@ -82,8 +82,12 @@ NAME_GUI = zappy_gui
 
 # Folder name
 SRCDIR_GUI = ${SRCDIR}gui/
+
 NET_GUI	=	$(SRCDIR_GUI)network/
 POSIX	=	$(NET_GUI)POSIX_wrapper/
+
+COMMAND_GUI = $(SRCDIR_GUI)command/
+COMMANDS_GUI = $(COMMAND_GUI)commands/
 
 # Sources
 SRC_GUI = $(SRCDIR_GUI)main.cpp	\
@@ -102,7 +106,32 @@ SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(NET_GUI)message/MessageProtocol.cpp	\
 		$(POSIX)SocketTransport.cpp	\
 		$(POSIX)connection/ReconnectionService.cpp	\
-		$(POSIX)connection/ConnectionManager.cpp
+		$(POSIX)connection/ConnectionManager.cpp	\
+		$(COMMAND_GUI)CommandHandler.cpp	\
+		$(COMMANDS_GUI)BoardContentCommand.cpp	\
+		$(COMMANDS_GUI)EggBornCommand.cpp	\
+		$(COMMANDS_GUI)EggDieCommand.cpp	\
+		$(COMMANDS_GUI)EggNewCommand.cpp	\
+		$(COMMANDS_GUI)MapSizeCommand.cpp	\
+		$(COMMANDS_GUI)PlayerBroadcastCommand.cpp	\
+		$(COMMANDS_GUI)PlayerDieCommand.cpp	\
+		$(COMMANDS_GUI)PlayerDropCommand.cpp	\
+		$(COMMANDS_GUI)PlayerExpelledCommand.cpp	\
+		$(COMMANDS_GUI)PlayerForkCommand.cpp	\
+		$(COMMANDS_GUI)PlayerGetCommand.cpp	\
+		$(COMMANDS_GUI)PlayerIncantationCommand.cpp	\
+		$(COMMANDS_GUI)PlayerIncantationEndCommand.cpp	\
+		$(COMMANDS_GUI)PlayerInventoryCommand.cpp	\
+		$(COMMANDS_GUI)PlayerLevelCommand.cpp	\
+		$(COMMANDS_GUI)PlayerNewCommand.cpp	\
+		$(COMMANDS_GUI)PlayerPositionCommand.cpp	\
+		$(COMMANDS_GUI)ServerBadParamCommand.cpp	\
+		$(COMMANDS_GUI)ServerEndGameCommand.cpp	\
+		$(COMMANDS_GUI)ServerGetTimeCommand.cpp	\
+		$(COMMANDS_GUI)ServerMessageCommand.cpp	\
+		$(COMMANDS_GUI)ServerSetTimeCommand.cpp	\
+		$(COMMANDS_GUI)ServerUnknownCommand.cpp	\
+		$(COMMANDS_GUI)TeamNamesCommand.cpp	\
 
 # Objects
 OBJ_GUI = $(SRC_GUI:.cpp=.o)
