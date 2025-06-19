@@ -16,7 +16,8 @@
 #include <unistd.h>
 
 const command_registry_entry_t command_registry[] = {{"dummy", dummy_command},
-    {"forward", forward_command}, {"left", left_command}, {NULL, NULL}};
+    {"forward", forward_command}, {"left", left_command},
+    {"right", right_command}, {NULL, NULL}};
 
 /**
  * @brief Get the command handler for a given command.
