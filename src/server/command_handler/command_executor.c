@@ -67,7 +67,11 @@ void execute_command(client_t *client, command_t *command)
     if (!handler.handler) {
         debug_warning(client->server->options->debug,
             "Invalid command: '%s'\n", command->name);
-        write(client->sockfd, "ko\n", 3);
+        if (!client->is_gui) {
+            write(client->sockfd, "ko\n", 3);
+        } else {
+            write(client->sockfd, "suc\n", 4);
+        }
         return;
     }
     handler.handler(client, command);
