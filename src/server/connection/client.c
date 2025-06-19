@@ -59,7 +59,8 @@ static void handle_command(
  *
  * Checks if the team exists and if the client can join it. If successful,
  * creates a new client, assigns it to the team, and sends a welcome message.
- * If the team does not exist or the client cannot join, sends an error message.
+ * If the team does not exist or the client cannot join, sends an error
+ * message.
  *
  * @param server Pointer to the server structure
  * @param team_name Name of the team to join
@@ -80,7 +81,8 @@ static void process_single_command(
  *
  * Checks if the team exists and if the client can join it. If successful,
  * creates a new client, assigns it to the team, and sends a welcome message.
- * If the team does not exist or the client cannot join, sends an error message.
+ * If the team does not exist or the client cannot join, sends an error
+ * message.
  *
  * @param server Pointer to the server structure
  * @param team_name Name of the team to join
