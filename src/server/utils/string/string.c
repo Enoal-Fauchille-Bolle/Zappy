@@ -80,13 +80,14 @@ char *dyn_strcat(char **original_dest, const char *src)
         fprintf(stderr, "Invalid string pointer\n");
         return NULL;
     }
-    *original_dest = realloc(dest, strlen(dest) + strlen(src) + 1);
-    if (*original_dest == NULL) {
+    dest = realloc(dest, strlen(dest) + strlen(src) + 1);
+    if (dest == NULL) {
         perror("Failed to reallocate memory for string concatenation");
         return NULL;
     }
-    strcat(*original_dest, src);
-    return *original_dest;
+    *original_dest = dest;
+    strcat(dest, src);
+    return dest;
 }
 
 /**
