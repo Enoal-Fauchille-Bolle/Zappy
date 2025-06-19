@@ -108,6 +108,15 @@ static void init_new_connection(struct pollfd *fd, int client_sockfd)
     write(client_sockfd, "WELCOME\n", 8);
 }
 
+static void refuse_connection(server_t *server, int client_sockfd)
+{
+    debug_conn(server->options->debug,
+        "Connection refused - server at capacity (%d/%d clients)\n",
+        MAX_CLIENTS, MAX_CLIENTS);
+    write(client_sockfd, "ko\n", 3);
+    close(client_sockfd);
+}
+
 /**
  * @brief Accepts a new client connection and adds it to the server's client
  * pool
@@ -142,9 +151,10 @@ static void accept_new_connection(server_t *server)
                 inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port),
                 i - 2);
             init_new_connection(&server->fds[i], client_sockfd);
-            break;
+            return;
         }
     }
+    refuse_connection(server, client_sockfd);
 }
 
 /**
