@@ -146,3 +146,31 @@ void spread_resources(map_t *map, bool debug)
     for (resource_t resource = FOOD; resource <= THYSTAME; resource++)
         spread_resource(map, resource, debug);
 }
+
+/**
+ * @brief Generate a string representation of the player's inventory.
+ *
+ * This function creates a formatted string that includes the counts of each
+ * resource in the player's inventory. The string is dynamically allocated and
+ * should be freed by the caller.
+ *
+ * @param inventory The inventory to convert to a string
+ * @return A dynamically allocated string containing the inventory counts,
+ *         or NULL if memory allocation fails.
+ */
+char *get_inventory_string(const inventory_t inventory)
+{
+    char *inventory_str = malloc(256 * sizeof(char));
+
+    if (inventory_str == NULL) {
+        fprintf(stderr, "Memory allocation failed for inventory string\n");
+        return NULL;
+    }
+    snprintf(inventory_str, 256,
+        "[food: %zu, linemate: %zu, deraumere: %zu, "
+        "sibur: %zu, mendiane: %zu, phiras: %zu, thystame: %zu]",
+        inventory[FOOD], inventory[LINEMATE], inventory[DERAUMERE],
+        inventory[SIBUR], inventory[MENDIANE], inventory[PHIRAS],
+        inventory[THYSTAME]);
+    return inventory_str;
+}

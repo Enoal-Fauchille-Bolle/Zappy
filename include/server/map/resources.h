@@ -43,5 +43,6 @@ size_t get_minimum_resource_count(const map_t *map, const float density);
 size_t count_resource(const map_t *map, const resource_t resource);
 void spread_resource(map_t *map, const resource_t resource, bool debug);
 void spread_resources(map_t *map, bool debug);
+char *get_inventory_string(const inventory_t inventory);
 
 #endif /* !RESOURCES_H_ */
