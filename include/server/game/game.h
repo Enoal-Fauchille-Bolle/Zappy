@@ -8,6 +8,7 @@
 #ifndef GAME_H_
     #define GAME_H_
 
+    #include "connection/client.h"
     #include "map/map.h"
     #include "game/game_state.h"
     #include "options_parser/options.h"
@@ -20,6 +21,7 @@ typedef unsigned int tick_t;
 typedef unsigned int tick_rate_t;
 
 typedef struct game_s {
+    server_t *server;
     map_t *map;
     team_t **teams;
     player_id_t next_player_id;
@@ -28,7 +30,7 @@ typedef struct game_s {
     game_state_t game_state;
 } game_t;
 
-game_t *create_game(server_options_t *options);
+game_t *create_game(server_t *server);
 void game_tick(game_t *game, server_options_t *options);
 void destroy_game(game_t *game);
 

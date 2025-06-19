@@ -6,6 +6,7 @@
 */
 
 #include "game/game.h"
+#include "connection/server.h"
 #include "constants.h"
 #include "game/game_state.h"
 #include "game/teams.h"
@@ -80,20 +81,22 @@ static team_t **create_teams(char **teams_name)
  *
  * @note On failure, allocated resources are automatically cleaned up
  */
-static bool init_game(game_t *game, server_options_t *options)
+static bool init_game(game_t *game, server_t *server)
 {
-    game->map = create_map(options->width, options->height, options->debug);
+    game->map = create_map(server->options->width, server->options->height,
+        server->options->debug);
     if (!game->map) {
         destroy_game(game);
         return FAILURE;
     }
-    game->teams = create_teams(options->teams);
+    game->teams = create_teams(server->options->teams);
     if (!game->teams) {
         destroy_game(game);
         return FAILURE;
     }
+    game->server = server;
     game->next_player_id = 1;
-    game->tick_rate = options->frequency;
+    game->tick_rate = server->options->frequency;
     game->game_tick = 0;
     game->game_state = GAME_RUNNING;
     return SUCCESS;
@@ -110,38 +113,36 @@ static bool init_game(game_t *game, server_options_t *options)
  * configuration
  * @return bool Returns SUCCESS (true) if setup completed successfully
  */
-static bool setup_game(game_t *game, server_options_t *options)
+static bool setup_game(game_t *game, server_t *server)
 {
     for (int i = 0; game->teams[i] != NULL; i++) {
-        spawn_min_eggs(
-            game->map, game->teams[i], options->clients_nb, options->debug);
+        spawn_min_eggs(game->map, game->teams[i], server->options->clients_nb,
+            server->options->debug);
     }
-    spread_resources(game->map, options->debug);
+    spread_resources(game->map, server->options->debug);
     return SUCCESS;
 }
 
 /**
- * @brief Creates and initializes a new game instance
+ * @brief Creates a new game instance and initializes it with the server
+ * configuration
  *
- * Allocates memory for a game structure and initializes all its components
- * including the map, teams, and game state parameters based on the provided
- * server options.
+ * This function allocates memory for a game structure, initializes it with
+ * the server options, and sets up the game state. If any step fails, it cleans
+ * up allocated resources and returns NULL.
  *
- * @param options Pointer to server options containing game configuration
- * @return Pointer to the created game instance, or NULL if creation failed
- *
- * @note The function performs proper cleanup on failure, freeing any
- *       partially allocated resources before returning NULL
+ * @param server Pointer to the server structure containing configuration
+ * @return game_t* Pointer to the created game instance, or NULL on failure
  */
-game_t *create_game(server_options_t *options)
+game_t *create_game(server_t *server)
 {
     game_t *game = malloc(sizeof(game_t));
 
     if (!game)
         return NULL;
-    if (init_game(game, options) == FAILURE)
+    if (init_game(game, server) == FAILURE)
         return NULL;
-    if (setup_game(game, options) == FAILURE) {
+    if (setup_game(game, server) == FAILURE) {
         destroy_game(game);
         return NULL;
     }
