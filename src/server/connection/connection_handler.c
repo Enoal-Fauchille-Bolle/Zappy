@@ -22,40 +22,6 @@
 #include <unistd.h>
 
 /**
- * @brief Removes a client from the server and poll arrays
- *
- * This function safely disconnects a client by removing it from both the
- * server's client array and the poll file descriptor array, then destroys
- * the client structure.
- *
- * @param server Pointer to the server structure
- * @param fds Array of poll file descriptors
- * @param client_index Index of the client to remove (1-based for fds array)
- */
-void remove_client(server_t *server, int client_index)
-{
-    if (client_index < 2 || client_index >= MAX_CLIENTS + 2)
-        return;
-    if (server->fds[client_index].fd >= 0) {
-        write(server->fds[client_index].fd, "dead\n", 5);
-        debug_conn(server->options->debug, "Client %d disconnected\n",
-            client_index - 2);
-        close(server->fds[client_index].fd);
-    }
-    if (server->clients[client_index - 2] != NULL) {
-        debug_conn(server->options->debug,
-            "Player %d (Client %d) removed from team '%s'\n",
-            server->clients[client_index - 2]->player->id, client_index - 2,
-            server->clients[client_index - 2]->player->team->name);
-        destroy_client(server->clients[client_index - 2]);
-        server->clients[client_index - 2] = NULL;
-    }
-    server->fds[client_index].fd = -1;
-    server->fds[client_index].events = 0;
-    server->fds[client_index].revents = 0;
-}
-
-/**
  * @brief Processes client events for all connected clients
  *
  * Iterates through the file descriptor array and processes incoming messages

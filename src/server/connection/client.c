@@ -174,6 +174,68 @@ void destroy_client(client_t *client)
 }
 
 /**
+ * @brief Closes the connection for a client and updates the server state
+ *
+ * This function closes the file descriptor for a client, sends a disconnection
+ * message if applicable, and updates the server's client array to reflect the
+ * disconnection.
+ *
+ * @param server Pointer to the server structure
+ * @param client_index Index of the client in the server's file descriptor array
+ */
+static void close_client_connection(server_t *server, int client_index)
+{
+    if (server->clients[client_index - 2] != NULL) {
+        if (!server->clients[client_index - 2]->is_gui) {
+            write(server->fds[client_index].fd, "dead\n", 5);
+        } else {
+            write(server->fds[client_index].fd, "seg\n", 4);
+        }
+    }
+    debug_conn(
+        server->options->debug, "Client %d disconnected\n", client_index - 2);
+    close(server->fds[client_index].fd);
+    server->fds[client_index].fd = -1;
+    server->fds[client_index].events = 0;
+    server->fds[client_index].revents = 0;
+}
+
+/**
+ * @brief Removes a client from the server and poll arrays
+ *
+ * This function safely disconnects a client by removing it from both the
+ * server's client array and the poll file descriptor array, then destroys
+ * the client structure.
+ *
+ * @param server Pointer to the server structure
+ * @param fds Array of poll file descriptors
+ * @param client_index Index of the client to remove (1-based for fds array)
+ */
+void remove_client(server_t *server, int client_index)
+{
+    if (client_index < 2 || client_index >= MAX_CLIENTS + 2)
+        return;
+    if (server->fds[client_index].fd >= 0) {
+        close_client_connection(server, client_index);
+    }
+    if (server->clients[client_index - 2] != NULL) {
+        if (server->clients[client_index - 2]->player != NULL &&
+            !server->clients[client_index - 2]->is_gui) {
+            debug_conn(server->options->debug,
+                "Player %d (Client %d) removed from team '%s'\n",
+                server->clients[client_index - 2]->player->id,
+                client_index - 2,
+                server->clients[client_index - 2]->player->team->name);
+        } else {
+            debug_conn(server->options->debug,
+                "GUI client %d disconnected\n", client_index - 2);
+        }
+        destroy_client(server->clients[client_index - 2]);
+        server->clients[client_index - 2] = NULL;
+    }
+}
+
+/**
  * @brief Initializes a client structure with server connection details
  *
  * @param client Pointer to the client structure to initialize
