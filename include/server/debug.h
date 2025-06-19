@@ -11,6 +11,9 @@
     #include <stdarg.h>
     #include <stdio.h>
     #include <stdbool.h>
+    #include <time.h>
+    #include <sys/time.h>
+    #include <bits/types/struct_timeval.h>
 
     #define DEBUG_INFO "[ℹ️ ] "
     #define DEBUG_WARNING "[⚠️ ] "
@@ -19,8 +22,15 @@
 static inline void debug_print(bool debug_enabled, const char *prefix,
     const char *format, va_list args)
 {
+    struct timeval tv;
+    struct tm *tm_info;
+    char timestamp[30];
+
     if (debug_enabled) {
-        printf("%s", prefix);
+        gettimeofday(&tv, NULL);
+        tm_info = localtime(&tv.tv_sec);
+        strftime(timestamp, sizeof(timestamp), "%H:%M:%S", tm_info);
+        printf("[%s.%03ld] %s", timestamp, tv.tv_usec / 1000, prefix);
         vprintf(format, args);
     }
 }
