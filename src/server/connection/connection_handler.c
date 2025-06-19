@@ -37,6 +37,7 @@ void remove_client(server_t *server, int client_index)
     if (client_index < 2 || client_index >= MAX_CLIENTS + 2)
         return;
     if (server->fds[client_index].fd >= 0) {
+        write(server->fds[client_index].fd, "dead\n", 5);
         debug_conn(server->options->debug, "Client %d disconnected\n",
             client_index - 2);
         close(server->fds[client_index].fd);
