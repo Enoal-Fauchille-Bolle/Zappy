@@ -11,6 +11,7 @@
 #include "map/tile.h"
 #include "team/player/player.h"
 #include "utils/string.h"
+#include <cstddef>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -72,6 +73,8 @@ static char *get_tile_contents(tile_t *tile)
         fprintf(stderr, "Invalid tile pointer\n");
         return NULL;
     }
+    if (!contents)
+        return NULL;
     dyn_strcat_free(
         &contents, repeat_string("player", " ", get_nb_players_on_tile(tile)));
     concat_resources(&contents, tile);
