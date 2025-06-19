@@ -158,7 +158,6 @@ char *look(player_t *player, map_t *map)
                 get_tile_at_offset(map, player, depth, width), &contents);
     }
     dyn_strcat(&contents, "]");
-    player->tick_cooldown = 7;
     return contents;
 }
 
