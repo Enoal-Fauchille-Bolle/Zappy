@@ -9,6 +9,7 @@
 #include "command_handler/command_executor.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "team/player/player.h"
 #include "constants.h"
 #include "options_parser/options.h"
 #include <criterion/internal/assert.h>
