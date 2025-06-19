@@ -13,6 +13,7 @@
 #include "connection/socket.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "team/player/player.h"
 #include "utils/string.h"
 #include <stdlib.h>
 #include <string.h>

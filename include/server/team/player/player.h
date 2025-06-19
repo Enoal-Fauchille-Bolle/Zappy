@@ -10,9 +10,11 @@
     #define PLAYER_H_
 
     #include "connection/client.h"
+    #include "game/game.h"
     #include "map/coordinates.h"
     #include "map/resources.h"
     #include "map/tile.h"
+    #include "team/egg/egg.h"
     #include <stddef.h>
 
 typedef unsigned int level_t;

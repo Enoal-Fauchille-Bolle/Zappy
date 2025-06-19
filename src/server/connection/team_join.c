@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "debug_categories.h"
 #include "game/teams.h"
+#include "team/player/player.h"
 #include "team/egg/egg.h"
 #include "team/team.h"
 #include <stdio.h>

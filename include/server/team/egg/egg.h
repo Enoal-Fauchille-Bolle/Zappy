@@ -12,10 +12,10 @@
     #include "connection/client.h"
     #include "map/coordinates.h"
     #include "map/tile.h"
-    #include "team/player/player.h"
     #include <stddef.h>
 
 typedef struct team_s team_t;
+typedef struct player_s player_t;
 
 typedef struct egg_s {
     pos_t pos;

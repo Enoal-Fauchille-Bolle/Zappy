@@ -11,9 +11,10 @@
     #include "connection/client.h"
     #include "map/map.h"
     #include "team/egg/egg.h"
-    #include "team/player/player.h"
     #include "vector.h"
     #include <stddef.h>
+
+typedef struct player_s player_t;
 
 typedef struct team_s {
     char *name;             // Team name

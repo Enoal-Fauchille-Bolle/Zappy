@@ -11,7 +11,6 @@
 #include "connection/signal_handler.h"
 #include "constants.h"
 #include "debug_categories.h"
-#include "game/game_state.h"
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
 #include <errno.h>
