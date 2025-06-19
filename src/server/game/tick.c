@@ -61,6 +61,11 @@ static void update_player_tick_cooldown(player_t *player)
 {
     if (player->tick_cooldown > 0)
         player->tick_cooldown--;
+    if (player->doing_action && player->tick_cooldown == 0) {
+        debug_player(player->client->server->options->debug,
+            "Player %zu is ready to act again\n", player->id);
+        player->doing_action = false;
+    }
 }
 
 /**

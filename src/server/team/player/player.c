@@ -49,6 +49,7 @@ player_t *create_player(
     player->inventory[FOOD] = 10;
     player->hunger_cooldown = 126;
     player->tick_cooldown = 0;
+    player->doing_action = false;
     add_player_to_team(team, player);
     player->client = client;
     return player;

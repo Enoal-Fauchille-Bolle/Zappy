@@ -28,6 +28,7 @@ typedef struct player_s {
     inventory_t inventory;
     tick_t tick_cooldown;        // If 0, player can act
     size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
+    bool doing_action;
     team_t *team;
     client_t *client;   // Pointer to the client managing this player
 } player_t;
