@@ -6,6 +6,8 @@
 */
 
 #include "team/player/player.h"
+#include "connection/client.h"
+#include "connection/server.h"
 #include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
@@ -29,7 +31,8 @@
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if memory allocation fails
  */
-player_t *create_player(const pos_t pos, const size_t id, team_t *team)
+player_t *create_player(
+    const pos_t pos, const size_t id, team_t *team, client_t *client)
 {
     player_t *player = malloc(sizeof(player_t));
 
@@ -39,14 +42,15 @@ player_t *create_player(const pos_t pos, const size_t id, team_t *team)
     }
     player->id = id;
     player->pos = pos;
-    player->orientation = (rand() % 4) + 1;
+    player->orientation = rand() % ORIENTATION_COUNT;
     player->level = 1;
     for (size_t i = 0; i <= THYSTAME; i++)
         player->inventory[i] = 0;
     player->inventory[FOOD] = 10;
-    player->hunger_cooldown = 0;
+    player->hunger_cooldown = 126;
     player->tick_cooldown = 0;
     add_player_to_team(team, player);
+    player->client = client;
     return player;
 }
 
@@ -65,7 +69,15 @@ void destroy_player(player_t *player)
 {
     if (player == NULL)
         return;
+    if (player->client && player->client->server &&
+        player->client->server->game) {
+        remove_player_from_map(player->client->server->game->map, player);
+    }
+    if (player->team != NULL) {
+        remove_player_from_team(player->team, player);
+    }
     free(player);
+    player = NULL;
 }
 
 /**
@@ -137,15 +149,14 @@ egg_t *lay_egg(player_t *player, map_t *map)
 {
     egg_t *egg;
 
-    if (player == NULL || map == NULL) {
-        fprintf(stderr, "Invalid player or map pointer\n");
+    if (player == NULL || map == NULL || player->team == NULL ||
+        player->client == NULL || player->client->server == NULL ||
+        player->client->server->options == NULL) {
+        fprintf(stderr, "Player, map, client or server pointer is NULL\n");
         return NULL;
     }
-    if (player->team == NULL) {
-        fprintf(stderr, "Player is not part of a team\n");
-        return NULL;
-    }
-    egg = create_egg(player->pos, player->team);
+    egg = create_egg(
+        player->pos, player->team, player->client->server->options->debug);
     if (egg == NULL) {
         fprintf(stderr, "Failed to create egg\n");
         return NULL;

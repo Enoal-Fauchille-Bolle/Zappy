@@ -18,6 +18,15 @@ extern const int EXIT_ERROR_CODE;
 
     #define MAX_CLIENTS 128
 
-    #define POLL_TIMEOUT 25
+    #define DEFAULT_TICK_RATE 100
+
+    #define MIN_FREQUENCY 1
+    #define MAX_FREQUENCY 1000
+
+    #define MAX_MAP_SIZE 1000
+
+    #define MAX_INITIAL_CLIENTS 1000000
+
+    #define GAME_TICK_DEBUG_INTERVAL 100
 
 #endif /* !CONSTANTS_H_ */

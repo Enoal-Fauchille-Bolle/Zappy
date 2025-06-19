@@ -5,6 +5,7 @@
 ** spawn
 */
 
+#include "connection/client.h"
 #include "map/coordinates.h"
 #include "team/egg/egg.h"
 #include "team/player/player.h"
@@ -23,7 +24,7 @@
  * @param team Pointer to the team structure for which eggs will be spawned
  * @param count Number of eggs to spawn
  */
-void spawn_min_eggs(map_t *map, team_t *team, size_t min)
+void spawn_min_eggs(map_t *map, team_t *team, size_t min, bool debug)
 {
     pos_t random_pos;
     egg_t *current_egg;
@@ -36,7 +37,7 @@ void spawn_min_eggs(map_t *map, team_t *team, size_t min)
         if (get_egg_count(team) >= min)
             break;
         random_pos = (pos_t){rand() % map->width, rand() % map->height};
-        current_egg = create_egg(random_pos, team);
+        current_egg = create_egg(random_pos, team, debug);
         if (current_egg == NULL) {
             fprintf(stderr, "Failed to create egg\n");
             continue;
@@ -57,7 +58,8 @@ void spawn_min_eggs(map_t *map, team_t *team, size_t min)
  * @return Pointer to the newly created player_t structure on success,
  *         NULL if egg or map is NULL or if player creation fails
  */
-player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
+player_t *spawn_player_from_egg(
+    egg_t *egg, map_t *map, const size_t player_id, client_t *client)
 {
     player_t *player;
 
@@ -65,14 +67,16 @@ player_t *spawn_player_from_egg(egg_t *egg, map_t *map, const size_t player_id)
         fprintf(stderr, "Invalid egg or map pointer\n");
         return NULL;
     }
-    player = create_player(egg->pos, player_id, egg->team);
+    player = create_player(egg->pos, player_id, egg->team, client);
     if (player == NULL) {
         fprintf(stderr, "Failed to create player from egg\n");
         return NULL;
     }
     add_player_to_map(map, player);
     remove_egg_from_map(map, egg);
-    remove_egg_from_team(egg->team, egg);
+    if (egg->team != NULL) {
+        remove_egg_from_team(egg->team, egg);
+    }
     destroy_egg(egg);
     return player;
 }

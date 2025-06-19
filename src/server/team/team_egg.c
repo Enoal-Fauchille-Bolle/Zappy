@@ -5,8 +5,10 @@
 ** team_egg
 */
 
+#include "connection/client.h"
 #include "map/coordinates.h"
 #include "team/egg/egg.h"
+#include "team/player/player.h"
 #include "team/team.h"
 #include "vector.h"
 #include <stdbool.h>
@@ -105,16 +107,18 @@ static egg_t *get_random_egg(team_t *team)
  * @param team Pointer to the team structure
  * @param map Pointer to the map structure where the player will be spawned
  * @param id The ID of the player to be spawned
- * @return true if spawning was successful, false otherwise
+ * @param client Pointer to the client managing the player
+ * @return player_t* Pointer to the newly spawned player, or NULL if spawning
+ * failed
  */
-bool hatch_player(team_t *team, map_t *map, const size_t id)
+player_t *hatch_player(
+    team_t *team, map_t *map, const size_t id, client_t *client)
 {
     if (!team || !team->players || !team->eggs || !map) {
         fprintf(stderr, "Invalid team or map pointer\n");
-        return false;
+        return NULL;
     }
     if (get_egg_count(team) == 0)
-        return false;
-    spawn_player_from_egg(get_random_egg(team), map, id);
-    return true;
+        return NULL;
+    return spawn_player_from_egg(get_random_egg(team), map, id, client);
 }

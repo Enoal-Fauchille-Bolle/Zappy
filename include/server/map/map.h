@@ -20,7 +20,7 @@ typedef struct map_s {
     vector_t *tiles;      // 1D array of tiles representing the map
 } map_t;
 
-map_t *create_map(size_t width, size_t height);
+map_t *create_map(size_t width, size_t height, bool debug);
 void destroy_map(map_t *map);
 
 #endif /* !MAP_H_ */

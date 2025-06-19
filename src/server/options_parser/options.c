@@ -6,6 +6,7 @@
 */
 
 #include "options_parser/options.h"
+#include "constants.h"
 #include "options_parser/parser.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +42,7 @@ server_options_t *get_server_options(int ac, char **av)
         options->error = true;
     }
     if (options->frequency == 0)
-        options->frequency = 100;
+        options->frequency = DEFAULT_TICK_RATE;
     return options;
 }
 
@@ -66,4 +67,5 @@ void destroy_server_options(server_options_t *options)
         free(options->teams);
     }
     free(options);
+    options = NULL;
 }
