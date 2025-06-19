@@ -10,8 +10,8 @@
 #include <assert.h>
 #include <stddef.h>
 
-void *vector_find_impl(const vector_t *self,
-    predicate_function_t predicate, void *context)
+void *vector_find_impl(
+    const vector_t *self, predicate_function_t predicate, void *context)
 {
     void *element;
 

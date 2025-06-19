@@ -9,8 +9,8 @@
 #include <assert.h>
 #include <stdbool.h>
 
-bool vector_all_impl(const vector_t *self,
-    predicate_function_t predicate, void *context)
+bool vector_all_impl(
+    const vector_t *self, predicate_function_t predicate, void *context)
 {
     void *element;
 

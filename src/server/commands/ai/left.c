@@ -23,7 +23,6 @@ void left_command(client_t *client, command_t *command)
     write(client->sockfd, "ok\n", 3);
     debug_player(client->server->options->debug, "Player %zu turned left\n",
         client->player->id);
-    debug_map(client->server->options->debug,
-        "Player %zu orientation: %s\n", client->player->id,
-        orientation_names[client->player->orientation]);
+    debug_map(client->server->options->debug, "Player %zu orientation: %s\n",
+        client->player->id, orientation_names[client->player->orientation]);
 }

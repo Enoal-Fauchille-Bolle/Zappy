@@ -37,15 +37,15 @@ static bool validate_team(
 {
     if (team == NULL) {
         debug_conn(server->options->debug,
-            "Client %d tried to join invalid team '%s'\n",
-            client_index - 2, team_name);
+            "Client %d tried to join invalid team '%s'\n", client_index - 2,
+            team_name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
     if (get_egg_count(team) == 0) {
         debug_conn(server->options->debug,
-            "Client %d tried to join full team '%s'\n",
-            client_index - 2, team->name);
+            "Client %d tried to join full team '%s'\n", client_index - 2,
+            team->name);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
@@ -71,15 +71,14 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         create_client(server, team, client_index);
     if (server->clients[client_index - 2] == NULL) {
         debug_warning(server->options->debug,
-            "Failed to create client for team '%s' at index %d\n",
-            team->name, client_index - 2);
+            "Failed to create client for team '%s' at index %d\n", team->name,
+            client_index - 2);
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
     debug_conn(server->options->debug,
         "Player %d (Client %d) assigned to team '%s'\n",
-        server->clients[client_index - 2]->player->id,
-        client_index - 2,
+        server->clients[client_index - 2]->player->id, client_index - 2,
         team->name);
     return SUCCESS;
 }
@@ -145,8 +144,8 @@ static bool handle_gui_client(
     server_t *server, const char *team_name, int client_index)
 {
     if (strcmp(team_name, "GRAPHIC") == 0) {
-        server->clients[client_index - 2] = create_client(
-            server, NULL, client_index);
+        server->clients[client_index - 2] =
+            create_client(server, NULL, client_index);
         if (server->clients[client_index - 2] == NULL) {
             debug_warning(server->options->debug,
                 "Failed to create GUI client at index %d\n", client_index - 2);
@@ -187,8 +186,7 @@ bool handle_team_join(
     }
     if (send_welcome_message(server, client_index) == FAILURE) {
         debug_warning(server->options->debug,
-            "Failed to send welcome message to client %d\n",
-            client_index - 2);
+            "Failed to send welcome message to client %d\n", client_index - 2);
         return FAILURE;
     }
     return SUCCESS;

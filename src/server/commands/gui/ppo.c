@@ -34,7 +34,6 @@ void ppo_command(client_t *client, command_t *command)
         write(client->sockfd, "sbp\n", 4);
         return;
     }
-    dprintf(client->sockfd,
-        "ppo %zu %d %d %d\n", player->id, player->pos.x, player->pos.y,
-        player->orientation + 1);
+    dprintf(client->sockfd, "ppo %zu %d %d %d\n", player->id, player->pos.x,
+        player->pos.y, player->orientation + 1);
 }

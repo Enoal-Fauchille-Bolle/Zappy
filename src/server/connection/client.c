@@ -137,8 +137,7 @@ static void setup_client(
     client->is_gui = is_gui;
 }
 
-static void setup_player(
-    client_t *client, server_t *server, team_t *team)
+static void setup_player(client_t *client, server_t *server, team_t *team)
 {
     client->player = hatch_player(
         team, server->game->map, server->game->next_player_id, client);
