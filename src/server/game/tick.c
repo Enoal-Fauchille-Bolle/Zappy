@@ -6,6 +6,7 @@
 */
 
 #include "connection/connection_handler.h"
+#include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
 #include "map/resources.h"
@@ -117,8 +118,12 @@ static void update_players_ticks(game_t *game)
  */
 void game_tick(game_t *game, server_options_t *options)
 {
-    if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0)
+    if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0) {
         debug_game(options->debug, "Game tick %u\n", game->game_tick);
+    }
+    if (game->game_tick % GAME_RESOURCE_SPAWN_INTERVAL == 0) {
+        spread_resources(game->map, options->debug);
+    }
     update_players_ticks(game);
     for (int i = 0; game->teams[i] != NULL; i++) {
         spawn_min_eggs(
