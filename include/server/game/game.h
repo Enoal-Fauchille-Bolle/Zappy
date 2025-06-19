@@ -32,6 +32,7 @@ typedef struct game_s {
 
 game_t *create_game(server_t *server);
 void game_tick(game_t *game, server_options_t *options);
+player_t *get_player_by_id(game_t *game, size_t id);
 void destroy_game(game_t *game);
 
 #endif /* !GAME_H_ */
