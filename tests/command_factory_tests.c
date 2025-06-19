@@ -134,3 +134,55 @@ Test(command_factory, create_command_zero_tokens)
     free(tokens);
     free(command);
 }
+
+Test(command_factory, destroy_command_null)
+{
+    // Test that destroy_command can handle NULL input safely
+    destroy_command(NULL);
+    // If we reach here without crashing, the test passes
+    cr_assert(true, "destroy_command should handle NULL gracefully");
+}
+
+Test(command_factory, destroy_command_simple)
+{
+    const char *token_strings[] = {"test"};
+    char **tokens = create_test_tokens(token_strings, 1);
+    command_t *command = create_command_from_tokens(tokens, 1);
+
+    cr_assert_not_null(command, "Command should not be NULL");
+
+    // This should not crash and should free all memory properly
+    destroy_command(command);
+    // If we reach here without crashing, the test passes
+    cr_assert(true, "destroy_command should handle simple command gracefully");
+}
+
+Test(command_factory, destroy_command_with_arguments)
+{
+    const char *token_strings[] = {"command", "arg1", "arg2", "arg3"};
+    char **tokens = create_test_tokens(token_strings, 4);
+    command_t *command = create_command_from_tokens(tokens, 4);
+
+    cr_assert_not_null(command, "Command should not be NULL");
+    cr_assert_eq(command->argc, 3, "Command should have 3 arguments");
+
+    // This should not crash and should free all memory properly
+    destroy_command(command);
+    // If we reach here without crashing, the test passes
+    cr_assert(true, "destroy_command should handle command with arguments gracefully");
+}
+
+Test(command_factory, destroy_command_empty_tokens)
+{
+    char **tokens = malloc(sizeof(char *));
+    tokens[0] = NULL;
+    command_t *command = create_command_from_tokens(tokens, 0);
+
+    cr_assert_not_null(command, "Command should not be NULL");
+
+    // This should not crash even with empty tokens
+    // destroy_command will handle freeing the tokens array
+    destroy_command(command);
+    // If we reach here without crashing, the test passes
+    cr_assert(true, "destroy_command should handle empty tokens gracefully");
+}

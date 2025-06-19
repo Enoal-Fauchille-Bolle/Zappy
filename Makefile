@@ -102,7 +102,6 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)command_handler/command_validator.c			\
 				$(SRCDIR_SERVER)command_handler/command_executor.c			\
 				$(SRCDIR_SERVER)command_handler/command_buffer.c			\
-				$(SRCDIR_SERVER)commands/dummy.c							\
 				$(SRCDIR_SERVER)commands/forward.c							\
 				$(SRCDIR_SERVER)commands/left.c								\
 				$(SRCDIR_SERVER)commands/right.c							\
@@ -237,7 +236,6 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)game/game.c										\
 			$(SRCDIR_SERVER)game/tick.c										\
 			$(SRCDIR_SERVER)game/teams_util.c								\
-			$(SRCDIR_SERVER)commands/dummy.c								\
 			$(SRCDIR_SERVER)commands/forward.c								\
 			$(SRCDIR_SERVER)commands/left.c									\
 			$(SRCDIR_SERVER)commands/right.c								\
@@ -258,8 +256,25 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
             ${TESTS}command_tokenizer_tests.c								\
             ${TESTS}command_validator_tests.c								\
             ${TESTS}command_factory_tests.c									\
+            ${TESTS}command_buffer_tests.c									\
+            ${TESTS}command_executor_tests.c								\
             ${TESTS}command_parser_edge_tests.c								\
             ${TESTS}command_tokenizer_edge_tests.c							\
+			${TESTS}debug_tests.c											\
+			${TESTS}string_tests.c											\
+			${TESTS}client_tests.c											\
+			${TESTS}time_tests.c											\
+			${TESTS}options_parser/integration_tests.c						\
+			${TESTS}options_parser/parser_tests.c							\
+			${TESTS}options_parser/processor_tests.c						\
+			${TESTS}options_parser/port_option_tests.c						\
+			${TESTS}options_parser/width_option_tests.c						\
+			${TESTS}options_parser/height_option_tests.c					\
+			${TESTS}options_parser/frequency_option_tests.c				\
+			${TESTS}options_parser/clients_option_tests.c					\
+			${TESTS}options_parser/teams_option_tests.c					\
+			${TESTS}options_parser/help_option_tests.c						\
+			${TESTS}options_parser/debug_option_tests.c					\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
