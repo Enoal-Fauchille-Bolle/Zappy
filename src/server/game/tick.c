@@ -184,12 +184,13 @@ static void read_players_command_buffer(game_t *game)
 static void read_guis_command_buffer(server_t *server)
 {
     client_t *client = NULL;
+    command_t *command = NULL;
 
     for (int i = 2; i < MAX_CLIENTS + 2; i++) {
         if (server->clients[i - 2] == NULL || !server->clients[i - 2]->is_gui)
             continue;
         client = server->clients[i - 2];
-        command_t *command = pop_command_from_buffer(client);
+        command = pop_command_from_buffer(client);
         if (command == NULL)
             continue;
         debug_cmd(server->options->debug,

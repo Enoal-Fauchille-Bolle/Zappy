@@ -60,7 +60,8 @@ void destroy_client(client_t *client)
  * disconnection.
  *
  * @param server Pointer to the server structure
- * @param client_index Index of the client in the server's file descriptor array
+ * @param client_index Index of the client in the server's file descriptor
+ * array
  */
 static void close_client_connection(server_t *server, int client_index)
 {
@@ -106,8 +107,8 @@ void remove_client(server_t *server, int client_index)
                 client_index - 2,
                 server->clients[client_index - 2]->player->team->name);
         } else {
-            debug_conn(server->options->debug,
-                "GUI client %d disconnected\n", client_index - 2);
+            debug_conn(server->options->debug, "GUI client %d disconnected\n",
+                client_index - 2);
         }
         destroy_client(server->clients[client_index - 2]);
         server->clients[client_index - 2] = NULL;
