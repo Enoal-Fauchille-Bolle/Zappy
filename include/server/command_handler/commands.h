@@ -27,5 +27,6 @@
 
 void dummy_command(client_t *client, command_t *command);
 void forward_command(client_t *client, command_t *command);
+void left_command(client_t *client, command_t *command);
 
 #endif /* !COMMANDS_H_ */
