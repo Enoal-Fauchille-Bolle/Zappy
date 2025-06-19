@@ -173,8 +173,7 @@ bool process_connection(server_t *server)
             perror("poll");
         return FAILURE;
     }
-    if (server->fds[1].revents & POLLIN &&
-        server->game->game_state == GAME_RUNNING) {
+    if (server->fds[1].revents & POLLIN) {
         if (!handle_signal(server->fds[1].fd, server->options->debug)) {
             return FAILURE;
         }
