@@ -8,8 +8,7 @@
 #include "map/map.h"
 #include "map/resources.h"
 #include "map/tile.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stddef.h>
 
 // void redirect_stdout(void)

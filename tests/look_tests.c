@@ -9,8 +9,7 @@
 #include "map/map.h"
 #include "team/player/player.h"
 #include "team/team.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stdio.h>
 
 Test(look, null_player, .timeout = 2)

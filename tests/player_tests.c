@@ -10,8 +10,7 @@
 #include "map/tile.h"
 #include "team/player/player.h"
 #include "vector.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stddef.h>
 #include <stdio.h>
 
