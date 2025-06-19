@@ -9,6 +9,7 @@
 #ifndef PLAYER_H_
     #define PLAYER_H_
 
+    #include "connection/client.h"
     #include "map/coordinates.h"
     #include "map/resources.h"
     #include "map/tile.h"
@@ -27,10 +28,13 @@ typedef struct player_s {
     inventory_t inventory;
     tick_t tick_cooldown;        // If 0, player can act
     size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
+    bool doing_action;
     team_t *team;
+    client_t *client;   // Pointer to the client managing this player
 } player_t;
 
-player_t *create_player(const pos_t pos, const size_t id, team_t *team);
+player_t *create_player(
+    const pos_t pos, const size_t id, team_t *team, client_t *client);
 void destroy_player(player_t *player);
 
 void turn_player_left(player_t *player);

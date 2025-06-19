@@ -117,4 +117,5 @@ void destroy_team(team_t *team)
     if (team->eggs != NULL)
         free_eggs_vector(team->eggs);
     free(team);
+    team = NULL;
 }

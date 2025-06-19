@@ -9,6 +9,7 @@
 #ifndef EGG_H_
     #define EGG_H_
 
+    #include "connection/client.h"
     #include "map/coordinates.h"
     #include "map/tile.h"
     #include "team/player/player.h"
@@ -21,12 +22,12 @@ typedef struct egg_s {
     team_t *team;
 } egg_t;
 
-egg_t *create_egg(const pos_t pos, team_t *team);
+egg_t *create_egg(const pos_t pos, team_t *team, bool debug);
 void destroy_egg(egg_t *egg);
 
-void spawn_min_eggs(map_t *map, team_t *team, size_t min);
+void spawn_min_eggs(map_t *map, team_t *team, size_t min, bool debug);
 player_t *spawn_player_from_egg(
-    egg_t *egg, map_t *map, const size_t player_id);
+    egg_t *egg, map_t *map, const size_t player_id, client_t *client);
 
 void add_egg_to_tile(tile_t *tile, egg_t *egg);
 void remove_egg_from_tile(tile_t *tile, egg_t *egg);

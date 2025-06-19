@@ -6,6 +6,7 @@
 */
 
 #include "team/egg/egg.h"
+#include "debug_categories.h"
 #include "map/coordinates.h"
 #include "map/tile.h"
 #include "team/team.h"
@@ -21,10 +22,11 @@
  *
  * @param pos The position where the egg will be created
  * @param team Pointer to the team associated with the egg
+ * @param debug Boolean flag to enable debug messages
  * @return Pointer to the newly created egg_t structure on success,
  *         NULL if memory allocation fails
  */
-egg_t *create_egg(const pos_t pos, team_t *team)
+egg_t *create_egg(const pos_t pos, team_t *team, bool debug)
 {
     egg_t *egg = malloc(sizeof(egg_t));
 
@@ -34,7 +36,14 @@ egg_t *create_egg(const pos_t pos, team_t *team)
     }
     egg->pos = pos;
     egg->team = team;
-    add_egg_to_team(team, egg);
+    if (team == NULL) {
+        perror("Team pointer is NULL, egg will not be associated with a team");
+    } else {
+        add_egg_to_team(team, egg);
+        if (team->name)
+            debug_map(debug, "Egg created at (%zu, %zu) for team %s\n", pos.x,
+                pos.y, team->name);
+    }
     return egg;
 }
 
@@ -54,6 +63,7 @@ void destroy_egg(egg_t *egg)
     if (egg == NULL)
         return;
     free(egg);
+    egg = NULL;
 }
 
 /**

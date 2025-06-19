@@ -12,11 +12,12 @@
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 #include <stdio.h>
+#include <string.h>
 
 Test(look, null_player)
 {
-    map_t *map = create_map(1, 1);
-    player_t *player = create_player((pos_t){0, 0}, 0, NULL);
+    map_t *map = create_map(1, 1, false);
+    player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     char *result = look(NULL, map);
 
     cr_assert_null(result, "Look should return NULL for NULL player");
@@ -35,9 +36,9 @@ static const char *expected_look_results[] = {"[player]",
 
 Test(look, valid)
 {
-    map_t *map = create_map(7, 7);
+    map_t *map = create_map(7, 7, false);
     team_t *team = create_team("Team1");
-    player_t *player = create_player((pos_t){3, 3}, 1, team);
+    player_t *player = create_player((pos_t){3, 3}, 1, team, NULL);
     char *look_result;
 
     player->orientation = NORTH;
@@ -64,9 +65,9 @@ Test(look, valid)
 
 Test(look, empty_map)
 {
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     team_t *team = create_team("Team1");
-    player_t *player = create_player((pos_t){0, 0}, 1, team);
+    player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
     char *look_result;
 
     look_result = look(player, map);
@@ -84,9 +85,9 @@ Test(look, empty_map)
 
 Test(look, player_on_one_by_one_map)
 {
-    map_t *map = create_map(1, 1);
+    map_t *map = create_map(1, 1, false);
     team_t *team = create_team("Team1");
-    player_t *player = create_player((pos_t){0, 0}, 1, team);
+    player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
     char *look_result;
 
     player->orientation = NORTH;
@@ -114,9 +115,9 @@ Test(look, player_on_one_by_one_map)
 // visualization of the 2D map to understand this test.
 Test(look, object_in_each_direction)
 {
-    map_t *map = create_map(3, 3);
+    map_t *map = create_map(3, 3, false);
     team_t *team = create_team("Team1");
-    player_t *player = create_player((pos_t){1, 1}, 1, team);
+    player_t *player = create_player((pos_t){1, 1}, 1, team, NULL);
     char *look_result;
 
     add_player_to_map(map, player);

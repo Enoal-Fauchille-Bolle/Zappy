@@ -6,6 +6,8 @@
 */
 
 #include "map/resources.h"
+#include "debug_categories.h"
+#include "map/resource_names.h"
 #include "map/tile.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -67,6 +69,33 @@ size_t count_resource(const map_t *map, const resource_t resource)
 }
 
 /**
+ * @brief Place a specific resource at a random position on the map.
+ *
+ * This function selects a random tile on the map and increments the count of
+ * the specified resource type on that tile. It also prints the coordinates of
+ * the tile if debugging is enabled.
+ *
+ * @param map Pointer to the map structure where resources will be placed
+ * @param resource The type of resource to place (e.g., FOOD, LINEMATE, etc.)
+ * @param show_comma Flag to indicate whether to print a comma after the
+ * coordinates (for formatting purposes)
+ * @param debug Flag to enable debug output
+ */
+static void place_resource_at_random_position(
+    map_t *map, const resource_t resource, bool show_comma, bool debug)
+{
+    size_t tile_index = rand() % (map->width * map->height);
+    tile_t *current_tile = get_tile_by_index(map, tile_index);
+
+    current_tile->resources[resource]++;
+    if (debug) {
+        printf("(%zu, %zu)", tile_index % map->width, tile_index / map->width);
+        if (show_comma)
+            printf(", ");
+    }
+}
+
+/**
  * @brief Spread a specific resource across the map to meet minimum density.
  *
  * This function checks the current count of a specified resource in the map
@@ -76,22 +105,25 @@ size_t count_resource(const map_t *map, const resource_t resource)
  *
  * @param map Pointer to the map structure where resources will be spread
  * @param resource The type of resource to spread (e.g., FOOD, LINEMATE, etc.)
+ * @param debug Flag to enable debug output
  * @note If the map pointer is NULL, it prints an error message and returns
  */
-void spread_resource(map_t *map, const resource_t resource)
+void spread_resource(map_t *map, const resource_t resource, bool debug)
 {
     size_t min = get_minimum_resource_count(map, resource_densities[resource]);
     size_t current_count = count_resource(map, resource);
-    size_t target_count = min - current_count;
-    tile_t *current_tile;
+    long long target_count = min - current_count;
+    bool show_comma;
 
-    if (map == NULL || current_count >= min)
-        return;
-    for (size_t i = 0; i < target_count; i++) {
-        current_tile =
-            get_tile_by_index(map, rand() % (map->width * map->height));
-        current_tile->resources[resource]++;
+    debug_resource(debug && target_count > 0,
+        "Spread resource %s to tile at positions [", resource_names[resource]);
+    for (long long i = 0; i < target_count; i++) {
+        show_comma = (i < target_count - 1);
+        place_resource_at_random_position(
+            map, resource, show_comma, debug && target_count != 0);
     }
+    if (debug && target_count > 0)
+        printf("]\n");
 }
 
 /**
@@ -105,12 +137,12 @@ void spread_resource(map_t *map, const resource_t resource)
  * @param map Pointer to the map structure where resources will be spread
  * @note If the map pointer is NULL, it prints an error message and returns
  */
-void spread_resources(map_t *map)
+void spread_resources(map_t *map, bool debug)
 {
     if (map == NULL) {
         fprintf(stderr, "Invalid map pointer\n");
         return;
     }
     for (resource_t resource = FOOD; resource <= THYSTAME; resource++)
-        spread_resource(map, resource);
+        spread_resource(map, resource, debug);
 }

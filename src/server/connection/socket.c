@@ -8,11 +8,13 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
+#include <asm-generic/socket.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <netinet/in.h>
 
 /**
  * @brief Reads data from a client socket
@@ -117,9 +119,16 @@ static struct sockaddr_in init_sockaddr_in(int port)
 int setup_socket_fd(void)
 {
     int server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
 
     if (server_sockfd == -1) {
         perror("socket");
+    }
+    if (setsockopt(
+            server_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("setsockopt SO_REUSEADDR failed");
+        close(server_sockfd);
+        return -1;
     }
     return server_sockfd;
 }
