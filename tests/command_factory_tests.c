@@ -7,8 +7,7 @@
 
 #include "command_handler/command.h"
 #include "command_handler/command_factory.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -112,7 +111,8 @@ Test(command_factory, create_command_memory_failure)
     // This test simulates memory allocation failure by passing NULL tokens
     command_t *command = create_command_from_tokens(NULL, 0);
 
-    cr_assert_not_null(command, "Command should not be NULL even with NULL tokens");
+    cr_assert_not_null(
+        command, "Command should not be NULL even with NULL tokens");
     cr_assert_null(command->name, "Command name should be NULL");
     cr_assert_eq(command->argc, -1, "Command should have -1 arguments");
     cr_assert_null(command->argv, "argv should be NULL");

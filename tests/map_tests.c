@@ -10,8 +10,7 @@
 #include "map/resources.h"
 #include "map/tile.h"
 #include "team/player/player.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -190,6 +189,27 @@ Test(add_player_to_tile, null, .timeout = 2)
     destroy_map(map);
 }
 
+Test(add_player_to_tile, player_count, .timeout = 2)
+{
+    player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
+    map_t *map = create_map(1, 1, false);
+    tile_t *tile = get_tile(map, (pos_t){0, 0});
+
+    add_player_to_tile(tile, player);
+    cr_assert_eq(get_nb_players_on_tile(tile), 1,
+        "Player count should be 1 after adding a player");
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(get_nb_players_on_tile, null, .timeout = 2)
+{
+    tile_t *tile = get_tile(NULL, (pos_t){0, 0});
+
+    cr_assert_eq(get_nb_players_on_tile(tile), 0,
+        "Player count should be 0 for NULL tile");
+}
+
 Test(remove_player_from_tile, null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
@@ -236,4 +256,33 @@ Test(init_tile, null, .timeout = 2)
 {
     init_tile(NULL);
     // No assertion here, just checking for crashes
+}
+
+Test(wrap_coordinates, negative_coordinates)
+{
+    pos_t pos = {-1, -1};
+    pos_t wrapped_pos = wrap_coordinates(pos, 5, 5);
+
+    cr_assert_eq(wrapped_pos.x, 4, "Wrapped X should be 4 for negative X");
+    cr_assert_eq(wrapped_pos.y, 4, "Wrapped Y should be 4 for negative Y");
+}
+
+Test(wrap_coordinates, high_negative_coordinates)
+{
+    pos_t pos = {-6, -6};
+    pos_t wrapped_pos = wrap_coordinates(pos, 5, 5);
+
+    cr_assert_eq(
+        wrapped_pos.x, 4, "Wrapped X should be 4 for high negative X");
+    cr_assert_eq(
+        wrapped_pos.y, 4, "Wrapped Y should be 4 for high negative Y");
+}
+
+Test(wrap_coordinates, large_coordinates)
+{
+    pos_t pos = {12, 15};
+    pos_t wrapped_pos = wrap_coordinates(pos, 10, 10);
+
+    cr_assert_eq(wrapped_pos.x, 2, "Wrapped X should be 2 for large X");
+    cr_assert_eq(wrapped_pos.y, 5, "Wrapped Y should be 5 for large Y");
 }

@@ -12,8 +12,7 @@
 #include "team/player/player.h"
 #include "team/team.h"
 #include "vector.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stddef.h>
 #include <stdio.h>
 
@@ -274,5 +273,19 @@ Test(team, create_player_with_team, .timeout = 2)
     cr_assert_eq(
         *(player_t **)vector_get_vtable(team->players)->at(team->players, 0),
         player, "Player should be the first in the team's players vector");
+    destroy_team(team);
+}
+
+Test(team, get_team_player_count_null, .timeout = 2)
+{
+    team_t *team = create_team("test");
+    size_t player_count = get_team_player_count(NULL);
+
+    cr_assert_eq(player_count, 0, "Player count should be 0 with a NULL team");
+    vector_destroy(team->players);
+    team->players = NULL;
+    player_count = get_team_player_count(team);
+    cr_assert_eq(
+        player_count, 0, "Player count should be 0 with a NULL team->players");
     destroy_team(team);
 }

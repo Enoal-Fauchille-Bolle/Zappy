@@ -6,8 +6,7 @@
 */
 
 #include "command_handler/command_validator.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 
 Test(command_validator, validate_buffer_null)
 {

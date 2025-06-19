@@ -72,35 +72,37 @@ void trim(char *str)
  * @return Pointer to the newly allocated concatenated string, or NULL on
  * failure
  */
-char *dyn_strcat(char *dest, const char *src)
+char *dyn_strcat(char **original_dest, const char *src)
 {
-    char *new_str = NULL;
+    char *dest;
 
-    if (dest == NULL || src == NULL) {
+    if (!original_dest || !*original_dest || !src) {
         fprintf(stderr, "Invalid string pointer\n");
         return NULL;
     }
-    new_str = realloc(dest, strlen(dest) + strlen(src) + 1);
-    if (new_str == NULL) {
+    dest = *original_dest;
+    dest = realloc(dest, strlen(dest) + strlen(src) + 1);
+    if (!dest) {
         perror("Failed to reallocate memory for string concatenation");
         return NULL;
     }
-    strcat(new_str, src);
-    return new_str;
+    *original_dest = dest;
+    strcat(dest, src);
+    return dest;
 }
 
 /**
- * @brief Create an empty string with a null terminator.
+ * @brief Create an empty string with a specified size.
  *
- * This function allocates memory for an empty string (a string with only
- * a null terminator) and returns a pointer to it. If memory allocation fails,
- * it prints an error message and returns NULL.
+ * This function allocates memory for a string of the specified size and
+ * initializes it to an empty string (null-terminated).
  *
+ * @param size The size of the string to allocate
  * @return Pointer to the newly allocated empty string, or NULL on failure
  */
-char *empty_string(void)
+char *empty_string(size_t size)
 {
-    char *str = malloc(sizeof(char) * 1);
+    char *str = malloc(sizeof(char) * (size + 1));
 
     if (str == NULL) {
         perror("Failed to allocate memory for empty string");

@@ -7,8 +7,7 @@
 
 #include "command_handler/command.h"
 #include "command_handler/command_parser.h"
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
+#include <criterion/criterion.h>
 #include <stdio.h>
 #include <stdlib.h>
 

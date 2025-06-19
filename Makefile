@@ -89,12 +89,14 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)map/tile.c									\
 			 	$(SRCDIR_SERVER)team/player/player.c						\
 			 	$(SRCDIR_SERVER)team/player/movement.c						\
+				$(SRCDIR_SERVER)team/player/look.c							\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
 			 	$(SRCDIR_SERVER)team/team_egg.c								\
 			 	$(SRCDIR_SERVER)team/team_player.c							\
-				$(SRCDIR_SERVER)utils/string.c								\
+				$(SRCDIR_SERVER)utils/string/string.c						\
+				$(SRCDIR_SERVER)utils/string/repeat_string.c				\
 				$(SRCDIR_SERVER)game/game.c									\
 				$(SRCDIR_SERVER)game/teams_util.c							\
 				$(SRCDIR_SERVER)game/tick.c									\
@@ -207,6 +209,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)map/tile.c										\
 			$(SRCDIR_SERVER)team/player/player.c							\
 			$(SRCDIR_SERVER)team/player/movement.c							\
+			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
@@ -245,7 +248,9 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}map_tests.c												\
 			${TESTS}egg_tests.c												\
 			${TESTS}team_tests.c											\
-			$(SRCDIR_SERVER)utils/string.c									\
+			${TESTS}look_tests.c											\
+			$(SRCDIR_SERVER)utils/string/string.c							\
+			$(SRCDIR_SERVER)utils/string/repeat_string.c					\
 			$(SRCDIR_SERVER)command_handler/command_parser.c				\
 			$(SRCDIR_SERVER)command_handler/command_factory.c				\
 			$(SRCDIR_SERVER)command_handler/command_tokenizer.c				\

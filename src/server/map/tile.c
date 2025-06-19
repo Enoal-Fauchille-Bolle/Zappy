@@ -97,3 +97,26 @@ tile_t *get_tile_by_index(const map_t *map, size_t index)
     }
     return vtable->at(map->tiles, index);
 }
+
+/**
+ * @brief Get the number of players on a tile.
+ *
+ * This function returns the number of players currently present on the
+ * specified tile. If the tile pointer is NULL, it prints an error message
+ * and returns 0.
+ *
+ * @param tile Pointer to the tile_t structure from which to get the player
+ * count
+ * @return Number of players on the tile, or 0 if the tile pointer is NULL.
+ */
+size_t get_nb_players_on_tile(const tile_t *tile)
+{
+    const vector_vtable_t *vtable;
+
+    if (tile == NULL) {
+        fprintf(stderr, "Invalid tile pointer\n");
+        return 0;
+    }
+    vtable = vector_get_vtable(tile->players);
+    return vtable->size(tile->players);
+}
