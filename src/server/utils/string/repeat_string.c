@@ -22,7 +22,7 @@
  * @return A newly allocated string containing the repeated pattern,
  *         or NULL if memory allocation fails.
  */
-char *repeat_string(const char *str, const char *delim, size_t count)
+char *repeat_string(const char *str, const char *delim, uint count)
 {
     size_t delim_len = delim ? strlen(delim) : 0;
     ssize_t total_len =
