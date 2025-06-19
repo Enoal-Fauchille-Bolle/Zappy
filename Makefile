@@ -259,6 +259,17 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}string_tests.c											\
 			${TESTS}client_tests.c											\
 			${TESTS}time_tests.c											\
+			${TESTS}options_parser/integration_tests.c						\
+			${TESTS}options_parser/parser_tests.c							\
+			${TESTS}options_parser/processor_tests.c						\
+			${TESTS}options_parser/port_option_tests.c						\
+			${TESTS}options_parser/width_option_tests.c						\
+			${TESTS}options_parser/height_option_tests.c					\
+			${TESTS}options_parser/frequency_option_tests.c				\
+			${TESTS}options_parser/clients_option_tests.c					\
+			${TESTS}options_parser/teams_option_tests.c					\
+			${TESTS}options_parser/help_option_tests.c						\
+			${TESTS}options_parser/debug_option_tests.c					\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
