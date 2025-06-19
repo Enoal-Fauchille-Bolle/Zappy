@@ -63,8 +63,8 @@ CommandHandler::CommandHandler() {
  * 
  * Cleans up the command handler resources.
  */
-CommandHandler::~CommandHandler() {
-    // No dynamic memory to clean up, unique_ptrs handle it
+CommandHandler::~CommandHandler()
+{
 }
 
 /**

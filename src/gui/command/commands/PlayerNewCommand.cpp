@@ -6,6 +6,6 @@ PlayerNewCommand::PlayerNewCommand()
 }
 
 void PlayerNewCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager; // Avoid unused parameter warning
+    gameManager = gameManager;
     std::cout << "PlayerNewCommand " << args << std::endl;
 }

@@ -6,6 +6,6 @@ PlayerBroadcastCommand::PlayerBroadcastCommand()
 }
 
 void PlayerBroadcastCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager; // Avoid unused parameter warning
+    gameManager = gameManager;
     std::cout << "PlayerBroadcastCommand " << args << std::endl;
 }

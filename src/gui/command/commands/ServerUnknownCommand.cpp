@@ -6,6 +6,6 @@ ServerUnknownCommand::ServerUnknownCommand()
 }
 
 void ServerUnknownCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager; // Avoid unused parameter warning
+    gameManager = gameManager;
     std::cout << "ServerUnknownCommand " << args << std::endl;
 }

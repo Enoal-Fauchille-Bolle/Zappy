@@ -6,6 +6,6 @@ PlayerPositionCommand::PlayerPositionCommand()
 }
 
 void PlayerPositionCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager; // Avoid unused parameter warning
+    gameManager = gameManager;
     std::cout << "PlayerPositionCommand " << args << std::endl;
 }

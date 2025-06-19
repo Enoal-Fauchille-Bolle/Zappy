@@ -6,6 +6,6 @@ BoardContentCommand::BoardContentCommand()
 }
 
 void BoardContentCommand::execute(const std::string& args, SimpleGameManager gameManager) {
-    gameManager = gameManager; // Avoid unused parameter warning
+    gameManager = gameManager;
     std::cout << "BoardContentCommand " << args << std::endl;
 }
