@@ -7,12 +7,13 @@
 
 #include "connection/client.h"
 #include "command_handler/command.h"
-#include "command_handler/command_executor.h"
+#include "command_handler/command_buffer.h"
 #include "command_handler/command_factory.h"
 #include "command_handler/command_parser.h"
 #include "connection/connection_handler.h"
 #include "connection/server.h"
 #include "connection/socket.h"
+#include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
 #include "team/egg/egg.h"
@@ -35,10 +36,8 @@
  * executed
  * @param client_index Index of the client in the server's file descriptor
  * array
- * @return true if command was successfully parsed and executed, false
- * otherwise
  */
-static bool handle_command(
+static void handle_command(
     server_t *server, char *command_buffer, int client_index)
 {
     command_t *command = parse_command_buffer(command_buffer);
@@ -47,11 +46,62 @@ static bool handle_command(
         debug_warning(server->options->debug,
             "Failed to parse command from client %d\n", client_index - 2);
         write(server->fds[client_index].fd, "ko\n", 3);
-        return false;
+        return;
     }
-    execute_command(server->clients[client_index - 2], command);
-    destroy_command(command);
-    return true;
+    add_command_to_buffer(server->clients[client_index - 2], command);
+    debug_cmd(server->options->debug,
+        "Player %zu: '%s' command added to buffer\n",
+        server->clients[client_index - 2]->player->id, command_buffer);
+}
+
+/**
+ * @brief Handles a team join request from a client
+ *
+ * Checks if the team exists and if the client can join it. If successful,
+ * creates a new client, assigns it to the team, and sends a welcome message.
+ * If the team does not exist or the client cannot join, sends an error message.
+ *
+ * @param server Pointer to the server structure
+ * @param team_name Name of the team to join
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ */
+static void process_single_command(
+    server_t *server, char *command, int client_index)
+{
+    trim(command);
+    if (strlen(command) > 0) {
+        handle_command(server, command, client_index);
+    }
+}
+
+/**
+ * @brief Handles a team join request from a client
+ *
+ * Checks if the team exists and if the client can join it. If successful,
+ * creates a new client, assigns it to the team, and sends a welcome message.
+ * If the team does not exist or the client cannot join, sends an error message.
+ *
+ * @param server Pointer to the server structure
+ * @param team_name Name of the team to join
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ */
+static void handle_all_commands(
+    server_t *server, char *message, int client_index)
+{
+    char *message_copy = strdup(message);
+    char *start = message_copy;
+    char *end = strchr(start, '\n');
+
+    while (end != NULL) {
+        *end = '\0';
+        process_single_command(server, start, client_index);
+        start = end + 1;
+        end = strchr(start, '\n');
+    }
+    process_single_command(server, start, client_index);
+    free(message_copy);
 }
 
 /**
@@ -72,17 +122,16 @@ void handle_client_message(server_t *server, int client_index)
 
     if (!message)
         return remove_client(server, client_index);
-    trim(message);
-    if (strlen(message) == 0)
-        return free(message);
+    if (strlen(message) == 0) {
+        free(message);
+        return;
+    }
     if (server->clients[client_index - 2] == NULL) {
+        trim(message);
         handle_team_join(server, message, client_index);
     } else {
         to_lowercase(message);
-        debug_cmd(server->options->debug, "Player %d (Client %d): '%s'\n",
-            server->clients[client_index - 2]->player->id, client_index - 2,
-            message);
-        handle_command(server, message, client_index);
+        handle_all_commands(server, message, client_index);
     }
     free(message);
 }
@@ -104,8 +153,18 @@ void destroy_client(client_t *client)
 {
     if (client == NULL)
         return;
-    if (client->player != NULL) {
+    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
+        if (client->command[i] != NULL) {
+            destroy_command(client->command[i]);
+            client->command[i] = NULL;
+        }
+    }
+    if (client->player != NULL && client->server != NULL &&
+        client->server->game != NULL) {
         destroy_player(client->player);
+        client->player = NULL;
+    } else if (client->player != NULL) {
+        free(client->player);
         client->player = NULL;
     }
     free(client);
@@ -126,6 +185,9 @@ static void setup_client(client_t *client, server_t *server, int client_index)
     client->index = client_index - 2;
     client->sockfd = server->fds[client_index].fd;
     client->player = NULL;
+    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
+        client->command[i] = NULL;
+    }
 }
 
 /**

@@ -18,6 +18,8 @@ extern const int EXIT_ERROR_CODE;
 
     #define MAX_CLIENTS 128
 
+    #define MAX_COMMAND_BUFFER_SIZE 10
+
     #define DEFAULT_TICK_RATE 100
 
     #define MIN_FREQUENCY 1

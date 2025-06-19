@@ -5,11 +5,17 @@
 ** Tick Management
 */
 
+#include "command_handler/command.h"
+#include "command_handler/command_buffer.h"
+#include "command_handler/command_executor.h"
+#include "command_handler/command_factory.h"
 #include "connection/connection_handler.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
 #include "map/resources.h"
+#include "options_parser/options.h"
+#include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "team/team.h"
 #include "vector.h"
@@ -113,6 +119,59 @@ static void update_players_ticks(game_t *game)
 }
 
 /**
+ * @brief Read and execute command buffer for a single player
+ *
+ * This function checks if the player is ready to act (i.e., their tick
+ * cooldown is 0) and if the client and server pointers are valid. It then pops
+ * a command from the player's command buffer, executes it, and destroys the
+ * command.
+ *
+ * @param player Pointer to the player structure to read commands from
+ */
+static void read_player_command_buffer(player_t *player)
+{
+    command_t *command = NULL;
+
+    if (player->tick_cooldown > 0)
+        return;
+    if (player->client == NULL || player->client->server == NULL ||
+        player->client->server->options == NULL) {
+        fprintf(stderr, "Invalid player or client pointer\n");
+        return;
+    }
+    command = pop_command_from_buffer(player->client);
+    if (command == NULL)
+        return;
+    debug_cmd(player->client->server->options->debug,
+        "Player %zu: '%s' command executed\n", player->id, command->name);
+    player->doing_action = true;
+    execute_command(player->client, command);
+    destroy_command(command);
+}
+
+/**
+ * @brief Read and execute command buffers for all players in the game
+ *
+ * This function iterates through all teams and players, reading their command
+ * buffers and executing the commands if the player is ready to act.
+ *
+ * @param game Pointer to the game structure containing teams and players
+ */
+static void read_players_command_buffer(game_t *game)
+{
+    const vector_vtable_t *vtable = NULL;
+    player_t *player = NULL;
+
+    for (int i = 0; game->teams[i] != NULL; i++) {
+        vtable = vector_get_vtable(game->teams[i]->players);
+        for (size_t j = 0; j < vtable->size(game->teams[i]->players); j++) {
+            player = *(player_t **)vtable->at(game->teams[i]->players, j);
+            read_player_command_buffer(player);
+        }
+    }
+}
+
+/**
  * @brief Advances the game tick counter
  *
  * This function increments the game tick counter, which is used to track
@@ -129,6 +188,7 @@ void game_tick(game_t *game, server_options_t *options)
         spread_resources(game->map, options->debug);
     }
     update_players_ticks(game);
+    read_players_command_buffer(game);
     for (int i = 0; game->teams[i] != NULL; i++) {
         spawn_min_eggs(
             game->map, game->teams[i], options->clients_nb, options->debug);
