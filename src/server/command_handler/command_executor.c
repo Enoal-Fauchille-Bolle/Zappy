@@ -15,7 +15,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-const command_registry_entry_t command_registry[] = {{"dummy", dummy_command},
+const command_registry_entry_t command_registry[] = {
     {"forward", forward_command}, {"left", left_command},
     {"right", right_command}, {NULL, NULL}};
 

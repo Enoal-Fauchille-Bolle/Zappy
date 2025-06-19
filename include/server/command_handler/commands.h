@@ -25,7 +25,6 @@
     #define SET_COMMAND_COOLDOWN 7
     #define INCANTATION_COMMAND_COOLDOWN 300
 
-void dummy_command(client_t *client, command_t *command);
 void forward_command(client_t *client, command_t *command);
 void left_command(client_t *client, command_t *command);
 void right_command(client_t *client, command_t *command);

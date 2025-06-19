@@ -100,7 +100,6 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)command_handler/command_validator.c			\
 				$(SRCDIR_SERVER)command_handler/command_executor.c			\
 				$(SRCDIR_SERVER)command_handler/command_buffer.c			\
-				$(SRCDIR_SERVER)commands/dummy.c							\
 				$(SRCDIR_SERVER)commands/forward.c							\
 				$(SRCDIR_SERVER)commands/left.c								\
 				$(SRCDIR_SERVER)commands/right.c							\
@@ -234,7 +233,6 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)game/game.c										\
 			$(SRCDIR_SERVER)game/tick.c										\
 			$(SRCDIR_SERVER)game/teams_util.c								\
-			$(SRCDIR_SERVER)commands/dummy.c								\
 			$(SRCDIR_SERVER)commands/forward.c								\
 			$(SRCDIR_SERVER)commands/left.c									\
 			$(SRCDIR_SERVER)commands/right.c								\
