@@ -65,7 +65,8 @@ std::unique_ptr<NetworkManager>
  */
 bool NetworkManager::send_impl(const std::string &command)
 {
-    return send_buffer_->push(command);
+    send_buffer_->push(command);
+    return true;
 }
 
 /**

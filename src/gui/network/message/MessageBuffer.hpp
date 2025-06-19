@@ -17,30 +17,23 @@
 template<typename T>
 class MessageBuffer {
 private:
-    static constexpr size_t MAX_SIZE = 10;
     std::queue<T> buffer_;
     mutable std::mutex mutex_;
     std::condition_variable cv_;
 
 public:
-    bool push(const T& item) {
+    void push(const T& item) {
         std::scoped_lock lock{mutex_};
-        if (buffer_.size() >= MAX_SIZE) {
-            return false;
-        }
         buffer_.push(item);
         cv_.notify_one();
-        return true;
+        return;
     }
 
-    bool push(T&& item) {
+    void push(T&& item) {
         std::scoped_lock lock{mutex_};
-        if (buffer_.size() >= MAX_SIZE) {
-            return false;
-        }
         buffer_.push(std::move(item));
         cv_.notify_one();
-        return true;
+        return;
     }
 
     bool tryPop(T& item) {
@@ -72,12 +65,8 @@ public:
     }
 
     // Put item back at front (for failed sends)
-    bool pushFront(const T& item) {
+    void pushFront(const T& item) {
         std::lock_guard<std::mutex> lock(mutex_);
-        if (buffer_.size() >= MAX_SIZE) {
-            return false;
-        }
-
         std::queue<T> temp;
         temp.push(item);
         while (!buffer_.empty()) {
@@ -87,7 +76,7 @@ public:
 
         buffer_ = std::move(temp);
         cv_.notify_one();
-        return true;
+        return;
     }
 };
 
