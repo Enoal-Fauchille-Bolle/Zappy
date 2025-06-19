@@ -179,7 +179,7 @@ Test(string_utils, dyn_strcat_multiple)
 
 Test(string_utils, empty_string_basic)
 {
-    char *result = empty_string();
+    char *result = empty_string(0);
 
     cr_assert_not_null(result, "empty_string should not return NULL");
     cr_assert_str_eq(result, "", "empty_string should return an empty string");
@@ -190,7 +190,7 @@ Test(string_utils, empty_string_basic)
 
 Test(string_utils, empty_string_modifiable)
 {
-    char *result = empty_string();
+    char *result = empty_string(0);
 
     cr_assert_not_null(result, "empty_string should not return NULL");
 
