@@ -24,7 +24,7 @@
 char *repeat_string(const char *str, const char *delim, size_t count)
 {
     size_t delim_len = strlen(delim);
-    long total_len = (strlen(str) + delim_len) * count - delim_len;
+    ssize_t total_len = (strlen(str) + delim_len) * count - delim_len;
     char *result;
 
     if (total_len < 0)
