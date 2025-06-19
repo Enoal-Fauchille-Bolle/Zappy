@@ -20,8 +20,9 @@ typedef struct client_s {
     server_t *server;
     int index;
     int sockfd;
-    player_t *player;
-    command_t *command[MAX_COMMAND_BUFFER_SIZE];    // Queue for commands
+    player_t *player;   // If the client is a player (AI)
+    command_t *command_buffer[MAX_COMMAND_BUFFER_SIZE];    // Queue for commands
+    bool is_gui;    // True if the client is a GUI client
 } client_t;
 
 void handle_client_message(server_t *server, int client_index);

@@ -14,6 +14,7 @@
 #include "team/egg/egg.h"
 #include "team/team.h"
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 /**
@@ -67,6 +68,13 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
 {
     server->clients[client_index - 2] =
         create_client(server, team, client_index);
+    if (server->clients[client_index - 2] == NULL) {
+        debug_warning(server->options->debug,
+            "Failed to create client for team '%s' at index %d\n",
+            team->name, client_index - 2);
+        write(server->fds[client_index].fd, "ko\n", 3);
+        return FAILURE;
+    }
     debug_conn(server->options->debug,
         "Player %d (Client %d) assigned to team '%s'\n",
         server->clients[client_index - 2]->player->id,
@@ -132,6 +140,24 @@ static bool send_welcome_message(server_t *server, int client_index)
     return SUCCESS;
 }
 
+static bool handle_gui_client(
+    server_t *server, const char *team_name, int client_index)
+{
+    if (strcmp(team_name, "GRAPHIC") == 0) {
+        server->clients[client_index - 2] = create_client(
+            server, NULL, client_index);
+        if (server->clients[client_index - 2] == NULL) {
+            debug_warning(server->options->debug,
+                "Failed to create GUI client at index %d\n", client_index - 2);
+            return FAILURE;
+        }
+        debug_conn(server->options->debug,
+            "GUI client connected at index %d\n", client_index - 2);
+        return SUCCESS;
+    }
+    return FAILURE;
+}
+
 /**
  * @brief Handles a client's request to join a team
  *
@@ -149,6 +175,9 @@ static bool send_welcome_message(server_t *server, int client_index)
 bool handle_team_join(
     server_t *server, const char *team_name, int client_index)
 {
+    if (handle_gui_client(server, team_name, client_index) == SUCCESS) {
+        return SUCCESS;
+    }
     if (!validate_and_assign_team(server, team_name, client_index)) {
         debug_warning(server->options->debug,
             "Failed to assign team '%s' to client %d\n", team_name,

@@ -122,7 +122,8 @@ void remove_client(server_t *server, int client_index)
  * @param client_index Index of the client in the server's file descriptor
  * array
  */
-static void setup_client(client_t *client, server_t *server, int client_index)
+static void setup_client(
+    client_t *client, server_t *server, int client_index, bool is_gui)
 {
     client->server = server;
     client->index = client_index - 2;
@@ -131,6 +132,7 @@ static void setup_client(client_t *client, server_t *server, int client_index)
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         client->command_buffer[i] = NULL;
     }
+    client->is_gui = is_gui;
 }
 
 /**
@@ -153,7 +155,12 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
             "Failed to allocate memory for new client\n");
         return NULL;
     }
-    setup_client(client, server, client_index);
+    setup_client(client, server, client_index, team == NULL);
+    if (team == NULL) {
+        debug_conn(server->options->debug, "Client %d connected as GUI\n",
+            client_index - 2);
+        return client;
+    }
     client->player = hatch_player(
         team, server->game->map, server->game->next_player_id, client);
     debug_map(server->options->debug,

@@ -6,8 +6,9 @@
 */
 
 #include "command_handler/command_executor.h"
+#include "command_handler/ai_commands.h"
 #include "command_handler/command.h"
-#include "command_handler/commands.h"
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "debug.h"
@@ -15,9 +16,12 @@
 #include <strings.h>
 #include <unistd.h>
 
-const command_registry_entry_t command_registry[] = {
+const command_registry_entry_t ai_command_registry[] = {
     {"forward", forward_command}, {"left", left_command},
     {"right", right_command}, {NULL, NULL}};
+
+const command_registry_entry_t gui_command_registry[] = {
+    {"msz", msz_command}, {NULL, NULL}};
 
 /**
  * @brief Get the command handler for a given command.
@@ -28,11 +32,13 @@ const command_registry_entry_t command_registry[] = {
  * @param command The command structure containing the command name.
  * @return command_handler_t The handler for the specified command.
  */
-static command_registry_entry_t get_command_registry_entry(command_t *command)
+static command_registry_entry_t get_command_registry_entry(
+    const command_registry_entry_t *command_registry_entry, command_t *command)
 {
-    for (int i = 0; command_registry[i].command_name; i++) {
-        if (strcasecmp(command_registry[i].command_name, command->name) == 0) {
-            return command_registry[i];
+    for (int i = 0; command_registry_entry[i].command_name; i++) {
+        if (strcasecmp(
+                command_registry_entry[i].command_name, command->name) == 0) {
+            return command_registry_entry[i];
         }
     }
     return (command_registry_entry_t){NULL, NULL};
@@ -53,7 +59,11 @@ void execute_command(client_t *client, command_t *command)
 {
     command_registry_entry_t handler = {0};
 
-    handler = get_command_registry_entry(command);
+    if (!client->is_gui) {
+        handler = get_command_registry_entry(ai_command_registry, command);
+    } else {
+        handler = get_command_registry_entry(gui_command_registry, command);
+    }
     if (!handler.handler) {
         debug_warning(client->server->options->debug,
             "Invalid command: '%s'\n", command->name);

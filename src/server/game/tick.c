@@ -9,7 +9,8 @@
 #include "command_handler/command_buffer.h"
 #include "command_handler/command_executor.h"
 #include "command_handler/command_factory.h"
-#include "connection/connection_handler.h"
+#include "connection/client.h"
+#include "connection/server.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
@@ -172,6 +173,34 @@ static void read_players_command_buffer(game_t *game)
 }
 
 /**
+ * @brief Read and execute command buffers for all GUI clients in the server
+ *
+ * This function iterates through all clients in the server, checking if they
+ * are GUI clients. If they are, it pops a command from their command buffer,
+ * executes it, and destroys the command.
+ *
+ * @param server Pointer to the server structure containing clients
+ */
+static void read_guis_command_buffer(server_t *server)
+{
+    client_t *client = NULL;
+
+    for (int i = 2; i < MAX_CLIENTS + 2; i++) {
+        if (server->clients[i - 2] == NULL || !server->clients[i - 2]->is_gui)
+            continue;
+        client = server->clients[i - 2];
+        command_t *command = pop_command_from_buffer(client);
+        if (command == NULL)
+            continue;
+        debug_cmd(server->options->debug,
+            "GUI Client %d: '%s' command executed\n", client->index,
+            command->name);
+        execute_command(client, command);
+        destroy_command(command);
+    }
+}
+
+/**
  * @brief Advances the game tick counter
  *
  * This function increments the game tick counter, which is used to track
@@ -189,6 +218,7 @@ void game_tick(game_t *game, server_options_t *options)
     }
     update_players_ticks(game);
     read_players_command_buffer(game);
+    read_guis_command_buffer(game->server);
     for (int i = 0; game->teams[i] != NULL; i++) {
         spawn_min_eggs(
             game->map, game->teams[i], options->clients_nb, options->debug);
