@@ -256,6 +256,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
             ${TESTS}command_parser_edge_tests.c								\
             ${TESTS}command_tokenizer_edge_tests.c							\
 			${TESTS}debug_tests.c											\
+			${TESTS}string_tests.c											\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
