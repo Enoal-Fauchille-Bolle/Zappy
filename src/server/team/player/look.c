@@ -15,6 +15,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+static char *dyn_strcat_free(char **original_dest, char *src)
+{
+    char *result = dyn_strcat(original_dest, src);
+
+    free(src);
+    return result;
+}
+
 /**
  * @brief Concatenate resources from a tile into a string.
  *
@@ -59,15 +67,13 @@ static void concat_resources(char **contents, tile_t *tile)
 static char *get_tile_contents(tile_t *tile)
 {
     char *contents = empty_string();
-    char *temp;
 
     if (tile == NULL) {
         fprintf(stderr, "Invalid tile pointer\n");
         return NULL;
     }
-    temp = repeat_string("player", " ", get_nb_players_on_tile(tile));
-    dyn_strcat(&contents, temp);
-    free(temp);
+    dyn_strcat_free(
+        &contents, repeat_string("player", " ", get_nb_players_on_tile(tile)));
     concat_resources(&contents, tile);
     return contents;
 }
@@ -92,8 +98,7 @@ static void add_tile_to_list(tile_t *tile, char **contents)
         return;
     }
     dyn_strcat(contents, ",");
-    dyn_strcat(contents, tile_content);
-    free(tile_content);
+    dyn_strcat_free(contents, tile_content);
 }
 
 /**
@@ -137,16 +142,15 @@ static tile_t *get_tile_at_offset(
 char *look(player_t *player, map_t *map)
 {
     char *contents = empty_string();
-    char *tile_content;
 
     if (player == NULL || map == NULL) {
         fprintf(stderr, "Invalid player or map pointer\n");
         return NULL;
     }
+    if (!contents)
+        return NULL;
     dyn_strcat(&contents, "[");
-    tile_content = get_tile_contents(get_tile(map, player->pos));
-    dyn_strcat(&contents, tile_content);
-    free(tile_content);
+    dyn_strcat_free(&contents, get_tile_contents(get_tile(map, player->pos)));
     for (size_t depth = 1; depth < player->level; depth++) {
         for (size_t width = 0; width < depth * 2 + 1; width++)
             add_tile_to_list(
