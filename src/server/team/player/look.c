@@ -8,6 +8,7 @@
 #include "map/coordinates.h"
 #include "map/map.h"
 #include "map/resource_names.h"
+#include "map/resources.h"
 #include "map/tile.h"
 #include "team/player/player.h"
 #include "utils/string.h"
