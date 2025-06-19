@@ -258,6 +258,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}debug_tests.c											\
 			${TESTS}string_tests.c											\
 			${TESTS}client_tests.c											\
+			${TESTS}time_tests.c											\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
