@@ -95,6 +95,9 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)team/team_egg.c								\
 			 	$(SRCDIR_SERVER)team/team_player.c							\
 				$(SRCDIR_SERVER)utils/string.c								\
+				$(SRCDIR_SERVER)game/game.c									\
+				$(SRCDIR_SERVER)game/teams_util.c							\
+				$(SRCDIR_SERVER)game/tick.c									\
 				$(SRCDIR_SERVER)command_handler/command_parser.c			\
 				$(SRCDIR_SERVER)command_handler/command_factory.c			\
 				$(SRCDIR_SERVER)command_handler/command_tokenizer.c			\
@@ -105,9 +108,6 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/left.c							\
 				$(SRCDIR_SERVER)commands/ai/right.c							\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
-				$(SRCDIR_SERVER)game/game.c									\
-				$(SRCDIR_SERVER)game/teams_util.c							\
-				$(SRCDIR_SERVER)game/tick.c									\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
