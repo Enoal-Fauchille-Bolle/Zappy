@@ -239,6 +239,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/forward.c							\
 			$(SRCDIR_SERVER)commands/ai/left.c								\
 			$(SRCDIR_SERVER)commands/ai/right.c								\
+			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\
