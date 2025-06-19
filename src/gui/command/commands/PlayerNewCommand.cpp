@@ -1,0 +1,11 @@
+#include "PlayerNewCommand.hpp"
+#include <iostream>
+
+PlayerNewCommand::PlayerNewCommand()
+{
+}
+
+void PlayerNewCommand::execute(const std::string& args, SimpleGameManager gameManager) {
+    gameManager = gameManager; // Avoid unused parameter warning
+    std::cout << "PlayerNewCommand " << args << std::endl;
+}
