@@ -177,3 +177,16 @@ Test(resources, spread_resources_count_one, .timeout = 2)
         count_resource(map, THYSTAME), 1, "Thystame count should be 1");
     destroy_map(map);
 }
+
+Test(inventory, get_inventory_string, .timeout = 2)
+{
+    inventory_t inventory = {10, 5, 3, 2, 1, 9, 2};
+    char *inventory_str = get_inventory_string(inventory);
+
+    cr_assert_not_null(inventory_str, "Inventory string should not be NULL");
+    cr_assert_str_eq(inventory_str,
+        "[food: 10, linemate: 5, deraumere: 3, "
+        "sibur: 2, mendiane: 1, phiras: 9, thystame: 2]",
+        "Inventory string should match expected format");
+    free(inventory_str);
+}
