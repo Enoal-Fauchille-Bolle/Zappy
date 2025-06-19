@@ -5,6 +5,7 @@
 ** repeat_string
 */
 
+#include "utils/string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,18 +24,13 @@
  */
 char *repeat_string(const char *str, const char *delim, size_t count)
 {
-    size_t delim_len = strlen(delim);
-    ssize_t total_len = (strlen(str) + delim_len) * count - delim_len;
-    char *result;
+    size_t delim_len = delim ? strlen(delim) : 0;
+    ssize_t total_len =
+        count && str ? (strlen(str) + delim_len) * count - delim_len : 0;
+    char *result = empty_string(total_len);
 
-    if (total_len < 0)
-        total_len = 0;
-    result = malloc(sizeof(char) * (total_len + 1));
-    if (result == NULL) {
-        perror("Failed to allocate memory for repeated string");
+    if (!result)
         return NULL;
-    }
-    result[0] = '\0';
     for (size_t i = 0; i < count; i++) {
         strcat(result, str);
         if (i < count - 1)
