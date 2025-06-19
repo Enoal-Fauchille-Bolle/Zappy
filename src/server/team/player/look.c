@@ -66,7 +66,7 @@ static void concat_resources(char **contents, tile_t *tile)
  */
 static char *get_tile_contents(tile_t *tile)
 {
-    char *contents = empty_string();
+    char *contents = empty_string(0);
 
     if (tile == NULL) {
         fprintf(stderr, "Invalid tile pointer\n");
@@ -143,7 +143,7 @@ static tile_t *get_tile_at_offset(
  */
 char *look(player_t *player, map_t *map)
 {
-    char *contents = empty_string();
+    char *contents = empty_string(1);
 
     if (player == NULL || map == NULL) {
         fprintf(stderr, "Invalid player or map pointer\n");
@@ -151,7 +151,7 @@ char *look(player_t *player, map_t *map)
     }
     if (!contents)
         return NULL;
-    dyn_strcat(&contents, "[");
+    strcat(contents, "[");
     dyn_strcat_free(&contents, get_tile_contents(get_tile(map, player->pos)));
     for (size_t depth = 1; depth < player->level + 1; depth++) {
         for (size_t width = 0; width < depth * 2 + 1; width++)
