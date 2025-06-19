@@ -108,7 +108,7 @@ Test(string_utils, dyn_strcat_basic)
 {
     char *dest = malloc(6);
     strcpy(dest, "hello");
-    char *result = dyn_strcat(dest, " world");
+    char *result = dyn_strcat(&dest, " world");
 
     cr_assert_not_null(result, "dyn_strcat should not return NULL");
     cr_assert_str_eq(
@@ -121,7 +121,7 @@ Test(string_utils, dyn_strcat_empty_dest)
 {
     char *dest = malloc(1);
     strcpy(dest, "");
-    char *result = dyn_strcat(dest, "hello");
+    char *result = dyn_strcat(&dest, "hello");
 
     cr_assert_not_null(result, "dyn_strcat should not return NULL");
     cr_assert_str_eq(
@@ -134,7 +134,7 @@ Test(string_utils, dyn_strcat_empty_src)
 {
     char *dest = malloc(6);
     strcpy(dest, "hello");
-    char *result = dyn_strcat(dest, "");
+    char *result = dyn_strcat(&dest, "");
 
     cr_assert_not_null(result, "dyn_strcat should not return NULL");
     cr_assert_str_eq(result, "hello", "Should handle empty source string");
@@ -154,7 +154,7 @@ Test(string_utils, dyn_strcat_null_src)
 {
     char *dest = malloc(6);
     strcpy(dest, "hello");
-    char *result = dyn_strcat(dest, NULL);
+    char *result = dyn_strcat(&dest, NULL);
 
     cr_assert_null(result, "dyn_strcat should return NULL for NULL source");
     // dest should still be valid since the function returns early on NULL src
@@ -166,10 +166,10 @@ Test(string_utils, dyn_strcat_multiple)
     char *dest = malloc(6);
     strcpy(dest, "hello");
 
-    dest = dyn_strcat(dest, " ");
+    dest = dyn_strcat(&dest, " ");
     cr_assert_not_null(dest, "First concatenation should succeed");
 
-    dest = dyn_strcat(dest, "world");
+    dest = dyn_strcat(&dest, "world");
     cr_assert_not_null(dest, "Second concatenation should succeed");
     cr_assert_str_eq(
         dest, "hello world", "Multiple concatenations should work");

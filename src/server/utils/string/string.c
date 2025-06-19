@@ -74,14 +74,15 @@ void trim(char *str)
  */
 char *dyn_strcat(char **original_dest, const char *src)
 {
-    char *dest = *original_dest;
+    char *dest;
 
-    if (dest == NULL || src == NULL) {
+    if (!original_dest || !*original_dest || !src) {
         fprintf(stderr, "Invalid string pointer\n");
         return NULL;
     }
+    dest = *original_dest;
     dest = realloc(dest, strlen(dest) + strlen(src) + 1);
-    if (dest == NULL) {
+    if (!dest) {
         perror("Failed to reallocate memory for string concatenation");
         return NULL;
     }
