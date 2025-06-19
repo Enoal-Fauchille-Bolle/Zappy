@@ -8,6 +8,7 @@
 #include "team/player/player.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "game/game.h"
 #include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
@@ -165,4 +166,64 @@ egg_t *lay_egg(player_t *player, map_t *map)
     add_egg_to_map(map, egg);
     player->tick_cooldown = 42;
     return egg;
+}
+
+/**
+ * @brief Get a player by their ID within a specific team.
+ *
+ * This function searches for a player with the specified ID in the given team.
+ * If the team or player vector is NULL, it prints an error message and returns
+ * NULL. If a player with the specified ID is found, it returns a pointer to
+ * that player; otherwise, it returns NULL.
+ *
+ * @param team Pointer to the team structure to search in
+ * @param id The unique identifier of the player to find
+ * @return Pointer to the player_t structure if found, NULL otherwise
+ */
+static player_t *get_player_by_id_in_team(team_t *team, size_t id)
+{
+    const vector_vtable_t *vtable;
+    player_t *player;
+
+    if (team == NULL) {
+        fprintf(stderr, "Team pointer is NULL\n");
+        return NULL;
+    }
+    vtable = vector_get_vtable(team->players);
+    for (size_t i = 0; i < vtable->size(team->players); i++) {
+        player = *(player_t **)vtable->at(team->players, i);
+        if (player != NULL && player->id == id) {
+            return player;
+        }
+    }
+    return NULL;
+}
+
+/**
+ * @brief Get a player by their ID from the game.
+ *
+ * This function searches through all teams in the game to find a player with
+ * the specified ID. If the game pointer is NULL, it prints an error message and
+ * returns NULL. If a player with the specified ID is found, it returns a
+ * pointer to that player; otherwise, it returns NULL.
+ *
+ * @param game Pointer to the game structure containing teams and players
+ * @param id The unique identifier of the player to find
+ * @return Pointer to the player_t structure if found, NULL otherwise
+ */
+player_t *get_player_by_id(game_t *game, size_t id)
+{
+    player_t *player;
+
+    if (game == NULL) {
+        fprintf(stderr, "Game pointer is NULL\n");
+        return NULL;
+    }
+    for (size_t i = 0; game->teams[i] != NULL; i++) {
+        player = get_player_by_id_in_team(game->teams[i], id);
+        if (player != NULL) {
+            return player;
+        }
+    }
+    return NULL;
 }

@@ -38,6 +38,7 @@ typedef struct player_s {
 player_t *create_player(
     const pos_t pos, const size_t id, team_t *team, client_t *client);
 void destroy_player(player_t *player);
+player_t *get_player_by_id(game_t *game, size_t id);
 
 // Player actions
 void turn_player_left(player_t *player);
