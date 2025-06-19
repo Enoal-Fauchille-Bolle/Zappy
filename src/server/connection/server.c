@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/poll.h>
-#include <time.h>
 #include <unistd.h>
 
 /**
@@ -27,19 +26,16 @@
  *
  * This function safely deallocates memory for an array of client team strings.
  * It iterates through all possible client slots and frees each individual
- * team string before freeing the main array pointer.
+ * client structure and closes their file descriptors.
  *
- * @param clients_team Array of strings representing client teams to be
- * destroyed. Can be NULL (function will return early if so).
+ * @param server Pointer to the server structure containing the clients array
  */
 static void destroy_clients(server_t *server)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (server->clients[i] == NULL) {
-            continue;
+        if (server->clients[i] != NULL) {
+            remove_client(server, i + 2);
         }
-        free(server->clients[i]);
-        server->clients[i] = NULL;
     }
 }
 
@@ -73,16 +69,18 @@ void destroy_server(server_t *server)
     if (!server) {
         return;
     }
+    destroy_clients(server);
+    if (server->fds[0].fd >= 0) {
+        close(server->fds[0].fd);
+    }
+    if (server->fds[1].fd >= 0) {
+        close(server->fds[1].fd);
+    }
     if (server->game) {
         destroy_game(server->game);
     }
-    for (size_t i = 0; i < MAX_CLIENTS + 2; i++) {
-        if (server->fds[i].fd >= 0) {
-            close(server->fds[i].fd);
-        }
-    }
+    debug_server(server->options->debug, "Server stopped\n");
     destroy_server_options(server->options);
-    destroy_clients(server);
     free(server);
     server = NULL;
 }
@@ -198,8 +196,7 @@ void run_server(server_t *server)
         tick_start_time = get_current_time_ms();
         if (process_connection(server) == FAILURE)
             break;
-        wait_remaining_tick_time(server, tick_start_time);
         game_tick(server->game, server->options);
+        wait_remaining_tick_time(server, tick_start_time);
     }
-    debug_server(server->options->debug, "Server stopped\n");
 }
