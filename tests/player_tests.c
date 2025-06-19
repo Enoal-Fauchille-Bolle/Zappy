@@ -307,3 +307,19 @@ Test(player, destroy_player_null, .timeout = 2)
     destroy_player(NULL);      // Should not crash
     destroy_player(player);
 }
+
+Test(player, check_inventory_null, .timeout = 2)
+{
+    player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
+    char *inventory_str;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    inventory_str = check_inventory(NULL);
+    cr_assert_null(
+        inventory_str, "Inventory string should be NULL for NULL player");
+    inventory_str = check_inventory(player);
+    cr_assert_not_null(
+        inventory_str, "Inventory string should not be NULL for valid player");
+    free(inventory_str);
+    destroy_player(player);
+}
