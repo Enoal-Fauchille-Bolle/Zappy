@@ -7,6 +7,7 @@
 
 #include "constants.h"
 #include "options_parser/options.h"
+#include "utils/string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -137,16 +138,20 @@ static bool fill_teams(
     server_options_t *options, char **av, int start, int end)
 {
     for (int j = start + 1; j <= end; j++) {
+        trim(av[j]);
+        if (strlen(av[j]) == 0) {
+            dprintf(fileno(stderr), "Error: Team name cannot be empty.\n");
+            destroy_teams(options);
+            return FAILURE;
+        }
         if (do_team_already_exists(options, av[j])) {
             dprintf(
                 fileno(stderr), "Error: Team '%s' already exists.\n", av[j]);
-            destroy_teams(options);
             return FAILURE;
         }
         options->teams[j - start - 1] = strdup(av[j]);
         if (options->teams[j - start - 1] == NULL) {
             perror("Failed to allocate memory for team name");
-            destroy_teams(options);
             return FAILURE;
         }
     }
@@ -207,8 +212,9 @@ void handle_teams(server_options_t *options, int *i, int ac, char **av)
         return;
     }
     options->teams = init_teams(teams_count);
-    if (!fill_teams(options, av, start, *i)) {
+    if (fill_teams(options, av, start, *i) == FAILURE) {
         options->error = true;
+        destroy_teams(options);
         return;
     }
     options->teams[teams_count] = NULL;
