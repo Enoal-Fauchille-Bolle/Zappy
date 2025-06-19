@@ -34,7 +34,7 @@ void spawn_min_eggs(map_t *map, team_t *team, size_t min, bool debug)
         return;
     }
     for (size_t i = 0; i < min; i++) {
-        if (get_egg_count(team) >= min)
+        if (get_egg_count(team) >= (min - get_team_player_count(team)))
             break;
         random_pos = (pos_t){rand() % map->width, rand() % map->height};
         current_egg = create_egg(random_pos, team, debug);
