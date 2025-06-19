@@ -153,7 +153,7 @@ char *look(player_t *player, map_t *map)
         return NULL;
     dyn_strcat(&contents, "[");
     dyn_strcat_free(&contents, get_tile_contents(get_tile(map, player->pos)));
-    for (size_t depth = 1; depth < player->level; depth++) {
+    for (size_t depth = 1; depth < player->level + 1; depth++) {
         for (size_t width = 0; width < depth * 2 + 1; width++)
             add_tile_to_list(
                 get_tile_at_offset(map, player, depth, width), &contents);

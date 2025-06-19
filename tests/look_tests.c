@@ -45,13 +45,14 @@ Test(look, valid, .timeout = 2)
     get_tile(map, (pos_t){2, 1})->resources[FOOD] = 1;
     get_tile(map, (pos_t){4, 2})->resources[DERAUMERE] = 1;
     for (int i = 0; i < 4; i++) {
+        player->level = i;
         look_result = look(player, map);
         cr_assert_str_eq(look_result, expected_look_results[i],
             "Look result mismatch at level %d: expected '%s', got '%s'", i + 1,
             expected_look_results[i], look_result);
-        player->level++;
         free(look_result);
     }
+    player->level = 4;
     look_result = look(player, map);
     cr_assert_str_eq(look_result, expected_look_results[4],
         "Final look result mismatch: expected '%s', got '%s'",
@@ -69,8 +70,13 @@ Test(look, empty_map, .timeout = 2)
     char *look_result;
 
     look_result = look(player, map);
-    cr_assert_str_eq(look_result, "[]", "Look result should be '[]'");
-    player->level = 8;
+    cr_assert_str_eq(look_result, "[,,,]",
+        "Look result should be '[,,,]', but was '%s'", look_result);
+    player->level = 0;
+    look_result = look(player, map);
+    cr_assert_str_eq(look_result, "[]",
+        "Look result should be '[]', but was '%s'", look_result);
+    player->level = 7;
     look_result = look(player, map);
     cr_assert_str_eq(look_result,
         "[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,]",
@@ -90,10 +96,16 @@ Test(look, player_on_one_by_one_map, .timeout = 2)
 
     player->orientation = NORTH;
     add_player_to_map(map, player);
+    player->level = 0;
     look_result = look(player, map);
-    cr_assert_str_eq(
-        look_result, "[player]", "Look result should be '[player]'");
-    player->level = 3;
+    cr_assert_str_eq(look_result, "[player]",
+        "Look result should be '[player]', but was '%s'", look_result);
+    player->level = 1;
+    look_result = look(player, map);
+    cr_assert_str_eq(look_result, "[player,player,player,player]",
+        "Look result should be '[player,player,player,player]', but was '%s'",
+        look_result);
+    player->level = 2;
     look_result = look(player, map);
     cr_assert_str_eq(look_result,
         "[player,player,player,player,player,player,player,player,player]",
@@ -127,7 +139,7 @@ Test(look, object_in_each_direction, .timeout = 2)
         1;      // Bottom right corner
     get_tile(map, (pos_t){0, 2})->resources[PHIRAS] =
         1;      // Bottom left corner
-    player->level = 2;
+    player->level = 1;
     player->orientation = NORTH;
     look_result = look(player, map);
     cr_assert_str_eq(look_result, "[player,linemate,,deraumere]",
@@ -148,7 +160,7 @@ Test(look, object_in_each_direction, .timeout = 2)
     cr_assert_str_eq(look_result, "[player,phiras,,linemate]",
         "Look result should be '[player,phiras,,linemate]', but is '%s'",
         look_result);
-    player->level = 3;
+    player->level = 2;
     player->orientation = NORTH;
     look_result = look(player, map);
     cr_assert_str_eq(look_result,
