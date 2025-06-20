@@ -6,6 +6,8 @@
 */
 
 #include "GameManager.hpp"
+#include "network/NetworkManager.hpp"
+#include "command/CommandHandler.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <random>
@@ -15,7 +17,8 @@
  * 
  * Initializes the game manager with null scene and zero map dimensions.
  */
-SimpleGameManager::SimpleGameManager() : _scene(nullptr), _mapWidth(0), _mapHeight(0) {}
+SimpleGameManager::SimpleGameManager() :
+    _scene(nullptr), _commandHandler(new CommandHandler()), _mapWidth(0), _mapHeight(0) {}
 
 /**
  * @brief Destructor for SimpleGameManager.
@@ -247,14 +250,27 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
  * @brief Update the game state and handle time-based events.
  */
 void SimpleGameManager::update() {
-    static int time = 0;
-    time++;
-    if (time == 100) {
-        updatePlayerPosition(1, 1, 0, Orientation::NORTH);
-    }
+    std::string response = NetworkManager::receive(false);
+    readResponse(response);
 }
 
 /**
+ * @brief Read and process the server response.
+ * 
+ * @param response The response string from the server.
+ */
+void SimpleGameManager::readResponse(const std::string& response) {
+    if (response.length() < 3)  {
+        return;
+    }
+    std::string args {};
+    std::string command = response.substr(0, 3);
+    if (response.length() > 4)
+        args = response.substr(4);
+    _commandHandler->handleCommand(command, args, *this);
+}
+
+/*
  * @brief Get the current map size.
  * 
  * @return A pair containing the width and height of the map.

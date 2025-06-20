@@ -17,6 +17,8 @@
 #include <vector>
 #include <map>
 
+class CommandHandler;
+
 class SimpleGameManager {
 public:
     SimpleGameManager();
@@ -38,10 +40,12 @@ public:
     void removeResource(ResourceType type, int x, int y, int quantity = 1);
 
     void update();
+    void readResponse(const std::string& response);
     std::pair<int, int> getMapSize() const;
 
 private:
     Scenne* _scene;
+    CommandHandler* _commandHandler;
     int _mapWidth, _mapHeight;
     
     PlayerMap _players;

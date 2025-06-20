@@ -34,28 +34,16 @@ int main(int argc, char **argv)
     try {
         gui::Parser parser(argc, argv);
 
-        // NetworkManager::initialize(parser.getHost(),
-        //     parser.getPort());
-        // NetworkManager::send("GRAPHICS");
-        // std::string response = NetworkManager::receive();
-        // std::cout << "response: " << response << std::endl;
+        NetworkManager::initialize(parser.getHost(),
+            parser.getPort());
+        NetworkManager::send("GRAPHIC");
+        std::string response = NetworkManager::receive();
 
         ZappyApp app;
         app.initApp();
 
         SimpleGameManager gameManager;
         gameManager.initialize(&app.getScene());
-        gameManager.setMapSize(10, 10);
-        gameManager.createPlayer(1, "TeamA", 0, 0, Orientation::NORTH);
-        gameManager.createEgg(1, 0, 5, 5);
-
-        gameManager.createResource(ResourceType::FOOD, 2, 2, 3);
-        gameManager.createResource(ResourceType::LINEMATE, 2, 2, 2);
-        gameManager.createResource(ResourceType::DERAUMERE, 4, 4, 3);
-        gameManager.createResource(ResourceType::SIBUR, 5, 5, 2);
-        gameManager.createResource(ResourceType::MENDIANE, 6, 6, 1);
-        gameManager.createResource(ResourceType::PHIRAS, 7, 7, 4);
-        gameManager.createResource(ResourceType::THYSTAME, 8, 8, 6);
 
         bool running = true;
         while (running && !app.getRoot()->endRenderingQueued()) {
