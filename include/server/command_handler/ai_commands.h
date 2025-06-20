@@ -30,5 +30,6 @@ void right_command(client_t *client, command_t *command);
 void look_command(client_t *client, command_t *command);
 void inventory_command(client_t *client, command_t *command);
 void connect_nbr_command(client_t *client, command_t *command);
+void fork_command(client_t *client, command_t *command);
 
 #endif /* !AI_COMMANDS_H_ */
