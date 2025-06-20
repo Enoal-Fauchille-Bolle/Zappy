@@ -5,6 +5,7 @@
 ** Team Joining File
 */
 
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
@@ -80,6 +81,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         "Player %d (Client %d) assigned to team '%s'\n",
         server->clients[client_index - 2]->player->id, client_index - 2,
         team->name);
+    pnw_command(server->clients[client_index - 2]->player);
     return SUCCESS;
 }
 

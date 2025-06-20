@@ -114,6 +114,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/inventory.c						\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
 				$(SRCDIR_SERVER)commands/gui/ppo.c							\
+				$(SRCDIR_SERVER)commands/gui/pnw.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -256,6 +257,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/inventory.c							\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			$(SRCDIR_SERVER)commands/gui/ppo.c								\
+			$(SRCDIR_SERVER)commands/gui/pnw.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\
