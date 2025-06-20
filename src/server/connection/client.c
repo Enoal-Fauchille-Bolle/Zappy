@@ -102,7 +102,7 @@ void remove_client(server_t *server, int client_index)
     if (server->clients[client_index - 2] != NULL) {
         if (server->clients[client_index - 2]->player != NULL &&
             !server->clients[client_index - 2]->is_gui) {
-            debug_conn(server->options->debug,
+            debug_game(server->options->debug,
                 "Player %d (Client %d) removed from team '%s'\n",
                 server->clients[client_index - 2]->player->id,
                 client_index - 2,

@@ -77,7 +77,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
-    debug_conn(server->options->debug,
+    debug_game(server->options->debug,
         "Player %d (Client %d) assigned to team '%s'\n",
         server->clients[client_index - 2]->player->id, client_index - 2,
         team->name);
