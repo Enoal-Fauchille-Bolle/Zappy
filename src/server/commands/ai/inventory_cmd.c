@@ -39,5 +39,8 @@ void inventory_command(client_t *client, command_t *command)
     }
     client->player->tick_cooldown = INVENTORY_COMMAND_COOLDOWN;
     dprintf(client->sockfd, "%s\n", inventory_str);
+    debug_player(client->server->options->debug,
+        "Player %zu checked inventory: %s\n", client->player->id,
+        inventory_str);
     free(inventory_str);
 }
