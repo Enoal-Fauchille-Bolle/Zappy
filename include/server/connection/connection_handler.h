@@ -9,8 +9,8 @@
     #define CONNECTION_HANDLER_H_
 
     #include "connection/server.h"
+    #include <stdbool.h>
 
-void process_connections(server_t *server);
-void remove_client(server_t *server, int client_index);
+bool process_connection(server_t *server);
 
 #endif /* !CONNECTION_HANDLER_H_ */

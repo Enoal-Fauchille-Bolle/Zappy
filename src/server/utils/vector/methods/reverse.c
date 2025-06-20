@@ -22,8 +22,8 @@ vector_t *vector_reverse_impl(const vector_t *self)
     }
     vector_reserve_impl(result, self->size);
     for (size_t i = 0; i < self->size; i++) {
-        element = (char *)self->data +
-            ((self->size - 1 - i) * self->element_size);
+        element =
+            (char *)self->data + ((self->size - 1 - i) * self->element_size);
         result->public.vtable->push_back(result, element);
     }
     return result;

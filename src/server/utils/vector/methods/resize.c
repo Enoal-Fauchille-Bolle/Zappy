@@ -10,8 +10,8 @@
 #include <stddef.h>
 #include <string.h>
 
-void vector_resize_impl(vector_t *self, size_t new_size,
-    const void *default_value)
+void vector_resize_impl(
+    vector_t *self, size_t new_size, const void *default_value)
 {
     void *dest;
 

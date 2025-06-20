@@ -22,14 +22,16 @@ typedef enum orientation_e {
 } orientation_t;
 
 typedef struct pos_s {
-    size_t x;
-    size_t y;
+    int x;
+    int y;
 } pos_t;
 
-pos_t wrap_coordinates(const pos_t pos, size_t width, size_t height);
+pos_t wrap_coordinates(pos_t pos, size_t width, size_t height);
 orientation_t turn_left(orientation_t orientation);
 orientation_t turn_right(orientation_t orientation);
 pos_t get_forward_position(
     const pos_t pos, orientation_t orientation, const map_t *map);
+pos_t get_relative_position(const pos_t pos, orientation_t orientation,
+    pos_t offset, const map_t *map);
 
 #endif /* !COORDINATES_H_ */

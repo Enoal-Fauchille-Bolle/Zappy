@@ -5,9 +5,9 @@
 ** player management
 */
 
-#include "player/player.h"
 #include "map/map.h"
 #include "map/tile.h"
+#include "team/player/player.h"
 #include <stdio.h>
 
 /**

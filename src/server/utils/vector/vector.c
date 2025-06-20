@@ -9,8 +9,7 @@
 #include "vector_internal.h"
 #include <stdlib.h>
 
-const vector_vtable_t vector_vtable = {
-    .at = vector_at_impl,
+const vector_vtable_t vector_vtable = {.at = vector_at_impl,
     .front = vector_front_impl,
     .back = vector_back_impl,
     .data = vector_data_impl,
@@ -36,8 +35,7 @@ const vector_vtable_t vector_vtable = {
     .count = vector_count_impl,
     .find = vector_find_impl,
     .reverse = vector_reverse_impl,
-    .slice = vector_slice_impl
-};
+    .slice = vector_slice_impl};
 
 vector_t *vector_new(size_t element_size)
 {
@@ -46,13 +44,11 @@ vector_t *vector_new(size_t element_size)
     if (!self) {
         return NULL;
     }
-    *self = (vector_t){
-        .public.vtable = &vector_vtable,
+    *self = (vector_t){.public.vtable = &vector_vtable,
         .data = NULL,
         .size = 0,
         .capacity = 0,
-        .element_size = element_size
-    };
+        .element_size = element_size};
     return self;
 };
 

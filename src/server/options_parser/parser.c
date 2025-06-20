@@ -15,8 +15,7 @@ static const option_map_t options_map[] = {{"-p", handle_port},
     {"-c", handle_clients}, {"-f", handle_frequency}, {"-h", handle_help},
     {"--help", handle_help}, {"-d", handle_debug}, {"--debug", handle_debug},
     {NULL, NULL}};
-static const server_options_t default_options = {
-    .port = 0,
+static const server_options_t default_options = {.port = 0,
     .width = 0,
     .height = 0,
     .teams = NULL,
@@ -24,8 +23,7 @@ static const server_options_t default_options = {
     .frequency = 0,
     .help = false,
     .debug = false,
-    .error = false
-};
+    .error = false};
 
 /**
  * @brief Initialize server options structure with default values.

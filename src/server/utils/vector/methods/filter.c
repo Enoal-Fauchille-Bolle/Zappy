@@ -6,11 +6,11 @@
 */
 
 #include "../vector_internal.h"
-#include <stddef.h>
 #include <assert.h>
+#include <stddef.h>
 
-vector_t *vector_filter_impl(const vector_t *self,
-    predicate_function_t predicate, void *context)
+vector_t *vector_filter_impl(
+    const vector_t *self, predicate_function_t predicate, void *context)
 {
     vector_t *result;
     void *element;

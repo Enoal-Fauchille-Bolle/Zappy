@@ -20,7 +20,7 @@ static bool map_over(const vector_t *self, vector_t *result,
     void *output;
 
     for (size_t i = 0; i < self->size; i++) {
-        input = (char *)self->data + (i *self->element_size);
+        input = (char *)self->data + (i * self->element_size);
         output = malloc(result->element_size);
         if (!output) {
             perror("vector_map");
@@ -34,8 +34,8 @@ static bool map_over(const vector_t *self, vector_t *result,
     return true;
 }
 
-vector_t *vector_map_impl(const vector_t *self,
-    map_function_t map_fn, size_t output_element_size, void *context)
+vector_t *vector_map_impl(const vector_t *self, map_function_t map_fn,
+    size_t output_element_size, void *context)
 {
     vector_t *result;
 

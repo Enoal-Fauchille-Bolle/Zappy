@@ -12,15 +12,17 @@
     #include "constants.h"
     #include "connection/client.h"
     #include "options_parser/options.h"
+    #include "game/game.h"
 
 typedef struct server_s {
     server_options_t *options;
-    struct pollfd fds[MAX_CLIENTS + 1];
-    char **clients_team;
+    struct pollfd fds[MAX_CLIENTS + 2]; // +2 for server socket and signal fd
+    client_t *clients[MAX_CLIENTS];
+    game_t *game;
 } server_t;
 
 server_t *create_server(server_options_t *options);
 void destroy_server(server_t *server);
-void run_server(server_t *server, port_t port);
+void run_server(server_t *server);
 
 #endif /* !SERVER_H_ */
