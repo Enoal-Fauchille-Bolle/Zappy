@@ -153,8 +153,6 @@ static bool handle_gui_client(
                 "Failed to create GUI client at index %d\n", client_index - 2);
             return FAILURE;
         }
-        debug_conn(server->options->debug,
-            "GUI client connected at index %d\n", client_index - 2);
         return SUCCESS;
     }
     return FAILURE;
