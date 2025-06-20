@@ -162,7 +162,7 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
         return client;
     }
     debug_conn(server->options->debug, "Client %d connected as AI\n",
-        client_index - 2, team->name);
+        client_index - 2);
     client->player = hatch_player(
         team, server->game->map, server->game->next_player_id, client);
     server->game->next_player_id++;
