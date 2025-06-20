@@ -7,12 +7,19 @@
 
 #include "EggBornCommand.hpp"
 #include <iostream>
+#include <sstream>
 
 EggBornCommand::EggBornCommand()
 {
 }
 
 void EggBornCommand::execute(const std::string& args, SimpleGameManager& gameManager) {
-    (void)gameManager;
-    std::cout << "EggBornCommand " << args << std::endl;
+    std::string idStr;
+    int id;
+
+    std::istringstream iss(args);
+    iss >> idStr;
+
+    id = std::stoi(idStr.substr(1));
+    gameManager.removeEgg(id);
 }
