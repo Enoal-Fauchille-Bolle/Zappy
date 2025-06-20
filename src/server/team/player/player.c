@@ -157,8 +157,8 @@ egg_t *lay_egg(player_t *player, map_t *map)
         fprintf(stderr, "Player, map, client or server pointer is NULL\n");
         return NULL;
     }
-    egg = create_egg(
-        player->pos, player->team, player->id, player->client->server->options->debug);
+    egg = create_egg(player->pos, player->team, player->id,
+        player->client->server->options->debug);
     if (egg == NULL) {
         fprintf(stderr, "Failed to create egg\n");
         return NULL;

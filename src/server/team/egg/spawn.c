@@ -5,8 +5,8 @@
 ** spawn
 */
 
-#include "connection/server.h"
 #include "connection/client.h"
+#include "connection/server.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "map/coordinates.h"
@@ -132,8 +132,8 @@ player_t *spawn_player_from_egg(
         "Player %zu spawned at position (%d, %d) with orientation %s\n",
         player->id, player->pos.x, player->pos.y,
         orientation_names[player->orientation]);
-    debug_map(client->server->options->debug, "Egg %zu removed from team '%s'\n",
-        egg->id, egg->team->name);
+    debug_map(client->server->options->debug,
+        "Egg %zu removed from team '%s'\n", egg->id, egg->team->name);
     remove_egg_from_map(map, egg);
     remove_egg_from_team(egg->team, egg);
     destroy_egg(egg);
