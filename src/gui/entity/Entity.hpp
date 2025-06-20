@@ -26,6 +26,7 @@ class Entity {
         void setColor(const Color& color);
 
         std::string getId() const;
+        Ogre::Entity* getOgreEntity() const;
         Ogre::SceneNode* getSceneNode() const;
         void attachToScene(Ogre::SceneManager* sceneManager);
         void replaceMesh(const std::string &meshName);
