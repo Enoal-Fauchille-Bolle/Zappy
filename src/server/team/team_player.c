@@ -70,6 +70,16 @@ void remove_player_from_team(team_t *team, player_t *player)
     fprintf(stderr, "Player not found on team\n");
 }
 
+/**
+ * @brief Get the number of players in a team.
+ *
+ * This function returns the number of players in a team's players vector.
+ * It checks if the team pointer and its players vector are valid before
+ * attempting to retrieve the size.
+ *
+ * @param team Pointer to the team structure
+ * @return size_t The number of players in the team, or 0 if invalid
+ */
 size_t get_team_player_count(const team_t *team)
 {
     const vector_vtable_t *vtable;
