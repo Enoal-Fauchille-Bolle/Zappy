@@ -22,7 +22,8 @@ const command_registry_entry_t ai_command_registry[] = {
     {"inventory", inventory_command}, {NULL, NULL}};
 
 const command_registry_entry_t gui_command_registry[] = {{"msz", msz_command},
-    {"ppo", ppo_command}, {"bct", bct_command}, {NULL, NULL}};
+    {"ppo", ppo_command}, {"bct", bct_command}, {"plv", plv_command},
+    {NULL, NULL}};
 
 /**
  * @brief Get the command handler for a given command.
