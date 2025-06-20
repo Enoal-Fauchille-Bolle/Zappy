@@ -17,5 +17,6 @@ void ppo_command(client_t *client, command_t *command); // Single Command
 void pnw_command(player_t *player); // Global Event
 void bct_command(client_t *client, command_t *command); // Single Command
 void plv_command(client_t *client, command_t *command); // Single Command
+void tna_command(client_t *client, command_t *command); // Single Command
 
 #endif /* !GUI_COMMANDS_H_ */
