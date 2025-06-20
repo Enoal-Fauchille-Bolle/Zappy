@@ -31,8 +31,12 @@
 static void setup_egg(
     egg_t *egg, const pos_t pos, team_t *team, player_id_t parent_id)
 {
-    egg->id = team->game->next_egg_id;
-    team->game->next_egg_id++;
+    if (team != NULL) {
+        egg->id = team->game->next_egg_id;
+        team->game->next_egg_id++;
+    } else {
+        egg->id = 0;
+    }
     egg->parent_id = parent_id;
     egg->pos = pos;
     egg->team = team;
