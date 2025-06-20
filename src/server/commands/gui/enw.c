@@ -14,7 +14,7 @@
 
 void enw_command(egg_t *egg)
 {
-    if (egg == NULL)
+    if (egg == NULL || egg->team == NULL)
         return;
     send_to_all_guis(egg->team->game->server, "enw %zu %d %d %d\n", egg->id,
         egg->parent_id != 0 ? (int)egg->parent_id : -1, egg->pos.x,
