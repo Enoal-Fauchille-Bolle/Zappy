@@ -14,6 +14,16 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+/**
+ * @brief Handles the "fork" command for a client.
+ *
+ * This command allows a player to lay an egg, which is a new player that
+ * will be created in the game. The player must have enough cooldown time
+ * before they can use this command again.
+ *
+ * @param client Pointer to the client structure representing the player.
+ * @param command Pointer to the command structure containing command details.
+ */
 void fork_command(client_t *client, command_t *command)
 {
     (void)command;
