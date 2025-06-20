@@ -115,6 +115,24 @@ static void destroy_teams(server_options_t *options)
     options->teams = NULL;
 }
 
+static bool validate_team(server_options_t *options, char *team_name)
+{
+    if (strlen(team_name) == 0) {
+        dprintf(fileno(stderr), "Error: Team name cannot be empty.\n");
+        return FAILURE;
+    }
+    if (strcmp(team_name, "GRAPHIC") == 0) {
+        dprintf(fileno(stderr), "Error: Team name cannot be 'GRAPHIC'\n");
+        return FAILURE;
+    }
+    if (do_team_already_exists(options, team_name)) {
+        dprintf(
+            fileno(stderr), "Error: Team '%s' already exists.\n", team_name);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
 /**
  * @brief Fill the teams array with team names from command line arguments.
  *
@@ -139,14 +157,7 @@ static bool fill_teams(
 {
     for (int j = start + 1; j <= end; j++) {
         trim(av[j]);
-        if (strlen(av[j]) == 0) {
-            dprintf(fileno(stderr), "Error: Team name cannot be empty.\n");
-            destroy_teams(options);
-            return FAILURE;
-        }
-        if (do_team_already_exists(options, av[j])) {
-            dprintf(
-                fileno(stderr), "Error: Team '%s' already exists.\n", av[j]);
+        if (validate_team(options, av[j]) == FAILURE) {
             return FAILURE;
         }
         options->teams[j - start - 1] = strdup(av[j]);
