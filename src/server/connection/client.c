@@ -69,12 +69,14 @@ static void close_client_connection(server_t *server, int client_index)
     if (server->clients[client_index - 2] != NULL) {
         if (!server->clients[client_index - 2]->is_gui) {
             write(server->fds[client_index].fd, "dead\n", 5);
+            debug_conn(server->options->debug, "AI Client %d disconnected\n",
+                client_index - 2);
         } else {
             write(server->fds[client_index].fd, "seg\n", 4);
+            debug_conn(server->options->debug, "GUI Client %d disconnected\n",
+                client_index - 2);
         }
     }
-    debug_conn(
-        server->options->debug, "Client %d disconnected\n", client_index - 2);
     close(server->fds[client_index].fd);
     server->fds[client_index].fd = -1;
     server->fds[client_index].events = 0;
@@ -107,9 +109,6 @@ void remove_client(server_t *server, int client_index)
                 server->clients[client_index - 2]->player->id,
                 client_index - 2,
                 server->clients[client_index - 2]->player->team->name);
-        } else {
-            debug_conn(server->options->debug, "GUI client %d removed\n",
-                client_index - 2);
         }
         destroy_client(server->clients[client_index - 2]);
         server->clients[client_index - 2] = NULL;
@@ -174,6 +173,8 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
             client_index - 2);
         return client;
     }
+    debug_conn(server->options->debug, "Client %d connected as AI\n",
+        client_index - 2, team->name);
     setup_player(client, server, team);
     return client;
 }
