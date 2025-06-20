@@ -15,6 +15,15 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+/**
+ * @brief Handles the right command to turn the player right.
+ *
+ * This function turns the player to the right, sets a cooldown for the
+ * command, and sends an acknowledgment message to the client.
+ *
+ * @param client The client that sent the command.
+ * @param command The command structure (not used in this case).
+ */
 void right_command(client_t *client, command_t *command)
 {
     (void)command;

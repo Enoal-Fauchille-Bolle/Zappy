@@ -17,6 +17,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ * @brief Handles the look command to get the player's vision.
+ *
+ * This function retrieves the vision of the player and sends it to the client.
+ * If an error occurs during the vision retrieval, it sends an error message.
+ *
+ * @param client The client that sent the command.
+ * @param command The command structure (not used in this case).
+ */
 void look_command(client_t *client, command_t *command)
 {
     char *vision = look(client->player, client->server->game->map);

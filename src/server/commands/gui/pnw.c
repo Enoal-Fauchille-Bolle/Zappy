@@ -12,6 +12,14 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/**
+ * @brief Sends the player new connection message to all GUI clients.
+ *
+ * This function constructs a message containing the player's ID, position,
+ * orientation, level, and team name, and sends it to all GUI clients.
+ *
+ * @param player The player whose information is being sent.
+ */
 void pnw_command(player_t *player)
 {
     if (player == NULL)

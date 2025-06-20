@@ -16,6 +16,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ * @brief Handles the ppo command to send player position to the client.
+ *
+ * This function checks if the command has the correct number of arguments,
+ * retrieves the player by ID, and sends their position and orientation to the
+ * client.
+ *
+ * @param client The client that sent the command.
+ * @param command The command structure containing the player ID.
+ */
 void ppo_command(client_t *client, command_t *command)
 {
     size_t player_id = 0;

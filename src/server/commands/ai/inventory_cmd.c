@@ -17,6 +17,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ * @brief Handles the inventory command to check the player's inventory.
+ *
+ * This function retrieves the player's inventory and sends it to the client.
+ * If an error occurs during the inventory retrieval, it sends an error
+ * message.
+ *
+ * @param client The client that sent the command.
+ * @param command The command structure (not used in this case).
+ */
 void inventory_command(client_t *client, command_t *command)
 {
     char *inventory_str = check_inventory(client->player);

@@ -14,6 +14,16 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+/**
+ * @brief Handles the forward command to move the player forward.
+ *
+ * This function moves the player forward in the direction they are facing,
+ * sets a cooldown for the command, and sends an acknowledgment message to
+ * the client.
+ *
+ * @param client The client that sent the command.
+ * @param command The command structure (not used in this case).
+ */
 void forward_command(client_t *client, command_t *command)
 {
     (void)command;
