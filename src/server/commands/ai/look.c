@@ -28,7 +28,7 @@ void look_command(client_t *client, command_t *command)
             "Player %zu failed to look due to an error\n", client->player->id);
         return;
     }
-    client->player->tick_cooldown = INVENTORY_COMMAND_COOLDOWN;
+    client->player->tick_cooldown = LOOK_COMMAND_COOLDOWN;
     dprintf(client->sockfd, "%s\n", vision);
     free(vision);
 }
