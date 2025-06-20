@@ -6,6 +6,7 @@
 */
 
 #include "team/player/player.h"
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "game/game.h"
@@ -163,6 +164,7 @@ egg_t *lay_egg(player_t *player, map_t *map)
         fprintf(stderr, "Failed to create egg\n");
         return NULL;
     }
+    pfk_command(player);
     add_egg_to_map(map, egg);
     player->tick_cooldown = 42;
     return egg;
