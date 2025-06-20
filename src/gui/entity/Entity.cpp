@@ -126,6 +126,16 @@ std::string Entity::getId() const
 }
 
 /**
+ * @brief Get the Ogre entity associated with this Entity.
+ *
+ * @return Ogre::Entity* Pointer to the Ogre entity.
+ */
+Ogre::Entity* Entity::getOgreEntity() const
+{
+    return _ogreEntity;
+}
+
+/**
  * @brief Get the scene node associated with the entity.
  *
  * @return Ogre::SceneNode* The scene node pointer.
