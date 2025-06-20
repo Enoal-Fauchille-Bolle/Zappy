@@ -8,6 +8,7 @@
 #include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "debug_categories.h"
 #include "game/game.h"
 #include "team/player/player.h"
 #include <stdbool.h>
@@ -15,6 +16,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+/**
+ * @brief Sends player information to the client.
+ *
+ * This function formats and sends the player's position and orientation to the
+ * client in the format "ppo <player_id> <x> <y> <orientation>\n".
+ *
+ * @param client The client to which the player information will be sent.
+ * @param player The player whose information is being sent.
+ */
+static void send_player_info(client_t *client, player_t *player)
+{
+    dprintf(client->sockfd, "ppo %zu %d %d %d\n", player->id, player->pos.x,
+        player->pos.y, player->orientation + 1);
+    debug_player(client->server->options->debug,
+        "ppo command sent for player ID %zu: position (%d, %d), orientation "
+        "%d\n",
+        player->id, player->pos.x, player->pos.y, player->orientation + 1);
+}
 
 /**
  * @brief Handles the ppo command to send player position to the client.
@@ -45,6 +65,5 @@ void ppo_command(client_t *client, command_t *command)
         write(client->sockfd, "sbp\n", 4);
         return;
     }
-    dprintf(client->sockfd, "ppo %zu %d %d %d\n", player->id, player->pos.x,
-        player->pos.y, player->orientation + 1);
+    send_player_info(client, player);
 }

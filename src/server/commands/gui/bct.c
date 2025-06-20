@@ -110,7 +110,7 @@ static void send_tile_info(client_t *client, tile_t *tile, pos_t pos)
         tile->resources[DERAUMERE], tile->resources[SIBUR],
         tile->resources[MENDIANE], tile->resources[PHIRAS],
         tile->resources[THYSTAME]);
-    debug_map(client->server->options->debug,
+    debug_resource(client->server->options->debug,
         "bct command sent for tile at (%d, %d): "
         "%zu food, %zu linemate, %zu deraumere, %zu sibur, "
         "%zu mendiane, %zu phiras, %zu thystame\n",
