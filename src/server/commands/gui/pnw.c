@@ -6,8 +6,7 @@
 */
 
 #include "connection/client.h"
-#include "connection/server.h"
-#include "constants.h"
+#include "connection/client_message.h"
 #include "team/player/player.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -17,13 +16,7 @@ void pnw_command(player_t *player)
 {
     if (player == NULL)
         return;
-    for (int i = 2; i < MAX_CLIENTS + 2; i++) {
-        if (player->client->server->clients[i - 2] == NULL ||
-            !player->client->server->clients[i - 2]->is_gui)
-            continue;
-        dprintf(player->client->server->clients[i - 2]->sockfd,
-            "pnw %zu %d %d %d %u %s\n", player->id, player->pos.x,
-            player->pos.y, player->orientation + 1, player->level,
-            player->team->name);
-    }
+    send_to_all_guis(player->client->server,
+        "pnw %zu %d %d %d %u %s\n", player->id, player->pos.x, player->pos.y,
+        player->orientation + 1, player->level, player->team->name);
 }

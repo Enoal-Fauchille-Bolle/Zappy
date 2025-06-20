@@ -11,13 +11,35 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "connection/socket.h"
+#include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
 #include "team/player/player.h"
 #include "utils/string.h"
+#include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+void send_to_all_guis(server_t *server, const char *format, ...)
+{
+    va_list args;
+    char buffer[4096];
+    int len;
+
+    va_start(args, format);
+    len = vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (len <= 0) {
+        return;
+    }
+    for (int i = 2; i < MAX_CLIENTS + 2; i++) {
+        if (server->clients[i - 2] != NULL && server->clients[i - 2]->is_gui) {
+            write(server->clients[i - 2]->sockfd, buffer, len);
+        }
+    }
+}
 
 /**
  * @brief Handles a command received from a client
