@@ -15,5 +15,6 @@
 void msz_command(client_t *client, command_t *command);
 void ppo_command(client_t *client, command_t *command);
 void pnw_command(player_t *player);
+void bct_command(client_t *client, command_t *command);
 
 #endif /* !GUI_COMMANDS_H_ */
