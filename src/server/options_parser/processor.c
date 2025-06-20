@@ -50,7 +50,7 @@ static void option_debug(server_options_t *options)
     debug_server(true, "Width: %zu\n", options->width);
     debug_server(true, "Height: %zu\n", options->height);
     for (size_t i = 0; options->teams && options->teams[i]; i++) {
-        debug_server(true, "Team %zu: %s\n", i + 1, options->teams[i]);
+        debug_server(true, "Team %zu: '%s'\n", i + 1, options->teams[i]);
     }
     debug_server(true, "Clients: %zu\n", options->clients_nb);
     debug_server(true, "Frequency: %u\n", options->frequency);
