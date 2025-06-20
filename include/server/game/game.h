@@ -16,7 +16,6 @@
     #include <stddef.h>
     #include <stdbool.h>
 
-typedef unsigned int player_id_t;
 typedef unsigned int tick_t;
 typedef unsigned int tick_rate_t;
 
@@ -24,7 +23,8 @@ typedef struct game_s {
     server_t *server;
     map_t *map;
     team_t **teams;
-    player_id_t next_player_id;
+    size_t next_player_id;
+    size_t next_egg_id;
     tick_rate_t tick_rate;
     tick_t game_tick;
     game_state_t game_state;

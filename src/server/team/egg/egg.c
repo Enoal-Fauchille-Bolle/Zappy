@@ -7,6 +7,7 @@
 
 #include "team/egg/egg.h"
 #include "debug_categories.h"
+#include "game/game.h"
 #include "map/coordinates.h"
 #include "map/tile.h"
 #include "team/team.h"
@@ -34,6 +35,8 @@ egg_t *create_egg(const pos_t pos, team_t *team, bool debug)
         perror("Failed to allocate memory for egg");
         return NULL;
     }
+    egg->id = team->game->next_egg_id;
+    team->game->next_egg_id++;
     egg->pos = pos;
     egg->team = team;
     if (team == NULL) {

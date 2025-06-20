@@ -18,6 +18,7 @@ typedef struct team_s team_t;
 typedef struct player_s player_t;
 
 typedef struct egg_s {
+    size_t id;
     pos_t pos;
     team_t *team;
 } egg_t;

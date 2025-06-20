@@ -55,7 +55,7 @@ void destroy_game(game_t *game)
  * @param teams_name Array of team names (NULL-terminated)
  * @return team_t** Pointer to array of team pointers, or NULL on failure
  */
-static team_t **create_teams(char **teams_name)
+static team_t **create_teams(char **teams_name, game_t *game)
 {
     int teams_count = get_teams_name_count(teams_name);
     team_t **team_array = malloc(sizeof(team_t) * (teams_count + 1));
@@ -65,7 +65,7 @@ static team_t **create_teams(char **teams_name)
         return NULL;
     }
     for (int i = 0; i < teams_count; i++) {
-        team_array[i] = create_team(teams_name[i]);
+        team_array[i] = create_team(teams_name[i], game);
     }
     team_array[teams_count] = NULL;
     return team_array;
@@ -151,13 +151,14 @@ static bool init_game(game_t *game, server_t *server)
         destroy_game(game);
         return FAILURE;
     }
-    game->teams = create_teams(server->options->teams);
+    game->teams = create_teams(server->options->teams, game);
     if (!game->teams) {
         destroy_game(game);
         return FAILURE;
     }
     game->server = server;
     game->next_player_id = 1;
+    game->next_egg_id = 1;
     game->tick_rate = server->options->frequency;
     game->game_tick = 0;
     game->game_state = GAME_RUNNING;
