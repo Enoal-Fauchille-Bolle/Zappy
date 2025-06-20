@@ -111,6 +111,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/left.c							\
 				$(SRCDIR_SERVER)commands/ai/right.c							\
 				$(SRCDIR_SERVER)commands/ai/look.c							\
+				$(SRCDIR_SERVER)commands/ai/inventory.c							\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
 				$(SRCDIR_SERVER)commands/gui/ppo.c							\
 
@@ -252,6 +253,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/left.c								\
 			$(SRCDIR_SERVER)commands/ai/right.c								\
 			$(SRCDIR_SERVER)commands/ai/look.c								\
+			$(SRCDIR_SERVER)commands/ai/inventory.c								\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			$(SRCDIR_SERVER)commands/gui/ppo.c								\
 			${TESTS}player_tests.c											\

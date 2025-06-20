@@ -18,7 +18,8 @@
 
 const command_registry_entry_t ai_command_registry[] = {
     {"forward", forward_command}, {"left", left_command},
-    {"right", right_command}, {"look", look_command}, {NULL, NULL}};
+    {"right", right_command}, {"look", look_command},
+    {"inventory", inventory_command}, {NULL, NULL}};
 
 const command_registry_entry_t gui_command_registry[] = {
     {"msz", msz_command}, {"ppo", ppo_command}, {NULL, NULL}};
