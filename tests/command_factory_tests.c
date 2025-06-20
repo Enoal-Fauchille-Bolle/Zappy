@@ -169,7 +169,8 @@ Test(command_factory, destroy_command_with_arguments)
     // This should not crash and should free all memory properly
     destroy_command(command);
     // If we reach here without crashing, the test passes
-    cr_assert(true, "destroy_command should handle command with arguments gracefully");
+    cr_assert(true,
+        "destroy_command should handle command with arguments gracefully");
 }
 
 Test(command_factory, destroy_command_empty_tokens)

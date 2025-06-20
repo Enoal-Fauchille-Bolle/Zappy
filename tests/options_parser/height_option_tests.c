@@ -5,8 +5,8 @@
 ** Options Parser - Height Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -73,7 +73,8 @@ Test(height_option, handle_height_invalid_zero)
     dup2(dev_null, STDERR_FILENO);
 
     handle_height(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for zero height");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for zero height");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -96,7 +97,8 @@ Test(height_option, handle_height_invalid_negative)
     dup2(dev_null, STDERR_FILENO);
 
     handle_height(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for negative height");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for negative height");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -119,7 +121,8 @@ Test(height_option, handle_height_invalid_non_numeric)
     dup2(dev_null, STDERR_FILENO);
 
     handle_height(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for non-numeric height");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for non-numeric height");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -142,7 +145,8 @@ Test(height_option, handle_height_missing_value)
     dup2(dev_null, STDERR_FILENO);
 
     handle_height(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for missing height value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for missing height value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -159,7 +163,7 @@ Test(height_option, handle_height_already_set)
     int argc = 3;
     int i = 1;
 
-    options->height = 15;  // Pre-set height
+    options->height = 15;      // Pre-set height
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -167,7 +171,8 @@ Test(height_option, handle_height_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_height(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for already set height");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for already set height");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -190,7 +195,8 @@ Test(height_option, handle_height_empty_string)
     dup2(dev_null, STDERR_FILENO);
 
     handle_height(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for empty height value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for empty height value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);

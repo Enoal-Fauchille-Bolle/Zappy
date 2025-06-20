@@ -84,7 +84,8 @@ Test(debug, warning, .timeout = 2)
     // Check if output contains the expected pattern
     // Format should be: [HH:MM:SS.mmm] [⚠️ ] This is a warning message: 42\n
     cr_assert(strstr(buffer, "[⚠️ ] This is a warning message: 42\n") != NULL,
-        "Debug warning message should contain expected text with emoji prefix");
+        "Debug warning message should contain expected text with emoji "
+        "prefix");
 
     // Check timestamp format [HH:MM:SS.mmm] at the beginning
     regex_t regex;
@@ -211,9 +212,12 @@ Test(debug, connection, .timeout = 2)
     fclose(temp);
 
     // Check if output contains the expected pattern
-    // Format should be: [HH:MM:SS.mmm] [🔗] Client connected from IP: 127.0.0.1\n
-    cr_assert(strstr(buffer, "[🔗] Client connected from IP: 127.0.0.1\n") != NULL,
-        "Debug connection message should contain expected text with emoji prefix");
+    // Format should be: [HH:MM:SS.mmm] [🔗] Client connected from IP:
+    // 127.0.0.1\n
+    cr_assert(
+        strstr(buffer, "[🔗] Client connected from IP: 127.0.0.1\n") != NULL,
+        "Debug connection message should contain expected text with emoji "
+        "prefix");
 
     // Check timestamp format [HH:MM:SS.mmm] at the beginning
     regex_t regex;
@@ -256,7 +260,8 @@ Test(debug, command, .timeout = 2)
     // Check if output contains the expected pattern
     // Format should be: [HH:MM:SS.mmm] [⚡] Executing command: Forward\n
     cr_assert(strstr(buffer, "[⚡] Executing command: Forward\n") != NULL,
-        "Debug command message should contain expected text with emoji prefix");
+        "Debug command message should contain expected text with emoji "
+        "prefix");
 
     // Check timestamp format [HH:MM:SS.mmm] at the beginning
     regex_t regex;
@@ -383,8 +388,10 @@ Test(debug, map, .timeout = 2)
     fclose(temp);
 
     // Check if output contains the expected pattern
-    // Format should be: [HH:MM:SS.mmm] [🌐] Map created with dimensions 10 x 10\n
-    cr_assert(strstr(buffer, "[🌐] Map created with dimensions 10 x 10\n") != NULL,
+    // Format should be: [HH:MM:SS.mmm] [🌐] Map created with dimensions 10 x
+    // 10\n
+    cr_assert(
+        strstr(buffer, "[🌐] Map created with dimensions 10 x 10\n") != NULL,
         "Debug map message should contain expected text with emoji prefix");
 
     // Check timestamp format [HH:MM:SS.mmm] at the beginning
@@ -412,7 +419,8 @@ Test(debug, resource, .timeout = 2)
     FILE *original_stdout = stdout;
     stdout = temp;
 
-    debug_resource(debug_enabled, "Resource %s spawned at (%d, %d)\n", "food", 5, 3);
+    debug_resource(
+        debug_enabled, "Resource %s spawned at (%d, %d)\n", "food", 5, 3);
     fflush(stdout);
 
     // Restore stdout
@@ -428,7 +436,8 @@ Test(debug, resource, .timeout = 2)
     // Check if output contains the expected pattern
     // Format should be: [HH:MM:SS.mmm] [💎] Resource food spawned at (5, 3)\n
     cr_assert(strstr(buffer, "[💎] Resource food spawned at (5, 3)\n") != NULL,
-        "Debug resource message should contain expected text with emoji prefix");
+        "Debug resource message should contain expected text with emoji "
+        "prefix");
 
     // Check timestamp format [HH:MM:SS.mmm] at the beginning
     regex_t regex;
@@ -458,7 +467,8 @@ Test(debug, disabled, .timeout = 2)
     debug_info(debug_enabled, "This message should not appear: %d\n", 42);
     debug_warning(debug_enabled, "This warning should not appear: %d\n", 42);
     debug_error(debug_enabled, "This error should not appear: %d\n", 42);
-    debug_server(debug_enabled, "This server message should not appear: %d\n", 42);
+    debug_server(
+        debug_enabled, "This server message should not appear: %d\n", 42);
     fflush(stdout);
 
     // Restore stdout
@@ -472,5 +482,6 @@ Test(debug, disabled, .timeout = 2)
     fclose(temp);
 
     // When debug is disabled, no output should be produced
-    cr_assert_eq(read_size, 0, "No output should be produced when debug is disabled");
+    cr_assert_eq(
+        read_size, 0, "No output should be produced when debug is disabled");
 }

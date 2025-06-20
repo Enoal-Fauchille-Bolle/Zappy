@@ -31,7 +31,8 @@ Test(command_tokenizer_edge, extract_tokens_null_buffer)
     int parsed_count = 0;
     char **tokens = extract_tokens(NULL, &parsed_count);
 
-    cr_assert_not_null(tokens, "Tokens should not be NULL even for NULL buffer");
+    cr_assert_not_null(
+        tokens, "Tokens should not be NULL even for NULL buffer");
     cr_assert_eq(parsed_count, 0, "Should parse 0 tokens for NULL buffer");
     cr_assert_null(tokens[0], "First token should be NULL");
 

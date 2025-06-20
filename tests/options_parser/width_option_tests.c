@@ -5,8 +5,8 @@
 ** Options Parser - Width Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -73,7 +73,8 @@ Test(width_option, handle_width_invalid_zero)
     dup2(dev_null, STDERR_FILENO);
 
     handle_width(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for zero width");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for zero width");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -96,7 +97,8 @@ Test(width_option, handle_width_invalid_negative)
     dup2(dev_null, STDERR_FILENO);
 
     handle_width(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for negative width");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for negative width");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -119,7 +121,8 @@ Test(width_option, handle_width_invalid_non_numeric)
     dup2(dev_null, STDERR_FILENO);
 
     handle_width(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for non-numeric width");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for non-numeric width");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -142,7 +145,8 @@ Test(width_option, handle_width_missing_value)
     dup2(dev_null, STDERR_FILENO);
 
     handle_width(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for missing width value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for missing width value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -159,7 +163,7 @@ Test(width_option, handle_width_already_set)
     int argc = 3;
     int i = 1;
 
-    options->width = 10;  // Pre-set width
+    options->width = 10;      // Pre-set width
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -167,7 +171,8 @@ Test(width_option, handle_width_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_width(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for already set width");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for already set width");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -190,7 +195,8 @@ Test(width_option, handle_width_empty_string)
     dup2(dev_null, STDERR_FILENO);
 
     handle_width(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for empty width value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for empty width value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);

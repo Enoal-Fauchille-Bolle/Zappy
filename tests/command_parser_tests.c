@@ -20,7 +20,7 @@ static void cleanup_command(command_t *command)
 {
     if (command == NULL)
         return;
-    
+
     if (command->tokens != NULL) {
         for (int i = 0; command->tokens[i] != NULL; i++) {
             free(command->tokens[i]);

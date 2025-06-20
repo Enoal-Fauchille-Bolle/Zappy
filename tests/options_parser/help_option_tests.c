@@ -5,8 +5,8 @@
 ** Options Parser - Help Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -52,7 +52,7 @@ Test(help_option, handle_help_already_set)
     int argc = 2;
     int i = 1;
 
-    options->help = true;  // Pre-set help flag
+    options->help = true;      // Pre-set help flag
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -60,7 +60,8 @@ Test(help_option, handle_help_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_help(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for already set help");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for already set help");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -79,9 +80,9 @@ Test(help_option, handle_help_state_consistency)
 
     // Verify initial state
     cr_assert_eq(options->help, false, "Help flag should initially be false");
-    
+
     handle_help(options, &i, argc, argv);
-    
+
     // Verify final state
     cr_assert_eq(options->help, true, "Help flag should be set to true");
     cr_assert_eq(options->error, false, "Error flag should remain false");
@@ -97,14 +98,15 @@ Test(help_option, handle_help_with_other_options_unset)
     int i = 1;
 
     handle_help(options, &i, argc, argv);
-    
+
     // Verify help is set and other options remain default
     cr_assert_eq(options->help, true, "Help flag should be set to true");
     cr_assert_eq(options->port, 0, "Port should remain default");
     cr_assert_eq(options->width, 0, "Width should remain default");
     cr_assert_eq(options->height, 0, "Height should remain default");
     cr_assert_eq(options->frequency, 0, "Frequency should remain default");
-    cr_assert_eq(options->clients_nb, 0, "Clients number should remain default");
+    cr_assert_eq(
+        options->clients_nb, 0, "Clients number should remain default");
     cr_assert_null(options->teams, "Teams should remain NULL");
     cr_assert_eq(options->error, false, "Error flag should remain false");
 
