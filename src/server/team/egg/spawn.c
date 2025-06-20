@@ -105,6 +105,27 @@ static bool check_player_validity(player_t *player)
 }
 
 /**
+ * @brief Debug function to log player spawn information.
+ *
+ * This function logs the player's spawn position and orientation,
+ * as well as the egg removal from the team.
+ *
+ * @param client Pointer to the client structure for logging
+ * @param player Pointer to the player structure being spawned
+ * @param egg Pointer to the egg structure being removed
+ */
+static void debug_player_spawn(client_t *client, player_t *player,
+    egg_t *egg)
+{
+    debug_map(client->server->options->debug,
+        "Player %zu spawned at position (%d, %d) with orientation %s\n",
+        player->id, player->pos.x, player->pos.y,
+        orientation_names[player->orientation]);
+    debug_map(client->server->options->debug,
+        "Egg %zu removed from team '%s'\n", egg->id, egg->team->name);
+}
+
+/**
  * @brief Spawn a player from an egg and add it to the map.
  *
  * This function creates a new player at the position of the given egg,
@@ -128,12 +149,10 @@ player_t *spawn_player_from_egg(
     if (check_player_validity(player) == FAILURE)
         return NULL;
     add_player_to_map(map, player);
-    debug_map(client->server->options->debug,
-        "Player %zu spawned at position (%d, %d) with orientation %s\n",
-        player->id, player->pos.x, player->pos.y,
-        orientation_names[player->orientation]);
-    debug_map(client->server->options->debug,
-        "Egg %zu removed from team '%s'\n", egg->id, egg->team->name);
+    if (client != NULL && client->server != NULL &&
+        client->server->options != NULL) {
+        debug_player_spawn(client, player, egg);
+    }
     remove_egg_from_map(map, egg);
     remove_egg_from_team(egg->team, egg);
     destroy_egg(egg);
