@@ -5,9 +5,9 @@
 ** Options Parser - Core Parser Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
 #include "options_parser/processor.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -25,11 +25,15 @@ Test(options_parser, init_options_success)
     cr_assert_eq(options->width, 0, "Width should be initialized to 0");
     cr_assert_eq(options->height, 0, "Height should be initialized to 0");
     cr_assert_null(options->teams, "Teams should be initialized to NULL");
-    cr_assert_eq(options->clients_nb, 0, "Clients number should be initialized to 0");
-    cr_assert_eq(options->frequency, 0, "Frequency should be initialized to 0");
+    cr_assert_eq(
+        options->clients_nb, 0, "Clients number should be initialized to 0");
+    cr_assert_eq(
+        options->frequency, 0, "Frequency should be initialized to 0");
     cr_assert_eq(options->help, false, "Help should be initialized to false");
-    cr_assert_eq(options->debug, false, "Debug should be initialized to false");
-    cr_assert_eq(options->error, false, "Error should be initialized to false");
+    cr_assert_eq(
+        options->debug, false, "Debug should be initialized to false");
+    cr_assert_eq(
+        options->error, false, "Error should be initialized to false");
 
     cleanup_server_options(options);
 }
@@ -49,7 +53,7 @@ Test(options_parser, are_mandatory_options_present_valid)
     options->teams = create_teams_array(team_names, 2);
 
     cr_assert_eq(are_mandatory_options_present(options), true,
-                 "Should return true when all mandatory options are present");
+        "Should return true when all mandatory options are present");
 
     cleanup_server_options(options);
 }
@@ -61,7 +65,7 @@ Test(options_parser, are_mandatory_options_present_help_mode)
     options->help = true;
 
     cr_assert_eq(are_mandatory_options_present(options), true,
-                 "Should return true when help flag is set");
+        "Should return true when help flag is set");
 
     cleanup_server_options(options);
 }
@@ -76,7 +80,7 @@ Test(options_parser, are_mandatory_options_present_missing_port)
     options->teams = create_teams_array(team_names, 2);
 
     cr_assert_eq(are_mandatory_options_present(options), false,
-                 "Should return false when port is missing");
+        "Should return false when port is missing");
 
     cleanup_server_options(options);
 }
@@ -91,7 +95,7 @@ Test(options_parser, are_mandatory_options_present_missing_width)
     options->teams = create_teams_array(team_names, 2);
 
     cr_assert_eq(are_mandatory_options_present(options), false,
-                 "Should return false when width is missing");
+        "Should return false when width is missing");
 
     cleanup_server_options(options);
 }
@@ -105,7 +109,7 @@ Test(options_parser, are_mandatory_options_present_missing_teams)
     options->height = 10;
 
     cr_assert_eq(are_mandatory_options_present(options), false,
-                 "Should return false when teams are missing");
+        "Should return false when teams are missing");
 
     cleanup_server_options(options);
 }
@@ -117,15 +121,8 @@ Test(options_parser, are_mandatory_options_present_missing_teams)
 Test(options_parser, parse_options_valid_arguments)
 {
     server_options_t *options = init_options();
-    char *argv[] = {
-        "zappy_server",
-        "-p", "8080",
-        "-x", "10",
-        "-y", "15",
-        "-c", "5",
-        "-f", "100",
-        "-n", "team1", "team2"
-    };
+    char *argv[] = {"zappy_server", "-p", "8080", "-x", "10", "-y", "15", "-c",
+        "5", "-f", "100", "-n", "team1", "team2"};
     int argc = 13;
 
     parse_options(options, argc, argv);
@@ -197,16 +194,8 @@ Test(options_parser, parse_options_empty_args)
 Test(options_parser, parse_options_mixed_order)
 {
     server_options_t *options = init_options();
-    char *argv[] = {
-        "zappy_server",
-        "-f", "50",
-        "-p", "9000",
-        "-y", "20",
-        "-x", "15",
-        "-c", "3",
-        "-n", "alpha", "beta", "gamma",
-        NULL
-    };
+    char *argv[] = {"zappy_server", "-f", "50", "-p", "9000", "-y", "20", "-x",
+        "15", "-c", "3", "-n", "alpha", "beta", "gamma", NULL};
     int argc = 13;
 
     parse_options(options, argc, argv);
@@ -214,7 +203,8 @@ Test(options_parser, parse_options_mixed_order)
     cr_assert_eq(options->width, 15, "Width should be set correctly");
     cr_assert_eq(options->height, 20, "Height should be set correctly");
     cr_assert_eq(options->frequency, 50, "Frequency should be set correctly");
-    cr_assert_eq(options->clients_nb, 3, "Clients number should be set correctly");
+    cr_assert_eq(
+        options->clients_nb, 3, "Clients number should be set correctly");
 
     cleanup_server_options(options);
 }

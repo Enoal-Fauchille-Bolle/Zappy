@@ -256,7 +256,8 @@ Test(client, create_client_valid)
 Test(client, create_client_null_server, .disabled = true)
 {
     // SKIP: create_client doesn't handle NULL server - implementation bug
-    // The function immediately accesses server->options->debug without NULL check
+    // The function immediately accesses server->options->debug without NULL
+    // check
     team_t *team = create_mock_team();
     int client_index = 2;
 
@@ -367,7 +368,8 @@ Test(client, handle_client_message_empty_message)
 Test(client, handle_client_message_no_message, .disabled = true)
 {
     // SKIP: remove_client doesn't handle NULL client - implementation bug
-    // The function accesses client->player->id without checking if client exists
+    // The function accesses client->player->id without checking if client
+    // exists
     server_t *server = create_mock_server();
     int client_fd, server_fd;
     int client_index = 2;

@@ -5,8 +5,8 @@
 ** Options Parser - Debug Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -52,7 +52,7 @@ Test(debug_option, handle_debug_already_set)
     int argc = 2;
     int i = 1;
 
-    options->debug = true;  // Pre-set debug flag
+    options->debug = true;      // Pre-set debug flag
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -60,7 +60,8 @@ Test(debug_option, handle_debug_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_debug(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for already set debug");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for already set debug");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -78,10 +79,11 @@ Test(debug_option, handle_debug_state_consistency)
     int i = 1;
 
     // Verify initial state
-    cr_assert_eq(options->debug, false, "Debug flag should initially be false");
-    
+    cr_assert_eq(
+        options->debug, false, "Debug flag should initially be false");
+
     handle_debug(options, &i, argc, argv);
-    
+
     // Verify final state
     cr_assert_eq(options->debug, true, "Debug flag should be set to true");
     cr_assert_eq(options->error, false, "Error flag should remain false");
@@ -97,7 +99,7 @@ Test(debug_option, handle_debug_with_other_options_unset)
     int i = 1;
 
     handle_debug(options, &i, argc, argv);
-    
+
     // Verify debug is set and other options remain default
     cr_assert_eq(options->debug, true, "Debug flag should be set to true");
     cr_assert_eq(options->help, false, "Help flag should remain default");
@@ -105,7 +107,8 @@ Test(debug_option, handle_debug_with_other_options_unset)
     cr_assert_eq(options->width, 0, "Width should remain default");
     cr_assert_eq(options->height, 0, "Height should remain default");
     cr_assert_eq(options->frequency, 0, "Frequency should remain default");
-    cr_assert_eq(options->clients_nb, 0, "Clients number should remain default");
+    cr_assert_eq(
+        options->clients_nb, 0, "Clients number should remain default");
     cr_assert_null(options->teams, "Teams should remain NULL");
     cr_assert_eq(options->error, false, "Error flag should remain false");
 
@@ -120,7 +123,7 @@ Test(debug_option, handle_debug_multiple_args)
     int i = 1;
 
     handle_debug(options, &i, argc, argv);
-    
+
     // Verify debug is set and index is correct for next option
     cr_assert_eq(options->debug, true, "Debug flag should be set to true");
     cr_assert_eq(i, 1, "Index should remain the same for flag options");
@@ -138,8 +141,10 @@ Test(debug_option, handle_debug_twice_in_sequence)
 
     // First call should succeed
     handle_debug(options, &i, argc, argv);
-    cr_assert_eq(options->debug, true, "Debug flag should be set to true after first call");
-    cr_assert_eq(options->error, false, "Error flag should remain false after first call");
+    cr_assert_eq(options->debug, true,
+        "Debug flag should be set to true after first call");
+    cr_assert_eq(options->error, false,
+        "Error flag should remain false after first call");
 
     // Second call should fail
     int stderr_backup = dup(STDERR_FILENO);
@@ -147,7 +152,8 @@ Test(debug_option, handle_debug_twice_in_sequence)
     dup2(dev_null, STDERR_FILENO);
 
     handle_debug(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for second debug call");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for second debug call");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);

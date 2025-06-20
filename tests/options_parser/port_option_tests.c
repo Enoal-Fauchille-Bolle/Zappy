@@ -5,8 +5,8 @@
 ** Port Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -73,7 +73,8 @@ Test(port_option, handle_port_invalid_range_low)
     dup2(dev_null, STDERR_FILENO);
 
     handle_port(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set for port < 1024");
+    cr_assert_eq(
+        options->error, true, "Error flag should be set for port < 1024");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -96,7 +97,8 @@ Test(port_option, handle_port_invalid_range_high)
     dup2(dev_null, STDERR_FILENO);
 
     handle_port(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set for port > 65535");
+    cr_assert_eq(
+        options->error, true, "Error flag should be set for port > 65535");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -142,7 +144,8 @@ Test(port_option, handle_port_invalid_negative)
     dup2(dev_null, STDERR_FILENO);
 
     handle_port(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set for negative port");
+    cr_assert_eq(
+        options->error, true, "Error flag should be set for negative port");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -165,7 +168,8 @@ Test(port_option, handle_port_invalid_non_numeric)
     dup2(dev_null, STDERR_FILENO);
 
     handle_port(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set for non-numeric port");
+    cr_assert_eq(
+        options->error, true, "Error flag should be set for non-numeric port");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -188,7 +192,8 @@ Test(port_option, handle_port_missing_value)
     dup2(dev_null, STDERR_FILENO);
 
     handle_port(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set for missing port value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set for missing port value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -205,7 +210,7 @@ Test(port_option, handle_port_already_set)
     int argc = 3;
     int i = 1;
 
-    options->port = 8080; // Pre-set port
+    options->port = 8080;      // Pre-set port
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -213,7 +218,8 @@ Test(port_option, handle_port_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_port(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set for already set port");
+    cr_assert_eq(
+        options->error, true, "Error flag should be set for already set port");
     cr_assert_eq(options->port, 8080, "Port should remain unchanged");
 
     // Restore stderr
@@ -234,7 +240,8 @@ Test(port_option, handle_port_boundary_values)
 
     handle_port(options, &i, argc, argv);
     cr_assert_eq(options->port, 1025, "Port 1025 should be valid");
-    cr_assert_eq(options->error, false, "Error flag should be false for port 1025");
+    cr_assert_eq(
+        options->error, false, "Error flag should be false for port 1025");
 
     cleanup_server_options(options);
 
@@ -245,7 +252,8 @@ Test(port_option, handle_port_boundary_values)
 
     handle_port(options, &i, argc, argv2);
     cr_assert_eq(options->port, 65534, "Port 65534 should be valid");
-    cr_assert_eq(options->error, false, "Error flag should be false for port 65534");
+    cr_assert_eq(
+        options->error, false, "Error flag should be false for port 65534");
 
     cleanup_server_options(options);
 }

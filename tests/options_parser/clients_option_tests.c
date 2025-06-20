@@ -5,8 +5,8 @@
 ** Options Parser - Clients Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -53,7 +53,8 @@ Test(clients_option, handle_clients_valid_large)
     int i = 1;
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->clients_nb, 100, "Clients number should be set to 100");
+    cr_assert_eq(
+        options->clients_nb, 100, "Clients number should be set to 100");
     cr_assert_eq(i, 2, "Index should be incremented to 2");
     cr_assert_eq(options->error, false, "Error flag should remain false");
 
@@ -73,7 +74,8 @@ Test(clients_option, handle_clients_invalid_zero)
     dup2(dev_null, STDERR_FILENO);
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for zero clients");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for zero clients");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -96,7 +98,8 @@ Test(clients_option, handle_clients_invalid_negative)
     dup2(dev_null, STDERR_FILENO);
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for negative clients");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for negative clients");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -119,7 +122,8 @@ Test(clients_option, handle_clients_invalid_non_numeric)
     dup2(dev_null, STDERR_FILENO);
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for non-numeric clients");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for non-numeric clients");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -142,7 +146,8 @@ Test(clients_option, handle_clients_missing_value)
     dup2(dev_null, STDERR_FILENO);
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for missing clients value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for missing clients value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -159,7 +164,7 @@ Test(clients_option, handle_clients_already_set)
     int argc = 3;
     int i = 1;
 
-    options->clients_nb = 3;  // Pre-set clients number
+    options->clients_nb = 3;      // Pre-set clients number
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -167,7 +172,8 @@ Test(clients_option, handle_clients_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for already set clients");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for already set clients");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -190,7 +196,8 @@ Test(clients_option, handle_clients_empty_string)
     dup2(dev_null, STDERR_FILENO);
 
     handle_clients(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for empty clients value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for empty clients value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);

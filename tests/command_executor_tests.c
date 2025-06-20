@@ -9,9 +9,9 @@
 #include "command_handler/command_executor.h"
 #include "connection/client.h"
 #include "connection/server.h"
-#include "team/player/player.h"
 #include "constants.h"
 #include "options_parser/options.h"
+#include "team/player/player.h"
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 #include <stdlib.h>
@@ -296,7 +296,8 @@ static char *read_from_pipe(int read_fd)
 Test(command_executor, execute_command_invalid_command)
 {
     client_t *client = create_test_client();
-    command_t *command = create_test_command("dummy");  // dummy no longer exists
+    command_t *command =
+        create_test_command("dummy");      // dummy no longer exists
 
     cr_assert_not_null(client, "Client should not be NULL");
     cr_assert_not_null(command, "Command should not be NULL");
@@ -317,7 +318,8 @@ Test(command_executor, execute_command_invalid_command)
 
     // Should fail since dummy command no longer exists in registry
     cr_assert_not_null(response, "Response should not be NULL");
-    cr_assert_str_eq(response, "ko\n", "Response should be 'ko\\n' for invalid command");
+    cr_assert_str_eq(
+        response, "ko\n", "Response should be 'ko\\n' for invalid command");
 
     close(read_fd);
     free(response);
@@ -340,9 +342,10 @@ Test(command_executor, execute_command_valid_forward)
 
     client->sockfd = write_fd;
 
-    // Note: This test documents that forward_command doesn't handle NULL player gracefully
-    // The command will crash because it tries to access client->player without null checks
-    // We skip this test for now since it's testing a bug in the actual implementation
+    // Note: This test documents that forward_command doesn't handle NULL
+    // player gracefully The command will crash because it tries to access
+    // client->player without null checks We skip this test for now since it's
+    // testing a bug in the actual implementation
     cr_skip("Forward command doesn't handle NULL player - implementation bug");
 
     cleanup_test_command(command);
@@ -364,9 +367,10 @@ Test(command_executor, execute_command_valid_left)
 
     client->sockfd = write_fd;
 
-    // Note: This test documents that left_command doesn't handle NULL player gracefully
-    // The command will crash because it tries to access client->player without null checks
-    // We skip this test for now since it's testing a bug in the actual implementation
+    // Note: This test documents that left_command doesn't handle NULL player
+    // gracefully The command will crash because it tries to access
+    // client->player without null checks We skip this test for now since it's
+    // testing a bug in the actual implementation
     cr_skip("Left command doesn't handle NULL player - implementation bug");
 
     cleanup_test_command(command);
@@ -388,9 +392,10 @@ Test(command_executor, execute_command_valid_right)
 
     client->sockfd = write_fd;
 
-    // Note: This test documents that right_command doesn't handle NULL player gracefully
-    // The command will crash because it tries to access client->player without null checks
-    // We skip this test for now since it's testing a bug in the actual implementation
+    // Note: This test documents that right_command doesn't handle NULL player
+    // gracefully The command will crash because it tries to access
+    // client->player without null checks We skip this test for now since it's
+    // testing a bug in the actual implementation
     cr_skip("Right command doesn't handle NULL player - implementation bug");
 
     cleanup_test_command(command);
@@ -436,10 +441,12 @@ Test(command_executor, execute_command_null_command)
 
     cr_assert_not_null(client, "Client should not be NULL");
 
-    // Note: This documents a bug in execute_command - it doesn't handle NULL command
-    // The function will crash when it tries to call get_command_registry_entry(NULL)
-    // which then tries to access command->name
-    cr_skip("execute_command doesn't handle NULL command - implementation bug");
+    // Note: This documents a bug in execute_command - it doesn't handle NULL
+    // command The function will crash when it tries to call
+    // get_command_registry_entry(NULL) which then tries to access
+    // command->name
+    cr_skip(
+        "execute_command doesn't handle NULL command - implementation bug");
 
     cleanup_test_client(client);
 }
@@ -458,9 +465,11 @@ Test(command_executor, execute_command_null_command_name)
     command->argv = NULL;
     command->tokens = NULL;
 
-    // Note: This documents a bug in execute_command - it doesn't handle NULL command->name
-    // The function will crash when get_command_registry_entry tries to access command->name
-    cr_skip("execute_command doesn't handle NULL command->name - implementation bug");
+    // Note: This documents a bug in execute_command - it doesn't handle NULL
+    // command->name The function will crash when get_command_registry_entry
+    // tries to access command->name
+    cr_skip("execute_command doesn't handle NULL command->name - "
+            "implementation bug");
 
     free(command);
     cleanup_test_client(client);
@@ -586,9 +595,10 @@ Test(command_executor, execute_command_with_debug_enabled)
 Test(command_executor, execute_command_multiple_sequential)
 {
     client_t *client = create_test_client();
-    command_t *command1 = create_test_command("forward");    // Valid command
-    command_t *command2 = create_test_command("invalid");    // Invalid command
-    command_t *command3 = create_test_command("left");       // Valid command
+    command_t *command1 = create_test_command("forward");      // Valid command
+    command_t *command2 =
+        create_test_command("invalid");                     // Invalid command
+    command_t *command3 = create_test_command("left");      // Valid command
 
     cr_assert_not_null(client, "Client should not be NULL");
     cr_assert_not_null(command1, "Command1 should not be NULL");

@@ -8,6 +8,8 @@
 #include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "constants.h"
+#include "debug.h"
 #include "debug_categories.h"
 #include "game/game.h"
 #include "team/player/player.h"
@@ -37,6 +39,69 @@ static void send_player_info(client_t *client, player_t *player)
 }
 
 /**
+ * @brief Checks if the command has the correct number of arguments.
+ *
+ * This function validates that the command has exactly one argument (the
+ * player ID). If not, it sends an error message to the client.
+ *
+ * @param command The command structure containing the arguments.
+ * @param client The client that sent the command.
+ * @return true if the number of arguments is valid, false otherwise.
+ */
+static bool check_args_number(command_t *command, client_t *client)
+{
+    if (command->argc != 1) {
+        debug_warning(client->server->options->debug,
+            "Invalid number of arguments for ppo command\n");
+        write(client->sockfd, "sbp\n", 4);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+/**
+ * @brief Checks if the player ID is valid.
+ *
+ * This function checks if the player ID is greater than zero. If not, it sends
+ * an error message to the client.
+ *
+ * @param player_id The player ID to check.
+ * @param client The client that sent the command.
+ * @return true if the player ID is valid, false otherwise.
+ */
+static bool check_player_id(size_t player_id, client_t *client)
+{
+    if (player_id == 0) {
+        debug_warning(client->server->options->debug,
+            "Invalid player ID for ppo command: %zu\n", player_id);
+        write(client->sockfd, "sbp\n", 4);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+/**
+ * @brief Checks if the player exists in the game.
+ *
+ * This function retrieves the player by ID and checks if they exist. If the
+ * player does not exist, it sends an error message to the client.
+ *
+ * @param player The player structure to check.
+ * @param client The client that sent the command.
+ * @return true if the player exists, false otherwise.
+ */
+static bool check_player_exists(player_t *player, client_t *client)
+{
+    if (player == NULL) {
+        debug_warning(client->server->options->debug,
+            "Player not found for ppo command\n");
+        write(client->sockfd, "sbp\n", 4);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+/**
  * @brief Handles the ppo command to send player position to the client.
  *
  * This function checks if the command has the correct number of arguments,
@@ -51,19 +116,13 @@ void ppo_command(client_t *client, command_t *command)
     size_t player_id = 0;
     player_t *player = NULL;
 
-    if (command->argc != 1) {
-        write(client->sockfd, "sbp\n", 4);
+    if (check_args_number(command, client) == FAILURE)
         return;
-    }
     player_id = strtoull(command->argv[0], NULL, 10);
-    if (player_id == 0) {
-        write(client->sockfd, "sbp\n", 4);
+    if (check_player_id(player_id, client) == FAILURE)
         return;
-    }
     player = get_player_by_id(client->server->game, player_id);
-    if (player == NULL) {
-        write(client->sockfd, "sbp\n", 4);
+    if (check_player_exists(player, client) == FAILURE)
         return;
-    }
     send_player_info(client, player);
 }

@@ -5,8 +5,8 @@
 ** Options Parser - Frequency Option Handler Tests
 */
 
-#include "options_parser_test_utils.h"
 #include "options_parser/parser.h"
+#include "options_parser_test_utils.h"
 #include <criterion/criterion.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -73,7 +73,8 @@ Test(frequency_option, handle_frequency_invalid_zero)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for frequency zero");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for frequency zero");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -96,7 +97,8 @@ Test(frequency_option, handle_frequency_invalid_negative)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for negative frequency");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for negative frequency");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -119,7 +121,8 @@ Test(frequency_option, handle_frequency_invalid_too_high)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for frequency too high");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for frequency too high");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -142,7 +145,8 @@ Test(frequency_option, handle_frequency_invalid_non_numeric)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for non-numeric frequency");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for non-numeric frequency");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -165,7 +169,8 @@ Test(frequency_option, handle_frequency_missing_value)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for missing frequency value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for missing frequency value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -182,7 +187,7 @@ Test(frequency_option, handle_frequency_already_set)
     int argc = 3;
     int i = 1;
 
-    options->frequency = 50;  // Pre-set frequency
+    options->frequency = 50;      // Pre-set frequency
 
     // Redirect stderr to avoid output during tests
     int stderr_backup = dup(STDERR_FILENO);
@@ -190,7 +195,8 @@ Test(frequency_option, handle_frequency_already_set)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for already set frequency");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for already set frequency");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
@@ -213,7 +219,8 @@ Test(frequency_option, handle_frequency_empty_string)
     dup2(dev_null, STDERR_FILENO);
 
     handle_frequency(options, &i, argc, argv);
-    cr_assert_eq(options->error, true, "Error flag should be set to true for empty frequency value");
+    cr_assert_eq(options->error, true,
+        "Error flag should be set to true for empty frequency value");
 
     // Restore stderr
     dup2(stderr_backup, STDERR_FILENO);
