@@ -11,7 +11,6 @@
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
-#include "map/orientation_names.h"
 #include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "team/team.h"
@@ -136,17 +135,6 @@ static void setup_client(
     client->is_gui = is_gui;
 }
 
-static void setup_player(client_t *client, server_t *server, team_t *team)
-{
-    client->player = hatch_player(
-        team, server->game->map, server->game->next_player_id, client);
-    debug_map(server->options->debug,
-        "Player %zu spawned at position (%d, %d) with orientation %s\n",
-        client->player->id, client->player->pos.x, client->player->pos.y,
-        orientation_names[client->player->orientation]);
-    server->game->next_player_id++;
-}
-
 /**
  * @brief Creates a new client and associates it with a team and player
  *
@@ -175,6 +163,8 @@ client_t *create_client(server_t *server, team_t *team, int client_index)
     }
     debug_conn(server->options->debug, "Client %d connected as AI\n",
         client_index - 2, team->name);
-    setup_player(client, server, team);
+    client->player = hatch_player(
+        team, server->game->map, server->game->next_player_id, client);
+    server->game->next_player_id++;
     return client;
 }

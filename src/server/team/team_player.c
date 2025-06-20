@@ -32,6 +32,10 @@ void add_player_to_team(team_t *team, player_t *player)
     }
     player->team = team;
     vtable = vector_get_vtable(team->players);
+    if (!vtable) {
+        fprintf(stderr, "Invalid vtable pointer\n");
+        return;
+    }
     vtable->push_back(team->players, &player);
 }
 

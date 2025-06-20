@@ -22,8 +22,10 @@ typedef unsigned int tick_t;
 typedef struct team_s team_t;
 typedef struct egg_s egg_t;
 
+typedef size_t player_id_t;
+typedef size_t egg_id_t;
 typedef struct player_s {
-    size_t id;
+    player_id_t id;
     pos_t pos;
     orientation_t orientation;
     level_t level;      // Player's level, starting at 1
