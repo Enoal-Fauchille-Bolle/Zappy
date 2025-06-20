@@ -150,6 +150,9 @@ static void read_player_command_buffer(player_t *player)
     player->doing_action = true;
     execute_command(player->client, command);
     destroy_command(command);
+    if (player->tick_cooldown == 0) {
+        read_player_command_buffer(player);
+    }
 }
 
 /**
