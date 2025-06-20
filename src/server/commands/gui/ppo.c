@@ -41,8 +41,8 @@ static void send_player_info(client_t *client, player_t *player)
 /**
  * @brief Checks if the command has the correct number of arguments.
  *
- * This function validates that the command has exactly one argument (the player
- * ID). If not, it sends an error message to the client.
+ * This function validates that the command has exactly one argument (the
+ * player ID). If not, it sends an error message to the client.
  *
  * @param command The command structure containing the arguments.
  * @param client The client that sent the command.
