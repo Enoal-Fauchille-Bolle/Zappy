@@ -19,5 +19,6 @@ void bct_command(client_t *client, command_t *command); // Command
 void plv_command(client_t *client, command_t *command); // Command
 void tna_command(client_t *client, command_t *command); // Command
 void pdi_command(player_t *player); // Global Event
+void pin_command(client_t *client, command_t *command); // Command
 
 #endif /* !GUI_COMMANDS_H_ */
