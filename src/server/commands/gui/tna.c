@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** msz Command
+** tna Command
 */
 
 #include "command_handler/command.h"
