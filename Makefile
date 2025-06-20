@@ -123,6 +123,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/gui/pdi.c							\
 				$(SRCDIR_SERVER)commands/gui/pin.c							\
 				$(SRCDIR_SERVER)commands/gui/enw.c							\
+				$(SRCDIR_SERVER)commands/gui/ebo.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -274,6 +275,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/gui/pdi.c								\
 			$(SRCDIR_SERVER)commands/gui/pin.c								\
 			$(SRCDIR_SERVER)commands/gui/enw.c								\
+			$(SRCDIR_SERVER)commands/gui/ebo.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\

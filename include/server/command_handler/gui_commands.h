@@ -21,5 +21,6 @@ void tna_command(client_t *client, command_t *command); // Command
 void pdi_command(player_t *player); // Global Event
 void pin_command(client_t *client, command_t *command); // Command
 void enw_command(egg_t *egg); // Global Event
+void ebo_command(egg_t *egg); // Global Event
 
 #endif /* !GUI_COMMANDS_H_ */

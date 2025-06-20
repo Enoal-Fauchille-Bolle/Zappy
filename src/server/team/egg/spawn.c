@@ -7,6 +7,7 @@
 
 #include "connection/client.h"
 #include "connection/server.h"
+#include "command_handler/gui_commands.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "map/coordinates.h"
@@ -153,6 +154,7 @@ player_t *spawn_player_from_egg(
         client->server->options != NULL) {
         debug_player_spawn(client, player, egg);
     }
+    ebo_command(egg);
     remove_egg_from_map(map, egg);
     remove_egg_from_team(egg->team, egg);
     destroy_egg(egg);
