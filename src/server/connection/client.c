@@ -108,7 +108,7 @@ void remove_client(server_t *server, int client_index)
                 client_index - 2,
                 server->clients[client_index - 2]->player->team->name);
         } else {
-            debug_conn(server->options->debug, "GUI client %d disconnected\n",
+            debug_conn(server->options->debug, "GUI client %d removed\n",
                 client_index - 2);
         }
         destroy_client(server->clients[client_index - 2]);
