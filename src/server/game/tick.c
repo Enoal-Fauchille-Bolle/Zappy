@@ -9,6 +9,7 @@
 #include "command_handler/command_buffer.h"
 #include "command_handler/command_executor.h"
 #include "command_handler/command_factory.h"
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
@@ -44,6 +45,7 @@ static bool handle_player_starvation(player_t *player)
         debug_game(player->client->server->options->debug,
             "Player %zu (Client %d) has starved\n", player->id,
             player->client->index);
+        pdi_command(player);
         remove_client(player->client->server, player->client->index + 2);
         return true;
     }
