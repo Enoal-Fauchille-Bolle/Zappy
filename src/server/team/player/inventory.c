@@ -7,6 +7,7 @@
 
 #include "connection/client.h"
 #include "map/resources.h"
+#include "map/tile.h"
 #include "team/player/player.h"
 #include <stdio.h>
 
