@@ -38,3 +38,71 @@ char *check_inventory(player_t *player)
     player->tick_cooldown = 1;
     return inventory_str;
 }
+
+/**
+ * @brief Take a resource from the tile where the player is located.
+ *
+ * This function allows a player to take a specified resource from the tile
+ * they are currently on. If the resource is available, it is removed from
+ * the tile and added to the player's inventory.
+ *
+ * @param player Pointer to the player structure.
+ * @param map Pointer to the map structure.
+ * @param resource The type of resource to take (e.g., FOOD, LINEMATE, etc.).
+ * @return true if the resource was successfully taken, false otherwise.
+ */
+bool take_resource(player_t *player, map_t *map, resource_t resource)
+{
+    tile_t *tile;
+
+    if (!player || !map || resource < FOOD || resource >= RESOURCE_COUNT) {
+        fprintf(stderr, "Invalid parameters for taking resource\n");
+        return false;
+    }
+    tile = get_tile(map, player->pos);
+    if (!tile) {
+        fprintf(stderr, "Tile not found for player position\n");
+        return false;
+    }
+    if (tile->resources[resource] > 0) {
+        player->inventory[resource]++;
+        tile->resources[resource]--;
+        player->tick_cooldown = 7;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Set a resource on the tile where the player is located.
+ *
+ * This function allows a player to set a specified resource on the tile
+ * they are currently on. If the player has the resource in their inventory,
+ * it is removed from the inventory and added to the tile's resources.
+ *
+ * @param player Pointer to the player structure.
+ * @param map Pointer to the map structure.
+ * @param resource The type of resource to set (e.g., FOOD, LINEMATE, etc.).
+ * @return true if the resource was successfully set, false otherwise.
+ */
+bool set_resource(player_t *player, map_t *map, resource_t resource)
+{
+    tile_t *tile;
+
+    if (!player || !map || resource < FOOD || resource >= RESOURCE_COUNT) {
+        fprintf(stderr, "Invalid parameters for setting resource\n");
+        return false;
+    }
+    tile = get_tile(map, player->pos);
+    if (!tile) {
+        fprintf(stderr, "Tile not found for player position\n");
+        return false;
+    }
+    if (player->inventory[resource] > 0) {
+        player->inventory[resource]--;
+        tile->resources[resource]++;
+        player->tick_cooldown = 7;
+        return true;
+    }
+    return false;
+}

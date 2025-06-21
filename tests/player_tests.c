@@ -323,3 +323,102 @@ Test(player, check_inventory_null, .timeout = 2)
     free(inventory_str);
     destroy_player(player);
 }
+
+Test(player, take_resource_null, .timeout = 2)
+{
+    player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
+    map_t *map = create_map(10, 10, false);
+    bool result;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    result = take_resource(NULL, map, FOOD);
+    cr_assert_eq(
+        result, false, "Taking resource with NULL player should return false");
+    result = take_resource(player, NULL, FOOD);
+    cr_assert_eq(
+        result, false, "Taking resource with NULL map should return false");
+    result = take_resource(player, map, RESOURCE_COUNT);
+    cr_assert_eq(result, false,
+        "Taking resource with invalid resource type should return false");
+    result = take_resource(player, map, FOOD);
+    cr_assert_eq(result, false,
+        "Taking resource with no FOOD on tile should return false");
+    cr_assert_eq(player->inventory[FOOD], 10,
+        "Player should have 10 FOOD in inventory");
+    cr_assert_eq(count_resource(map, FOOD), 0, "Map should have 0 FOOD ");
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(player, take_resource_success, .timeout = 2)
+{
+    player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
+    map_t *map = create_map(10, 10, false);
+    tile_t *tile = get_tile(map, player->pos);
+    bool result;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    tile->resources[FOOD] = 5;      // Set some FOOD on the tile
+    add_player_to_map(map, player);
+    result = take_resource(player, map, FOOD);
+    cr_assert_eq(result, true,
+        "Taking resource with valid player and map should return true");
+    cr_assert_eq(player->inventory[FOOD], 11,
+        "Player should have 11 FOOD in inventory after taking");
+    cr_assert_eq(tile->resources[FOOD], 4,
+        "Tile should have 4 FOOD left after taking one");
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(player, set_resource_null, .timeout = 2)
+{
+    player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
+    map_t *map = create_map(10, 10, false);
+    bool result;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    result = set_resource(NULL, map, FOOD);
+    cr_assert_eq(result, false,
+        "Setting resource with NULL player should return false");
+    result = set_resource(player, NULL, FOOD);
+    cr_assert_eq(
+        result, false, "Setting resource with NULL map should return false");
+    result = set_resource(player, map, RESOURCE_COUNT);
+    cr_assert_eq(result, false,
+        "Setting resource with invalid resource type should return false");
+    result = set_resource(player, map, SIBUR);
+    cr_assert_eq(result, false,
+        "Setting resource with no SIBUR in inventory should return false");
+    cr_assert_eq(player->inventory[FOOD], 10,
+        "Player should have 10 FOOD in inventory before setting");
+    cr_assert_eq(count_resource(map, FOOD), 0,
+        "Map should have 0 FOOD after setting 0");
+    destroy_player(player);
+    destroy_map(map);
+}
+
+Test(player, set_resource_success, .timeout = 2)
+{
+    player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
+    map_t *map = create_map(10, 10, false);
+    tile_t *tile = get_tile(map, player->pos);
+    bool result;
+
+    cr_assert_not_null(player, "Player should not be NULL");
+    cr_assert_not_null(map, "Map should not be NULL");
+    add_player_to_map(map, player);
+    player->inventory[FOOD] = 5;      // Give player some FOOD
+    result = set_resource(player, map, FOOD);
+    cr_assert_eq(result, true,
+        "Setting resource with valid player and map should return true");
+    cr_assert_eq(player->inventory[FOOD], 4,
+        "Player should have 4 FOOD in inventory after setting");
+    cr_assert_eq(tile->resources[FOOD], 1,
+        "Tile should have 1 FOOD after setting one from inventory");
+    destroy_player(player);
+    destroy_map(map);
+}
