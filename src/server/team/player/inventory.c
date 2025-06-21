@@ -5,6 +5,7 @@
 ** Inventory
 */
 
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "map/resources.h"
 #include "map/tile.h"
@@ -100,6 +101,7 @@ bool set_resource(player_t *player, map_t *map, resource_t resource)
     if (player->inventory[resource] > 0) {
         player->inventory[resource]--;
         tile->resources[resource]++;
+        pdr_command(player, resource);
         return true;
     }
     return false;

@@ -10,6 +10,7 @@
 
     #include "command_handler/command.h"
     #include "connection/client.h"
+    #include "map/resources.h"
     #include "team/player/player.h"
 
 void msz_command(client_t *client, command_t *command); // Command
@@ -24,5 +25,6 @@ void pin_command(client_t *client, command_t *command); // Command
 void enw_command(egg_t *egg); // Global Event
 void ebo_command(egg_t *egg); // Global Event
 void pfk_command(player_t *player); // Global Event
+void pdr_command(player_t *player, resource_t resource); // Global Event
 
 #endif /* !GUI_COMMANDS_H_ */
