@@ -8,9 +8,11 @@
 import time
 import sys
 import os
+from connexions import Connection
+from loop import Loop
 
 class Commands:
-    def __init__(self, connexion):
+    def __init__(self, connexion: Connection):
         self.connexion = connexion
 
     def Forward(self):
@@ -70,7 +72,7 @@ class Commands:
             return False
         return True
 
-    def Look(self):
+    def Look(self) -> None | list[list[str]]:
         if self.connexion.connected:
             self.connexion.send("Look\n")
             start_time = time.time()
@@ -86,10 +88,12 @@ class Commands:
             return None
         if response == "ok":
             response = self.connexion.receive()
+        if response is None:
+            return None
         # print(f"Look response: {response}")
         if response.startswith('[') and response.endswith(']'):
             response = response[1:-1]
-        tiles = []
+        tiles: list[list[str]] = []
         if not response.strip():
             return []
         raw_tiles = response.split(',')
@@ -114,14 +118,14 @@ class Commands:
     def Inventory(self):
         if self.connexion.connected:
             self.connexion.send("Inventory\n")
-            start_time = time.time()
+        start_time = time.time()
         response = self.connexion.receive()
         end_time = time.time()
         elapsed_time = (end_time - start_time) / 2
         print(f"Inventory response: {response}")  # Debugging line
         if response is None or response == "ko":
             return None
-        inventory = {}
+        inventory: dict[str, int] = {}
         items_str = response.strip()
         if items_str.startswith('[') and items_str.endswith(']'):
             items_str = items_str[1:-1]
@@ -143,7 +147,7 @@ class Commands:
             ai.tick.append(elapsed_time)
         return inventory
 
-    def Broadcast(self, message):
+    def Broadcast(self, message: str):
         if not self.connexion.connected or not self.connexion.socket:
             print("Not connected to server, can't broadcast")
             return False
@@ -194,12 +198,12 @@ class Commands:
         except ValueError:
             return None
 
-    def Take(self, item):
+    def Take(self, item: str):
         if self.connexion.connected:
             self.connexion.send(f"Take {item}\n")
-            start_time = time.time()
         else:
             print("Not connected to the server.")
+        start_time = time.time()
         response = self.connexion.receive()
         end_time = time.time()
         elapsed_time = (end_time - start_time) / 128
@@ -224,12 +228,12 @@ class Commands:
                 print(f"Picked up {item}. Updated inventory: {ai.inventory}")
         return True
 
-    def Set(self, item):
+    def Set(self, item: str):
         if self.connexion.connected:
             self.connexion.send(f"Set {item}\n")
-            start_time = time.time()
         else:
             print("Not connected to the server.")
+        start_time = time.time()
         response = self.connexion.receive()
         end_time = time.time()
         elapsed_time = (end_time - start_time) / 7
@@ -300,7 +304,7 @@ class Commands:
             return False
         return True
 
-    def encrypt_message(self, message, name):
+    def encrypt_message(self, message: str, name: str):
         """
         Encrypt a message using a simple algorithm based on the name.
         This is a basic implementation and can be replaced with a more sophisticated one.
@@ -308,7 +312,7 @@ class Commands:
         if not name:
             return message
         shift = sum(ord(c) for c in name) % 26
-        encrypted = []
+        encrypted: list[str] = []
         for char in message:
             if char.isalpha():
                 ascii_offset = ord('a') if char.islower() else ord('A')
@@ -319,7 +323,7 @@ class Commands:
 
         return ''.join(encrypted)
 
-    def handle_death(self, ai_instance):
+    def handle_death(self, ai_instance: Loop):
         """Handle the AI's death by terminating immediately"""
         print("\n!!! DEATH DETECTED IN COMMAND - TERMINATING !!!\n")
         

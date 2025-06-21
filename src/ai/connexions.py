@@ -6,6 +6,7 @@
 ## class to connect new IA to the server
 ##
 
+from typing import Optional
 import socket
 import threading
 import time
@@ -15,11 +16,11 @@ import os
 It includes methods for connecting to the server, sending messages, and handling connection states.
 """
 class Connection:
-    def __init__(self, port, name, machine):
+    def __init__(self, port: int, name: str, machine: str):
         self.port = port
         self.name = name
         self.machine = machine
-        self.socket = None
+        self.socket: Optional[socket.socket] = None
         self.connected = False
         self.buffer = ""
         self.waiting_for_response = False
@@ -32,7 +33,7 @@ class Connection:
         @return True if connection is successful, False otherwise.
         """
     def connect(self):
-        if self.connected:
+        if self.connected and self.socket:
             try:
                 self.socket.getpeername()
                 #print("Already connected.")
@@ -57,7 +58,7 @@ class Connection:
         @param message: The message to be sent to the server.
         @return True if the message was sent successfully, False otherwise.
         """
-    def send(self, message):
+    def send(self, message: str):
         if not self.connected or not self.socket:
             print("Not connected to the server.")
             return False
@@ -81,7 +82,7 @@ class Connection:
         @param buffer_size: The size of the buffer to read data from the socket.
         @return The received complete message as a string, or None if an error occurs.
         """
-    def receive(self, buffer_size=1024, timeout=5.0):
+    def receive(self, buffer_size: int = 1024, timeout: float = 5.0):
         if not self.connected or not self.socket:
             print("Not connected to the server.")
             return None

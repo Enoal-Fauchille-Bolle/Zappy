@@ -5,31 +5,30 @@
 ## AI loop for Zappy
 ##
 
-import random
+from typing import Optional
 from commands import Commands
+from connexions import Connection
 import threading
-import time
 from utils import ContinuousMonitor
-import sys
 
 class Loop:
-    def __init__(self, connexion):
+    def __init__(self, connexion: Connection):
         self.connexion = connexion
         self.running = True
         self.inventory = {"food": 10, "linemate": 0, "deraumere": 0, "sibur": 0, "mendiane": 0, "phiras": 0, "thystame": 0}
-        self.look = []
+        self.look: list[list[str]] = []
         self.orientation = 0
         self.map_size = None
         self.commands = Commands(connexion)
         self.connexion.ai_instance = self # Store the AI instance in the connexion object
         self.level = 1
         self.time_look = 9
-        self.tick = []
+        self.tick: list[float] = []
         self.lock = threading.Lock()
         self.inventory_lock = threading.Lock()
         self.tick_counter = 0
         self.tick_duration = 0
-        self.current_path = []
+        self.current_path: list[str] = []
         self.elevation_requirements = [
             { "players": 1, "linemate": 1, "deraumere": 0, "sibur": 0, "mendiane": 0, "phiras": 0, "thystame": 0},
             { "players": 2, "linemate": 1, "deraumere": 1, "sibur": 1, "mendiane": 0, "phiras": 0, "thystame": 0},
@@ -39,7 +38,7 @@ class Loop:
             { "players": 6, "linemate": 1, "deraumere": 2, "sibur": 3, "mendiane": 0, "phiras": 1, "thystame": 0},
             { "players": 6, "linemate": 2, "deraumere": 2, "sibur": 2, "mendiane": 2, "phiras": 2, "thystame": 1}]
 
-    def run(self, map_size=None):
+    def run(self, map_size: Optional[tuple[int, int]] = None):
         """Main AI execution loop"""
         print("AI starting")
         self.running = True
@@ -123,7 +122,7 @@ class Loop:
         else:
             return self.handle_movement_command(next_command)
 
-    def handle_take_command(self, command):
+    def handle_take_command(self, command: str):
         """Handle taking an item"""
         item = command.split(" ")[1]
         self_tile_idx = -1
@@ -143,7 +142,7 @@ class Loop:
             self.commands.Look()
             return False
 
-    def handle_movement_command(self, command):
+    def handle_movement_command(self, command: str):
         """Handle movement commands"""
         success = False
         if command == "Forward":
@@ -163,7 +162,7 @@ class Loop:
             # print(f"Left result: {success}, new orientation: {self.orientation}")
         return success
 
-    def plan_next_action(self, resource_name):
+    def plan_next_action(self, resource_name: str):
         """Plan the next action when there's no current path"""
         path = self.find_resource_path(resource_name)
         if path:
@@ -212,7 +211,7 @@ class Loop:
         else:
             print(f"Warning: New position index {new_index} out of bounds")
 
-    def find_resource_path(self, resource_name: str):
+    def find_resource_path(self, resource_name: str) -> list[str]:
         coords = self.get_tile_relative_coords()
         print(f"Looking for {resource_name}...")
         closest_idx = None
@@ -250,13 +249,13 @@ class Loop:
                 coords.append((i, -depth))
         return [self.rotate_vector(dx, dy) for dx, dy in coords]
 
-    def rotate_vector(self, dx, dy):
+    def rotate_vector(self, dx: int, dy: int):
         """Rotate (dx, dy) according to orientation"""
         for _ in range(self.orientation):
             dx, dy = -dy, dx
         return dx, dy
 
-    def plan_cardinal_path_to(self, target, resource_name=None):
+    def plan_cardinal_path_to(self, target: tuple[int, int], resource_name: Optional[str] = None):
         """Generate a series of commands to reach the target coordinates"""
         x, y = target
         path = []

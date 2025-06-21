@@ -8,12 +8,13 @@
 import threading
 import time
 import socket
-import queue
-import os
+# import queue
+# import os
+from loop import Loop
 
 class ContinuousMonitor(threading.Thread):
     """Thread dedicated to continuously monitoring ticks and receiving messages"""
-    def __init__(self, ai_instance):
+    def __init__(self, ai_instance: Loop):
         threading.Thread.__init__(self)
         self.daemon = True  # Thread will exit when main program exits
         self.ai_instance = ai_instance
@@ -73,7 +74,7 @@ class ContinuousMonitor(threading.Thread):
         except Exception as e:
             print(f"Error consuming food: {e}")
 
-    def decrypt_message(self, encrypted_message, name):
+    def decrypt_message(self, encrypted_message: str, name: str):
                     """
                     Decrypt a message that was encrypted with the encrypt_message method.
                     Uses the reverse of the encryption algorithm.
@@ -81,7 +82,7 @@ class ContinuousMonitor(threading.Thread):
                     if not name:
                         return encrypted_message
                     shift = sum(ord(c) for c in name) % 26
-                    decrypted = []
+                    decrypted: list[str] = []
                     for char in encrypted_message:
                         if char.isalpha():
                             ascii_offset = ord('a') if char.islower() else ord('A')
@@ -128,7 +129,7 @@ class ContinuousMonitor(threading.Thread):
         finally:
             self.socket_lock.release()
 
-    def process_received_data(self, data):
+    def process_received_data(self, data: str):
         """Process incoming data from the server"""
         if "dead" in data:
             # print("DEATH DETECTED BY MONITOR: 'dead' found in received data")
@@ -141,7 +142,7 @@ class ContinuousMonitor(threading.Thread):
             if line.strip():
                 self.process_message(line.strip())
 
-    def process_message(self, message):
+    def process_message(self, message: str):
         """Process a complete message"""
         # print(f"Monitor processing message: {message}")
         if message == "dead":

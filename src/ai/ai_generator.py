@@ -14,11 +14,11 @@ import signal
 import atexit
 
 class AIGenerator:
-    def __init__(self, port, name, machine):
+    def __init__(self, port: int, name: str, machine: str):
         self.port = port
         self.name = name
         self.machine = machine
-        self.child_pids = []
+        self.child_pids: list[int] = []
         signal.signal(signal.SIGINT, self.handle_signal)
         signal.signal(signal.SIGTERM, self.handle_signal)
         atexit.register(self.clean_up)
@@ -48,7 +48,7 @@ class AIGenerator:
         @param machine: The machine address of the server.
         @param connection: The Connection object used to communicate with the server.
         """
-    def re_fork(self, port, name, machine, connection):
+    def re_fork(self, port: int, name: str, machine: str, connection: Connection):
         if connection.connected:
             client_number = connection.receive()
             print(f"Server response received (client number): {client_number}")
@@ -84,7 +84,7 @@ class AIGenerator:
         @param machine: The machine address of the server.
         @return The PID of the forked process, or None if the fork failed.
         """
-    def fork(self, port, name, machine):
+    def fork(self, port: int, name: str, machine: str):
         pid = os.fork()
         if pid == 0:
             signal.signal(signal.SIGINT, signal.SIG_DFL)
