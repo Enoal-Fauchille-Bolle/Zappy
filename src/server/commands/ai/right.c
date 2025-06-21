@@ -30,7 +30,7 @@ void right_command(client_t *client, command_t *command)
     turn_player_right(client->player);
     client->player->tick_cooldown = RIGHT_COMMAND_COOLDOWN;
     write(client->sockfd, "ok\n", 3);
-    debug_player(client->server->options->debug, "Player %zu turned right\n",
+    debug_map(client->server->options->debug, "Player %zu turned right\n",
         client->player->id);
     debug_map(client->server->options->debug, "Player %zu orientation: %s\n",
         client->player->id, orientation_names[client->player->orientation]);

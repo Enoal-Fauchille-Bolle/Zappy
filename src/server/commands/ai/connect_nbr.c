@@ -30,8 +30,6 @@ void connect_nbr_command(client_t *client, command_t *command)
     (void)command;
     client->player->tick_cooldown = CONNECT_NBR_COMMAND_COOLDOWN;
     dprintf(client->sockfd, "%zu\n", get_egg_count(client->player->team));
-    debug_player(client->server->options->debug,
-        "connect_nbr command sent for player ID %zu: team '%s' has %zu eggs\n",
-        client->player->id, client->player->team->name,
-        get_egg_count(client->player->team));
+    debug_game(client->server->options->debug, "Team '%s' has %zu eggs\n",
+        client->player->team->name, get_egg_count(client->player->team));
 }
