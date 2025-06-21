@@ -121,6 +121,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/gui/ppo.c							\
 				$(SRCDIR_SERVER)commands/gui/pnw.c							\
 				$(SRCDIR_SERVER)commands/gui/bct.c							\
+				$(SRCDIR_SERVER)commands/gui/mct.c							\
 				$(SRCDIR_SERVER)commands/gui/plv.c							\
 				$(SRCDIR_SERVER)commands/gui/tna.c							\
 				$(SRCDIR_SERVER)commands/gui/pdi.c							\
@@ -277,6 +278,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/gui/ppo.c								\
 			$(SRCDIR_SERVER)commands/gui/pnw.c								\
 			$(SRCDIR_SERVER)commands/gui/bct.c								\
+			$(SRCDIR_SERVER)commands/gui/mct.c								\
 			$(SRCDIR_SERVER)commands/gui/plv.c								\
 			$(SRCDIR_SERVER)commands/gui/tna.c								\
 			$(SRCDIR_SERVER)commands/gui/pdi.c								\
