@@ -431,7 +431,5 @@ Test(egg, player_lays_egg_valid, .timeout = 2)
         "Egg team should match the player's team");
     cr_assert_eq(get_egg_count(server->game->teams[0]), 1,
         "Team should have one egg after laying");
-    cr_assert_eq(player->tick_cooldown, 42,
-        "Player should have cooldown of 42 ticks after laying an egg");
     destroy_server(server);
 }

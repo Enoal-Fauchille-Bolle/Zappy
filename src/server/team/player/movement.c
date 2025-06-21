@@ -22,7 +22,6 @@
 void turn_player_left(player_t *player)
 {
     player->orientation = turn_left(player->orientation);
-    player->tick_cooldown = 7;
 }
 
 /**
@@ -37,7 +36,6 @@ void turn_player_left(player_t *player)
 void turn_player_right(player_t *player)
 {
     player->orientation = turn_right(player->orientation);
-    player->tick_cooldown = 7;
 }
 
 /**
@@ -58,6 +56,5 @@ void move_player_forward(player_t *player, map_t *map)
     }
     remove_player_from_map(map, player);
     player->pos = get_forward_position(player->pos, player->orientation, map);
-    player->tick_cooldown = 7;
     add_player_to_map(map, player);
 }

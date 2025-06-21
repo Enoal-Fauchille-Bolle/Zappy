@@ -166,6 +166,5 @@ egg_t *lay_egg(player_t *player, map_t *map)
     }
     pfk_command(player);
     add_egg_to_map(map, egg);
-    player->tick_cooldown = 42;
     return egg;
 }

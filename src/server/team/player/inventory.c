@@ -36,7 +36,6 @@ char *check_inventory(player_t *player)
         fprintf(stderr, "Failed to get inventory string\n");
         return NULL;
     }
-    player->tick_cooldown = 1;
     return inventory_str;
 }
 
@@ -68,7 +67,6 @@ bool take_resource(player_t *player, map_t *map, resource_t resource)
     if (tile->resources[resource] > 0) {
         player->inventory[resource]++;
         tile->resources[resource]--;
-        player->tick_cooldown = 7;
         return true;
     }
     return false;
@@ -102,7 +100,6 @@ bool set_resource(player_t *player, map_t *map, resource_t resource)
     if (player->inventory[resource] > 0) {
         player->inventory[resource]--;
         tile->resources[resource]++;
-        player->tick_cooldown = 7;
         return true;
     }
     return false;
