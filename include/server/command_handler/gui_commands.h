@@ -26,5 +26,6 @@ void enw_command(egg_t *egg); // Global Event
 void ebo_command(egg_t *egg); // Global Event
 void pfk_command(player_t *player); // Global Event
 void pdr_command(player_t *player, resource_t resource); // Global Event
+void pgt_command(player_t *player, resource_t resource); // Global Event
 
 #endif /* !GUI_COMMANDS_H_ */

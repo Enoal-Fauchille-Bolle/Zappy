@@ -68,6 +68,7 @@ bool take_resource(player_t *player, map_t *map, resource_t resource)
     if (tile->resources[resource] > 0) {
         player->inventory[resource]++;
         tile->resources[resource]--;
+        pgt_command(player, resource);
         return true;
     }
     return false;
