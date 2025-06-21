@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Take Command
+** Set Command
 */
 
 #include "command_handler/ai_commands.h"
