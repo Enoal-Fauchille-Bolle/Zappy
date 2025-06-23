@@ -99,7 +99,7 @@ static orientation_t reverse_orientation(orientation_t orientation)
  * @param debug Boolean indicating whether to print debug information.
  */
 static void eject_player_from_tile(tile_t *tile, player_t *ejecting_player,
-    player_t *current_player, bool debug)
+    player_t *ejected_player, bool debug)
 {
     pos_t pos = get_target_position(ejecting_player);
     tile_t *target_tile =
@@ -111,15 +111,15 @@ static void eject_player_from_tile(tile_t *tile, player_t *ejecting_player,
         fprintf(stderr, "Invalid tile or players vector\n");
         return;
     }
-    remove_player_from_tile(tile, current_player);
-    current_player->pos = pos;
-    add_player_to_tile(target_tile, current_player);
+    remove_player_from_tile(tile, ejected_player);
+    ejected_player->pos = pos;
+    add_player_to_tile(target_tile, ejected_player);
     debug_map(debug,
         "Player %zu got ejected from (%ld, %ld) to (%ld, %ld) towards "
         "%s\n",
-        current_player->id, ejecting_player->pos.x, ejecting_player->pos.y,
-        pos.x, pos.y, orientation_names[current_player->orientation]);
-    dprintf(current_player->client->sockfd, "eject: %d\n", orientation_origin);
+        ejected_player->id, ejecting_player->pos.x, ejecting_player->pos.y,
+        pos.x, pos.y, orientation_names[ejected_player->orientation]);
+    dprintf(ejected_player->client->sockfd, "eject: %d\n", orientation_origin);
 }
 
 /**
