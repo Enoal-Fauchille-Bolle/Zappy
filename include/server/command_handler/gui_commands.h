@@ -29,5 +29,6 @@ void pdr_command(player_t *player, resource_t resource); // Global Event
 void pgt_command(player_t *player, resource_t resource); // Global Event
 void sgt_command(client_t *client, command_t *command); // Command
 void sst_command(client_t *client, command_t *command); // Command
+void edi_command(egg_t *egg); // Global Event
 
 #endif /* !GUI_COMMANDS_H_ */
