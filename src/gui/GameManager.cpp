@@ -184,6 +184,19 @@ void SimpleGameManager::createEgg(int id, int parentId, int x, int y) {
 }
 
 /**
+ * @brief Convert an egg to a player.
+ * 
+ * @param eggId Identifier of the egg to convert.
+ */
+void SimpleGameManager::eggToPlayer(int eggId) {
+    auto it = _eggs.find(eggId);
+    if (it == _eggs.end()) {
+        std::cerr << "Egg " << eggId << " not found" << std::endl;
+        return;
+    }
+}
+
+/**
  * @brief Remove an egg from the game.
  * 
  * @param id Identifier of the egg to remove.
@@ -250,6 +263,15 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
  * @brief Update the game state and handle time-based events.
  */
 void SimpleGameManager::update() {
+    static int time = 0;
+    time++;
+    if (time == 100) {
+        updatePlayerPosition(1, 1, 0, Orientation::NORTH);
+        removeResource(ResourceType::FOOD, 2, 2, 2);
+    }
+    if (time == 200) {
+        removePlayer(1);
+    }
     std::string response = NetworkManager::receive(false);
     readResponse(response);
 }
@@ -358,4 +380,49 @@ void SimpleGameManager::positionResourceOnTile(Resources* resource, int x, int y
     float randomZ = dist(gen);
     Position offset = Utils::calculateResourceOffset(index, randomX, randomZ);
     resource->setPosition(tilePos.x + offset.x, offset.y, tilePos.z + offset.z);
+}
+
+/**
+ * @brief Remove a specified quantity of resources of a given type from a tile.
+ *
+ * @param type Type of resource to remove.
+ * @param x X coordinate of the tile.
+ * @param y Y coordinate of the tile.
+ * @param quantity Number of resources to remove (default: 1).
+ */
+void SimpleGameManager::removeResource(ResourceType type, int x, int y, int quantity) {
+    if (!isValidPosition(x, y)) {
+        std::cerr << "Invalid position for resource removal: (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+
+    TileDisplay* tile = getTile(x, y);
+    if (!tile) {
+        std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+
+    std::vector<Resources*> resourcesToRemove;
+    const auto& resources = tile->getContentManager()->getResources();
+
+    std::cout << "Resources on tile (" << x << ", " << y << "):" << std::endl;
+    for (const auto& res : resources) {
+        std::cout << "  - ID: " << res->getId() << ", Type: " << static_cast<int>(res->getResourceType()) << std::endl;
+        if (res->getResourceType() == type) {
+            resourcesToRemove.push_back(res);
+            if (resourcesToRemove.size() >= static_cast<size_t>(quantity)) {
+                break;
+            }
+        }
+    }
+
+    int removedCount = 0;
+    for (auto* resource : resourcesToRemove) {
+        if (removedCount >= quantity) break;
+        tile->getContentManager()->removeResource(resource);
+        delete resource;
+        removedCount++;
+    }
+
+    std::cout << "Removed " << removedCount << " resources of type " << static_cast<int>(type) << std::endl;
 }
