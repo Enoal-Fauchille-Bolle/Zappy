@@ -15,6 +15,7 @@
 #include <iostream>
 #include <ostream>
 #include <string>
+#include <chrono>
 #include "Parsing.hpp"
 #include "ZappyApp.hpp"
 #include "GameManager.hpp"
