@@ -22,7 +22,8 @@
     #define EJECT_COMMAND_COOLDOWN 7
     #define TAKE_COMMAND_COOLDOWN 7
     #define SET_COMMAND_COOLDOWN 7
-    #define INCANTATION_COMMAND_COOLDOWN 300
+    // #define INCANTATION_COMMAND_COOLDOWN 300
+    #define INCANTATION_COMMAND_COOLDOWN 20
 
 void forward_command(client_t *client, command_t *command);
 void left_command(client_t *client, command_t *command);
@@ -34,5 +35,6 @@ void fork_command(client_t *client, command_t *command);
 void take_command(client_t *client, command_t *command);
 void set_command(client_t *client, command_t *command);
 void eject_command(client_t *client, command_t *command);
+void incantation_command(client_t *client, command_t *command);
 
 #endif /* !AI_COMMANDS_H_ */
