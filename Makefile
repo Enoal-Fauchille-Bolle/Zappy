@@ -101,6 +101,7 @@ SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(SRCDIR_GUI)entity/Player.cpp \
 		$(SRCDIR_GUI)entity/TileContentManager.cpp \
 		$(SRCDIR_GUI)entity/TileDisplay.cpp	\
+		$(SRCDIR_GUI)Team.cpp	\
 		$(NET_GUI)NetworkWorker.cpp	\
 		$(NET_GUI)NetworkManager.cpp	\
 		$(NET_GUI)message/MessageProtocol.cpp	\
