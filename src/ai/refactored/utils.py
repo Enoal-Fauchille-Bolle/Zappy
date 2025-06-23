@@ -6,6 +6,7 @@
 ##
 
 import time
+from enum import Enum
 
 class Timer:
     """Simple timer for mesuring execution time"""
@@ -64,6 +65,13 @@ class GameConstants:
         "Set": 7,
         "Incantation": 300
     }
+
+    class Orientation(Enum):
+        NORTH = 0
+        EAST = 1
+        SOUTH = 2
+        WEST = 3
+        UNKNOWN = 4
 
 class MessageParser:
     """Utility class for parsing server messages"""

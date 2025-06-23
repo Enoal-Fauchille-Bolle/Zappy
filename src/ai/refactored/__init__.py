@@ -9,10 +9,12 @@
 
 from .network import NetworkManager
 from .utils import GameConstants, MessageParser, AIUtils
+from .vision import PlayerVision
 
 __all__ = [
     "NetworkManager",
     "GameConstants",
     "MessageParser",
-    "AIUtils"
+    "AIUtils",
+    "PlayerVision"
 ]
