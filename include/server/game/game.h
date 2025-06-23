@@ -13,6 +13,7 @@
     #include "game/game_state.h"
     #include "options_parser/options.h"
     #include "team/team.h"
+    #include "vector.h"
     #include <stddef.h>
     #include <stdbool.h>
 
@@ -23,6 +24,7 @@ typedef struct game_s {
     server_t *server;
     map_t *map;
     team_t **teams;
+    vector_t *incantations;
     size_t next_player_id;
     size_t next_egg_id;
     tick_rate_t tick_rate;
