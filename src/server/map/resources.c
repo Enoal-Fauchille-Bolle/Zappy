@@ -116,7 +116,7 @@ void spread_resource(map_t *map, const resource_t resource, bool debug)
     bool show_comma;
 
     debug_resource(debug && target_count > 0,
-        "Spread resource %s to tile at positions [", resource_names[resource]);
+        "Spawned resource '%s' at positions [", resource_names[resource]);
     for (long long i = 0; i < target_count; i++) {
         show_comma = (i < target_count - 1);
         place_resource_at_random_position(
