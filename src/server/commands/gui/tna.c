@@ -15,7 +15,8 @@
 void tna_command(client_t *client, command_t *command)
 {
     (void)command;
-    debug_game(client->server->options->debug, "tna command sent: ");
+    debug_game(client->server->options->debug,
+        "Client %d: tna command sent: ", client->index);
     for (int i = 0; client->server->options->teams[i] != NULL; i++) {
         dprintf(client->sockfd, "tna %s\n", client->server->options->teams[i]);
         printf("'%s'", client->server->options->teams[i]);

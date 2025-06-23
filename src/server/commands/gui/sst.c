@@ -81,5 +81,6 @@ void sst_command(client_t *client, command_t *command)
     client->server->game->tick_rate = tick_speed;
     dprintf(client->sockfd, "sst %u\n", client->server->game->tick_rate);
     debug_game(client->server->options->debug,
-        "sst command sent: %zu tick speed\n", client->server->game->tick_rate);
+        "Client %d: sst command sent: %zu tick speed\n", client->index,
+        client->server->game->tick_rate);
 }

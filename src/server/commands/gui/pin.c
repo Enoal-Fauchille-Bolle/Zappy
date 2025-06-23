@@ -38,9 +38,9 @@ static void send_player_info(client_t *client, player_t *player)
         player->inventory[SIBUR], player->inventory[MENDIANE],
         player->inventory[PHIRAS], player->inventory[THYSTAME]);
     debug_player(client->server->options->debug,
-        "pin command sent: player ID %zu, position (%d, %d), "
+        "Client %d: pin command sent: player ID %zu, position (%d, %d), "
         "inventory (food: %zu, linemate: %zu, deraumere: %zu, sibur: %zu, "
-        "mendiane: %zu, phiras: %zu, thystame: %zu)\n",
+        "mendiane: %zu, phiras: %zu, thystame: %zu)\n", client->index,
         player->id, player->pos.x, player->pos.y, player->inventory[FOOD],
         player->inventory[LINEMATE], player->inventory[DERAUMERE],
         player->inventory[SIBUR], player->inventory[MENDIANE],

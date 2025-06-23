@@ -33,8 +33,8 @@ static void send_player_info(client_t *client, player_t *player)
     dprintf(client->sockfd, "ppo %zu %d %d %d\n", player->id, player->pos.x,
         player->pos.y, player->orientation + 1);
     debug_player(client->server->options->debug,
-        "ppo command sent for player ID %zu: position (%d, %d), orientation "
-        "%d\n",
+        "Client %d: ppo command sent for player ID %zu: position (%d, %d), orientation "
+        "%d\n", client->index,
         player->id, player->pos.x, player->pos.y, player->orientation + 1);
 }
 

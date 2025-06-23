@@ -26,5 +26,6 @@ void sgt_command(client_t *client, command_t *command)
     (void)command;
     dprintf(client->sockfd, "sgt %u\n", client->server->game->tick_rate);
     debug_game(client->server->options->debug,
-        "sgt command sent: %zu tick speed\n", client->server->game->tick_rate);
+        "Client %d: sgt command sent: %zu tick speed\n", client->index,
+        client->server->game->tick_rate);
 }
