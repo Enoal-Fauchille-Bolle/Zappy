@@ -265,17 +265,6 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
 void SimpleGameManager::update() {
     std::string response = NetworkManager::receive(false);
     readResponse(response);
-    static int time = 0;
-    time++;
-    if (time == 100) {
-        updatePlayerPosition(1, 1, 0, Orientation::NORTH);
-        removeResource(ResourceType::FOOD, 2, 2, 2);
-    }
-    if (time == 200) {
-        removePlayer(1);
-    }
-    std::string response = NetworkManager::receive(false);
-    readResponse(response);
 }
 
 /**
