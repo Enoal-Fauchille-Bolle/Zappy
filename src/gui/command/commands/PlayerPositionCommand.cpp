@@ -7,12 +7,19 @@
 
 #include "PlayerPositionCommand.hpp"
 #include <iostream>
+#include <sstream>
 
 PlayerPositionCommand::PlayerPositionCommand()
 {
 }
 
 void PlayerPositionCommand::execute(const std::string& args, SimpleGameManager& gameManager) {
-    (void)gameManager;
-    std::cout << "PlayerPositionCommand " << args << std::endl;
+    std::string idStr;
+    int id, x, y, orientation;
+
+    std::istringstream iss(args);
+    iss >> idStr >> x >> y >> orientation;
+    id = std::stoi(idStr.substr(1));
+
+    gameManager.updatePlayerPosition(id, x, y, static_cast<Orientation>(orientation));
 }

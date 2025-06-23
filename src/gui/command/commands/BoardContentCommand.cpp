@@ -8,6 +8,7 @@
 #include "BoardContentCommand.hpp"
 #include <iostream>
 #include <string>
+#include <sstream>
 
 BoardContentCommand::BoardContentCommand()
 {
