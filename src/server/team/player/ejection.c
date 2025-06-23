@@ -169,8 +169,8 @@ bool eject(player_t *player, map_t *map)
         return FAILURE;
     }
     current_tile = get_tile(map, player->pos);
-    if (!current_tile || (get_nb_players_on_tile(current_tile) == 0 &&
-        get_nb_eggs_on_tile(current_tile) == 0)) {
+    if (!current_tile || (get_nb_players_on_tile(current_tile) <= 1 &&
+        get_nb_eggs_on_tile(current_tile) <= 0)) {
         debug_warning(player->client->server->options->debug,
             "Player %zu cannot eject: no other players on tile\n", player->id);
         return FAILURE;
