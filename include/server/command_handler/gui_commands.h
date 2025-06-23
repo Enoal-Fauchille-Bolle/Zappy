@@ -28,5 +28,6 @@ void pfk_command(player_t *player); // Global Event
 void pdr_command(player_t *player, resource_t resource); // Global Event
 void pgt_command(player_t *player, resource_t resource); // Global Event
 void sgt_command(client_t *client, command_t *command); // Command
+void sst_command(client_t *client, command_t *command); // Command
 
 #endif /* !GUI_COMMANDS_H_ */
