@@ -264,8 +264,7 @@ void SimpleGameManager::updateResource(ResourceType type, int x, int y, int quan
  * @param type Type of resource to create.
  * @param x X coordinate on the map.
  * @param y Y coordinate on the map.
- * @param quantity Number of resources to create (default: 1).
- * @param index Index for positioning resources uniquely.
+ * @param quantity Number of resources to create.
  */
 void SimpleGameManager::createResource(ResourceType type, int x, int y, int quantity) {
 
@@ -431,15 +430,8 @@ void SimpleGameManager::positionResourceOnTile(Resources* resource, int x,
  * @param y Y coordinate of the tile.
  * @param quantity Number of resources to remove.
  */
-void SimpleGameManager::removeResource(ResourceType type, int x, int y,
-                                       int quantity)
+void SimpleGameManager::removeResource(ResourceType type, int x, int y, int quantity)
 {
-    if (!isValidPosition(x, y)) {
-        std::cerr << "Invalid position for resource removal: (" << x << ", "
-                  << y << ")" << std::endl;
-        return;
-    }
-
     TileDisplay* tile = getTile(x, y);
     if (!tile) {
         std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
@@ -449,11 +441,7 @@ void SimpleGameManager::removeResource(ResourceType type, int x, int y,
     std::vector<Resources*> resourcesToRemove;
     const auto& resources = tile->getContentManager()->getResources();
 
-    std::cout << "Resources on tile (" << x << ", " << y << "):" << std::endl;
     for (const auto& res : resources) {
-        std::cout << "  - ID: " << res->getId()
-                  << ", Type: " << static_cast<int>(res->getResourceType())
-                  << std::endl;
         if (res->getResourceType() == type) {
             resourcesToRemove.push_back(res);
             if (resourcesToRemove.size() >= static_cast<size_t>(quantity)) {
@@ -464,8 +452,7 @@ void SimpleGameManager::removeResource(ResourceType type, int x, int y,
 
     int removedCount = 0;
     for (auto* resource : resourcesToRemove) {
-        if (removedCount >= quantity)
-            break;
+        if (removedCount >= quantity) break;
         tile->getContentManager()->removeResource(resource);
         delete resource;
         removedCount++;
