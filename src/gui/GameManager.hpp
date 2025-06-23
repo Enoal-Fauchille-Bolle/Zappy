@@ -44,6 +44,8 @@ public:
     void readResponse(const std::string& response);
     std::pair<int, int> getMapSize() const;
 
+    void cleanup();
+
 private:
     Scenne* _scene;
     CommandHandler* _commandHandler;

@@ -24,7 +24,8 @@
 /**
  * @brief Main entry point for the Zappy GUI application.
  *
- * Parses command line arguments, initializes the application, game manager, and main loop.
+ * Parses command line arguments, initializes the application, game manager, and
+ * main loop.
  *
  * @param argc Number of command line arguments.
  * @param argv Array of command line arguments.
@@ -35,8 +36,7 @@ int main(int argc, char **argv)
     try {
         gui::Parser parser(argc, argv);
 
-        NetworkManager::initialize(parser.getHost(),
-            parser.getPort());
+        NetworkManager::initialize(parser.getHost(), parser.getPort());
         NetworkManager::send("GRAPHIC");
         std::string response = NetworkManager::receive();
 
@@ -51,9 +51,10 @@ int main(int argc, char **argv)
             gameManager.update();
             app.getRoot()->renderOneFrame();
         }
+        gameManager.cleanup();
         app.closeApp();
         return 0;
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 84;
     }
