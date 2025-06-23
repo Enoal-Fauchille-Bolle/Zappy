@@ -14,7 +14,6 @@
 #include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
-#include "vector.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -58,11 +57,10 @@ static void send_tile_info(client_t *client, tile_t *tile, pos_t pos)
  * @param pos The current position in the map being processed.
  * @param vtable The vector vtable used to access the tiles.
  */
-static void iterate_tiles(
-    client_t *client, pos_t pos, const vector_vtable_t *vtable)
+static void iterate_tiles(client_t *client, size_t index, map_t *map)
 {
-    tile_t *tile = vtable->at(client->server->game->map->tiles,
-        pos.y * client->server->game->map->width + pos.x);
+    tile_t *tile = get_tile_by_index(map, index);
+    pos_t pos = {index % map->width, index / map->width};
 
     if (tile == NULL) {
         debug_error(client->server->options->debug,
@@ -70,11 +68,6 @@ static void iterate_tiles(
         return;
     }
     send_tile_info(client, tile, pos);
-    pos.x++;
-    if (pos.x >= (int)client->server->game->map->width) {
-        pos.x = 0;
-        pos.y++;
-    }
 }
 
 /**
@@ -88,13 +81,9 @@ static void iterate_tiles(
  */
 void mct_command(client_t *client, command_t *command)
 {
-    const vector_vtable_t *vtable =
-        vector_get_vtable(client->server->game->map->tiles);
-    pos_t pos = {0, 0};
+    map_t *map = client->server->game->map;
 
     (void)command;
-    while (pos.y < (int)client->server->game->map->height &&
-        pos.x < (int)client->server->game->map->width) {
-        iterate_tiles(client, pos, vtable);
-    }
+    for (size_t i = 0; i < map->height * map->width; i++)
+        iterate_tiles(client, i, client->server->game->map);
 }
