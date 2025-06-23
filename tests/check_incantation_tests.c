@@ -11,34 +11,27 @@
 #include "map/resources.h"
 #include "map/tile.h"
 #include "team/player/player.h"
+#include "game/incantation.h"
 #include <criterion/criterion.h>
 #include <time.h>
 
-Test(check_incantation, check_requirements_null_player, .timeout = 2)
+Test(check_incantation, check_requirements_null_map, .timeout = 2)
 {
-    player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
-    map_t *map = create_map(10, 10, false);
+    pos_t pos = {0, 0};
+    level_t level = 1;
 
-    cr_assert_eq(check_incantation_requirements(NULL, map), false,
-        "Should return false for NULL player");
-    cr_assert_eq(check_incantation_requirements(player, NULL), false,
+    cr_assert_eq(check_incantation_requirements(NULL, pos, level), false,
         "Should return false for NULL map");
-    cr_assert_eq(check_incantation_requirements(NULL, NULL), false,
-        "Should return false for NULL map and player");
-    destroy_player(player);
-    destroy_map(map);
 }
 
 Test(check_incantation, player_already_at_max_level, .timeout = 2)
 {
-    player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
-    player->level = MAX_PLAYER_LEVEL;
+    pos_t pos = {0, 0};
+    level_t level = MAX_PLAYER_LEVEL;
     map_t *map = create_map(10, 10, false);
 
-    add_player_to_map(map, player);
-    cr_assert_eq(check_incantation_requirements(player, map), false,
+    cr_assert_eq(check_incantation_requirements(map, pos, level), false,
         "Should return false for player already at max level");
-    destroy_player(player);
     destroy_map(map);
 }
 
@@ -46,10 +39,12 @@ Test(check_incantation, player_at_level_2_not_enough_players, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
     map_t *map = create_map(10, 10, false);
+    pos_t pos = {0, 0};
+    level_t level = 2;
 
     add_player_to_map(map, player);
     player->level = 2;
-    cr_assert_eq(check_incantation_requirements(player, map), false,
+    cr_assert_eq(check_incantation_requirements(map, pos, level), false,
         "Should return false for player at level 2 with not enough players");
     destroy_player(player);
     destroy_map(map);
@@ -59,11 +54,13 @@ Test(check_incantation, player_at_level_1_valid, .timeout = 2)
 {
     player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
     map_t *map = create_map(10, 10, false);
+    pos_t pos = {0, 0};
+    level_t level = 1;
 
     add_player_to_map(map, player);
     get_tile(map, player->pos)->resources[LINEMATE] = 1;
 
-    cr_assert_eq(check_incantation_requirements(player, map), true,
+    cr_assert_eq(check_incantation_requirements(map, pos, level), true,
         "Should return true for player at level 1 with enough resources");
     destroy_player(player);
     destroy_map(map);
@@ -75,6 +72,8 @@ Test(check_incantation, player_at_level_2_valid, .timeout = 2)
     player_t *another_player = create_player((pos_t){0, 0}, 2, NULL, NULL);
     map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile(map, player->pos);
+    pos_t pos = {0, 0};
+    level_t level = 2;
 
     add_player_to_map(map, player);
     add_player_to_map(map, another_player);
@@ -84,7 +83,7 @@ Test(check_incantation, player_at_level_2_valid, .timeout = 2)
     tile->resources[DERAUMERE] = 1;
     tile->resources[SIBUR] = 1;
 
-    cr_assert_eq(check_incantation_requirements(player, map), true,
+    cr_assert_eq(check_incantation_requirements(map, pos, level), true,
         "Should return true for player at level 2 with enough resources");
     destroy_player(player);
     destroy_map(map);
@@ -96,6 +95,8 @@ Test(check_incantation, player_at_level_2_invalid, .timeout = 2)
     player_t *another_player = create_player((pos_t){0, 0}, 2, NULL, NULL);
     map_t *map = create_map(10, 10, false);
     tile_t *tile = get_tile(map, player->pos);
+    pos_t pos = {0, 0};
+    level_t level = 2;
 
     add_player_to_map(map, player);
     add_player_to_map(map, another_player);
@@ -104,7 +105,7 @@ Test(check_incantation, player_at_level_2_invalid, .timeout = 2)
     tile->resources[DERAUMERE] = 1;
     tile->resources[SIBUR] = 1;
 
-    cr_assert_eq(check_incantation_requirements(player, map), false,
+    cr_assert_eq(check_incantation_requirements(map, pos, level), false,
         "Should return false for player at level 2 with enough resources");
     destroy_player(player);
     destroy_map(map);
