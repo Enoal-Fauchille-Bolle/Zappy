@@ -14,7 +14,6 @@ EggDieCommand::EggDieCommand()
 }
 
 void EggDieCommand::execute(const std::string& args, SimpleGameManager& gameManager) {
-    std::cout << "EggDieCommand " << args << std::endl;
     std::string idStr;
     int id;
 
