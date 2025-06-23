@@ -73,6 +73,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)options_parser/options/frequency.c			\
 			 	$(SRCDIR_SERVER)options_parser/options/help.c				\
 			 	$(SRCDIR_SERVER)options_parser/options/debug.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/display_eggs.c		\
 			 	$(SRCDIR_SERVER)connection/server.c							\
 			 	$(SRCDIR_SERVER)connection/client.c							\
 			 	$(SRCDIR_SERVER)connection/client_message.c					\
@@ -92,6 +93,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)team/player/movement.c						\
 				$(SRCDIR_SERVER)team/player/look.c							\
 				$(SRCDIR_SERVER)team/player/inventory.c						\
+				$(SRCDIR_SERVER)team/player/ejection.c						\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
@@ -117,6 +119,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/fork.c							\
 				$(SRCDIR_SERVER)commands/ai/take.c							\
 				$(SRCDIR_SERVER)commands/ai/set.c							\
+				$(SRCDIR_SERVER)commands/ai/eject.c							\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
 				$(SRCDIR_SERVER)commands/gui/ppo.c							\
 				$(SRCDIR_SERVER)commands/gui/pnw.c							\
@@ -240,6 +243,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/player/movement.c							\
 			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/player/inventory.c							\
+			$(SRCDIR_SERVER)team/player/ejection.c							\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
@@ -265,6 +269,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)options_parser/options/frequency.c				\
 			$(SRCDIR_SERVER)options_parser/options/help.c					\
 			$(SRCDIR_SERVER)options_parser/options/debug.c					\
+			$(SRCDIR_SERVER)options_parser/options/display_eggs.c			\
 			$(SRCDIR_SERVER)command_handler/command_executor.c				\
 			$(SRCDIR_SERVER)game/game.c										\
 			$(SRCDIR_SERVER)game/tick.c										\
@@ -278,6 +283,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/fork.c								\
 			$(SRCDIR_SERVER)commands/ai/take.c								\
 			$(SRCDIR_SERVER)commands/ai/set.c								\
+			$(SRCDIR_SERVER)commands/ai/eject.c								\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			$(SRCDIR_SERVER)commands/gui/ppo.c								\
 			$(SRCDIR_SERVER)commands/gui/pnw.c								\

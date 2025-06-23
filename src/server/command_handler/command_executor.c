@@ -21,7 +21,7 @@ const command_registry_entry_t ai_command_registry[] = {
     {"right", right_command}, {"look", look_command},
     {"inventory", inventory_command}, {"connect_nbr", connect_nbr_command},
     {"fork", fork_command}, {"take", take_command}, {"set", set_command},
-    {NULL, NULL}};
+    {"eject", eject_command}, {NULL, NULL}};
 
 const command_registry_entry_t gui_command_registry[] = {{"msz", msz_command},
     {"ppo", ppo_command}, {"bct", bct_command}, {"mct", mct_command},

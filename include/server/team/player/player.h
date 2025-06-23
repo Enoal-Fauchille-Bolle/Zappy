@@ -56,4 +56,6 @@ void remove_player_from_tile(tile_t *tile, player_t *player);
 void add_player_to_map(map_t *map, player_t *player);
 void remove_player_from_map(map_t *map, player_t *player);
 
+bool eject(player_t *player, map_t *map);
+
 #endif /* !PLAYER_H_ */

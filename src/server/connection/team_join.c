@@ -7,14 +7,17 @@
 
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
+#include "connection/client_message.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
 #include "game/teams.h"
+#include "map/resources.h"
 #include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "team/team.h"
+#include "vector.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -53,6 +56,15 @@ static bool validate_team(
     return SUCCESS;
 }
 
+static void send_new_player_to_guis(server_t *server, player_t *player)
+{
+    send_to_all_guis(server, "pin #%zu %d %d %zu %zu %zu %zu %zu %zu\n",
+        player->id, player->pos.x, player->pos.y, player->inventory[FOOD],
+        player->inventory[LINEMATE], player->inventory[DERAUMERE],
+        player->inventory[SIBUR], player->inventory[MENDIANE],
+        player->inventory[PHIRAS], player->inventory[THYSTAME]);
+}
+
 /**
  * @brief Assigns a client to a specific team and creates a new client instance
  *
@@ -77,11 +89,12 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
+    pnw_command(server->clients[client_index - 2]->player);
+    send_new_player_to_guis(server, server->clients[client_index - 2]->player);
     debug_game(server->options->debug,
         "Player %d (Client %d) assigned to team '%s'\n",
         server->clients[client_index - 2]->player->id, client_index - 2,
         team->name);
-    pnw_command(server->clients[client_index - 2]->player);
     return SUCCESS;
 }
 
@@ -132,7 +145,7 @@ static bool validate_and_assign_team(
  * array
  * @return true on success (always returns SUCCESS)
  */
-static bool send_welcome_message(server_t *server, int client_index)
+static bool send_ai_welcome_message(server_t *server, int client_index)
 {
     team_t *team = server->clients[client_index - 2]->player->team;
 
@@ -140,6 +153,48 @@ static bool send_welcome_message(server_t *server, int client_index)
     dprintf(server->fds[client_index].fd, "%ld %ld\n", server->options->width,
         server->options->height);
     return SUCCESS;
+}
+
+static void display_team_eggs_info(
+    server_t *server, int client_index, team_t *team)
+{
+    const vector_vtable_t *vtable = vector_get_vtable(team->eggs);
+    egg_t *egg = NULL;
+
+    for (size_t i = 0; i < get_egg_count(team); i++) {
+        egg = *(egg_t **)vtable->at(team->eggs, i);
+        if (egg == NULL) {
+            continue;
+        }
+        dprintf(server->fds[client_index].fd, "enw #%zu #%d %d %d\n", egg->id,
+            egg->parent_id != 0 ? (int)egg->parent_id : -1, egg->pos.x,
+            egg->pos.y);
+        debug_map(server->options->debug,
+            "Egg #%zu spawned by player #%zu at (%d, %d)\n", egg->id,
+            egg->parent_id, egg->pos.x, egg->pos.y);
+    }
+}
+
+static void display_eggs_info(server_t *server, int client_index)
+{
+    team_t *team = NULL;
+
+    for (size_t i = 0; server->game->teams[i] != NULL; i++) {
+        team = server->game->teams[i];
+        if (team == NULL) {
+            continue;
+        }
+        display_team_eggs_info(server, client_index, team);
+    }
+}
+
+static void send_gui_welcome_message(server_t *server, int client_index)
+{
+    msz_command(server->clients[client_index - 2], NULL);
+    sgt_command(server->clients[client_index - 2], NULL);
+    mct_command(server->clients[client_index - 2], NULL);
+    tna_command(server->clients[client_index - 2], NULL);
+    display_eggs_info(server, client_index);
 }
 
 static bool handle_gui_client(
@@ -153,6 +208,7 @@ static bool handle_gui_client(
                 "Failed to create GUI client at index %d\n", client_index - 2);
             return FAILURE;
         }
+        send_gui_welcome_message(server, client_index);
         return SUCCESS;
     }
     return FAILURE;
@@ -184,7 +240,7 @@ bool handle_team_join(
             client_index - 2);
         return FAILURE;
     }
-    if (send_welcome_message(server, client_index) == FAILURE) {
+    if (send_ai_welcome_message(server, client_index) == FAILURE) {
         debug_warning(server->options->debug,
             "Failed to send welcome message to client %d\n", client_index - 2);
         return FAILURE;

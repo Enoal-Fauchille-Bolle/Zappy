@@ -25,5 +25,5 @@ void pfk_command(player_t *player)
 {
     if (player == NULL)
         return;
-    send_to_all_guis(player->team->game->server, "pfk %zu\n", player->id);
+    send_to_all_guis(player->team->game->server, "pfk #%zu\n", player->id);
 }

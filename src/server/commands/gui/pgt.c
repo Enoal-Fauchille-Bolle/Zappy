@@ -30,5 +30,5 @@ void pgt_command(player_t *player, resource_t resource)
         player->team->game->server == NULL)
         return;
     send_to_all_guis(
-        player->team->game->server, "pgt %zu %zu\n", player->id, resource);
+        player->team->game->server, "pgt #%zu %zu\n", player->id, resource);
 }

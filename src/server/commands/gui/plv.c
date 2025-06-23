@@ -30,7 +30,7 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    dprintf(client->sockfd, "plv %zu %d\n", player->id, player->level);
+    dprintf(client->sockfd, "plv #%zu %d\n", player->id, player->level);
     debug_player(client->server->options->debug,
         "plv command sent for player ID %zu: level %d\n", player->id,
         player->level);

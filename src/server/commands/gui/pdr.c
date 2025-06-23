@@ -30,5 +30,5 @@ void pdr_command(player_t *player, resource_t resource)
         player->team->game->server == NULL)
         return;
     send_to_all_guis(
-        player->team->game->server, "pdr %zu %zu\n", player->id, resource);
+        player->team->game->server, "pdr #%zu %zu\n", player->id, resource);
 }

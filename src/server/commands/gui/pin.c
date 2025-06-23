@@ -32,7 +32,7 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    dprintf(client->sockfd, "pin %zu %d %d %zu %zu %zu %zu %zu %zu %zu\n",
+    dprintf(client->sockfd, "pin #%zu %d %d %zu %zu %zu %zu %zu %zu %zu\n",
         player->id, player->pos.x, player->pos.y, player->inventory[FOOD],
         player->inventory[LINEMATE], player->inventory[DERAUMERE],
         player->inventory[SIBUR], player->inventory[MENDIANE],

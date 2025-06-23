@@ -25,5 +25,5 @@ void ebo_command(egg_t *egg)
 {
     if (egg == NULL)
         return;
-    send_to_all_guis(egg->team->game->server, "ebo %zu\n", egg->id);
+    send_to_all_guis(egg->team->game->server, "ebo #%zu\n", egg->id);
 }

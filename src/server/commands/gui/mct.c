@@ -85,5 +85,5 @@ void mct_command(client_t *client, command_t *command)
 
     (void)command;
     for (size_t i = 0; i < map->height * map->width; i++)
-        iterate_tiles(client, i, client->server->game->map);
+        iterate_tiles(client, i, map);
 }
