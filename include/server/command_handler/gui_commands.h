@@ -25,6 +25,7 @@ void sgt_command(client_t *client, command_t *command);
 void sst_command(client_t *client, command_t *command);
 
 // GUI Events
+void ppo_event(player_t *player);
 void pnw_event(player_t *player);
 void pdi_event(player_t *player);
 void enw_event(egg_t *egg);

@@ -120,6 +120,7 @@ static void eject_player_from_tile(tile_t *tile, player_t *ejecting_player,
         ejected_player->id, ejecting_player->pos.x, ejecting_player->pos.y,
         pos.x, pos.y, orientation_names[ejected_player->orientation]);
     dprintf(ejected_player->client->sockfd, "eject: %d\n", orientation_origin);
+    ppo_event(ejected_player);
 }
 
 /**

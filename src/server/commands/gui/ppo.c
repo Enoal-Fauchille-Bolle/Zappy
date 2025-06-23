@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/client_message.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -101,6 +102,25 @@ static bool check_player_exists(player_t *player, client_t *client)
         return FAILURE;
     }
     return SUCCESS;
+}
+
+/**
+ * @brief Sends player position and orientation to all GUIs.
+ *
+ * This function formats the player's position and orientation and sends it to
+ * all connected GUIs. It is typically called when a player's position changes.
+ *
+ * @param player The player whose position and orientation will be sent.
+ */
+void ppo_event(player_t *player)
+{
+    if (player == NULL || player->client == NULL ||
+        player->client->server == NULL) {
+        fprintf(stderr, "Invalid player or client pointer\n");
+        return;
+    }
+    send_to_all_guis(player->client->server, "ppo %zu %d %d %d\n", player->id,
+        player->pos.x, player->pos.y, player->orientation + 1);
 }
 
 /**
