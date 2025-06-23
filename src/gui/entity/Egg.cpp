@@ -27,7 +27,6 @@ Egg::Egg(int id, int parentId)
  */
 Egg::~Egg()
 {
-    this->getSceneNode()->getCreator()->destroyEntity(this->getOgreEntity());
 }
 
 /**

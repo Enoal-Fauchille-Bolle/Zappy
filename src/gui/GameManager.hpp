@@ -37,8 +37,9 @@ public:
     void eggToPlayer(int eggId);
     void removeEgg(int id);
 
-    void createResource(ResourceType type, int x, int y, int quantity = 1);
-    void removeResource(ResourceType type, int x, int y, int quantity = 1);
+    void updateResource(ResourceType type, int x, int y, int quantity);
+    void createResource(ResourceType type, int x, int y, int quantity);
+    void removeResource(ResourceType type, int x, int y, int quantity);
 
     void update();
     void readResponse(const std::string& response);

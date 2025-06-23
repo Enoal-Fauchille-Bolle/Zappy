@@ -21,7 +21,7 @@ void BoardContentCommand::execute(const std::string& args, SimpleGameManager& ga
     int resourceType = 0;
 
     while (iss >> quantity) {
-        gameManager.createResource(static_cast<ResourceType>(resourceType), x, y, quantity);
+        gameManager.updateResource(static_cast<ResourceType>(resourceType), x, y, quantity);
         resourceType++;
     }
 }

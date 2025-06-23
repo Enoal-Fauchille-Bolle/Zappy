@@ -160,7 +160,7 @@ const std::vector<Entity*>& TileContentManager::getEntities() const {
  * @param resourceName Name of the resource type.
  * @param quantity Quantity to set.
  */
-void TileContentManager::setResourceQuantity(const std::string& resourceName, int quantity) {
+void TileContentManager::setResourceQuantity(ResourceType resourceName, int quantity) {
     _resourceQuantities[resourceName] = quantity;
 }
 
@@ -170,7 +170,7 @@ void TileContentManager::setResourceQuantity(const std::string& resourceName, in
  * @param resourceName Name of the resource type.
  * @return The quantity of the resource, or 0 if not found.
  */
-int TileContentManager::getResourceQuantity(const std::string& resourceName) const {
+int TileContentManager::getResourceQuantity(ResourceType resourceName) const {
     auto it = _resourceQuantities.find(resourceName);
     return (it != _resourceQuantities.end()) ? it->second : 0;
 }

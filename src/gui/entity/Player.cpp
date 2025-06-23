@@ -39,7 +39,6 @@ Player::Player(int id, const std::string &teamName)
  */
 Player::~Player()
 {
-    this->getSceneNode()->getCreator()->destroyEntity(this->getOgreEntity());
 }
 
 /**
