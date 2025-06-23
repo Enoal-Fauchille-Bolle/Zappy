@@ -24,6 +24,7 @@ typedef struct egg_s egg_t;
 
 typedef size_t player_id_t;
 typedef size_t egg_id_t;
+
 typedef struct player_s {
     player_id_t id;
     pos_t pos;
@@ -34,7 +35,7 @@ typedef struct player_s {
     size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
     bool doing_action;
     team_t *team;
-    client_t *client;   // Pointer to the client managing this player
+    client_t *client;      // Pointer to the client managing this player
 } player_t;
 
 player_t *create_player(
@@ -50,12 +51,11 @@ char *look(player_t *player, map_t *map);
 char *check_inventory(player_t *player);
 bool take_resource(player_t *player, map_t *map, resource_t resource);
 bool set_resource(player_t *player, map_t *map, resource_t resource);
+bool eject(player_t *player, map_t *map);
 
 void add_player_to_tile(tile_t *tile, player_t *player);
 void remove_player_from_tile(tile_t *tile, player_t *player);
 void add_player_to_map(map_t *map, player_t *player);
 void remove_player_from_map(map_t *map, player_t *player);
-
-bool eject(player_t *player, map_t *map);
 
 #endif /* !PLAYER_H_ */
