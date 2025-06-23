@@ -27,9 +27,8 @@ class PlayerVision:
         self.orientation = GameConstants.Orientation.UNKNOWN
 
         self.vision_data: list[Tile] = []
-        self.vison_level: int = 0
+        self.vison_level: int = 1
 
-        self.nearest_food: Optional[TilePos] = None
         self.visible_resources: list[ResourcePos] = []
 
     def set_dimension(self, width: int, height: int) -> None:
@@ -44,44 +43,38 @@ class PlayerVision:
 
     def _analyse_vision(self) -> None:
         """Analyse current vision data to find food and resources"""
-        food_positions: list[TilePos] = []
         resources_positions: list[ResourcePos] = []
 
         for i, tile_items in enumerate(self.vision_data):
             tile_pos: RelativePos = self._get_relative_position(i)
 
             for resource in tile_items:
-                if resource == "food":
-                    food_positions.append((tile_pos, i))
-                # elif resource in GameConstants.RESOURCES:
-                # avoid checking for food
                 resources_positions.append((resource, tile_pos, i))
-
-        self.nearest_food = self._find_nearest_food(food_positions)
         self.visible_resources = resources_positions
 
 
     def _get_relative_position(self, tile_index: int) -> RelativePos:
         """Convert tile index to relative position based on vison level"""
+        if tile_index < 0 or tile_index >= len(self.vision_data):
+            raise IndexError("Tile index out of range")
+        row = tile_index // (self.vison_level * 2 + 1)
+        col = tile_index % (self.vison_level * 2 + 1)
+        rel_x = col - self.vison_level
+        rel_y = row - self.vison_level
+        return (rel_x, rel_y)
 
-        # Simple level 1 vision:
-        if self.vison_level == 1:
-            if tile_index == 0:
-                return (-1, -1)
-            elif tile_index == 1:
-                return (-1, 0)
-            elif tile_index == 2:
-                return (-1, 1)
-
-        return (0, 0)
-
-    def _find_nearest_food(self, food_positions: list[TilePos]) -> Optional[TilePos]:
-        """Find the nearest food from current position"""
-        if not food_positions:
-            return None
-
-        # For now return the first food found
-        return food_positions[0]
+    def find_nearest_resource(self, resource_type: str) -> Optional[TilePos]:
+        """Find the nearest resource of a specific type"""
+        nearest_resource: Optional[TilePos] = None
+        min_distance: float = float('inf')
+        for resource in self.visible_resources:
+            if resource[0] == resource_type:
+                distance = (resource[1][0] - self.player_pos[0]) ** 2 + \
+                           (resource[1][1] - self.player_pos[1]) ** 2
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_resource = (resource[1], resource[2])
+        return nearest_resource
 
     def update_player_position(self, x: int, y: int,
                                direction: Optional[GameConstants.Orientation]) \
@@ -95,7 +88,7 @@ class PlayerVision:
 
     @property
     def is_food_visible(self) -> bool:
-        return self.nearest_food is not None
+        return self.find_nearest_resource("food") is not None
 
     def get_tile_content(self, tile_index: int) -> Tile:
         """Get the content of a specific tile"""

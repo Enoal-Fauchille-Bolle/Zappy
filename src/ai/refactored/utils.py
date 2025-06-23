@@ -33,6 +33,7 @@ class GameConstants:
     DEFAULT_FREQUENCY:int = 100
 
     RESOURCES: list[str] = [
+        "food",
         "linemate",
         "deraumere",
         "sibur",
