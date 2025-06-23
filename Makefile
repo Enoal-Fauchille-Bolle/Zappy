@@ -93,6 +93,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)team/player/movement.c						\
 				$(SRCDIR_SERVER)team/player/look.c							\
 				$(SRCDIR_SERVER)team/player/inventory.c						\
+				$(SRCDIR_SERVER)team/player/ejection.c						\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
@@ -118,6 +119,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/fork.c							\
 				$(SRCDIR_SERVER)commands/ai/take.c							\
 				$(SRCDIR_SERVER)commands/ai/set.c							\
+				$(SRCDIR_SERVER)commands/ai/eject.c							\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
 				$(SRCDIR_SERVER)commands/gui/ppo.c							\
 				$(SRCDIR_SERVER)commands/gui/pnw.c							\
@@ -241,6 +243,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/player/movement.c							\
 			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/player/inventory.c							\
+			$(SRCDIR_SERVER)team/player/ejection.c							\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
@@ -280,6 +283,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/fork.c								\
 			$(SRCDIR_SERVER)commands/ai/take.c								\
 			$(SRCDIR_SERVER)commands/ai/set.c								\
+			$(SRCDIR_SERVER)commands/ai/eject.c								\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			$(SRCDIR_SERVER)commands/gui/ppo.c								\
 			$(SRCDIR_SERVER)commands/gui/pnw.c								\
