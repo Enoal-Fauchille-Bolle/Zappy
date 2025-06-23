@@ -26,5 +26,6 @@ void init_tile(tile_t *tile);
 tile_t *get_tile(const map_t *map, const pos_t pos);
 tile_t *get_tile_by_index(const map_t *map, size_t index);
 size_t get_nb_players_on_tile(const tile_t *tile);
+size_t get_nb_eggs_on_tile(const tile_t *tile);
 
 #endif /* !TILE_H_ */
