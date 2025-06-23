@@ -6,6 +6,7 @@
 */
 
 #include "command_handler/ai_commands.h"
+#include "command_handler/gui_commands.h"
 #include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
@@ -17,6 +18,7 @@
 void eject_command(client_t *client, command_t *command)
 {
     (void)command;
+    pex_command(client->player);
     if (!eject(client->player, client->server->game->map)) {
         write(client->sockfd, "ko\n", 3);
         return;
