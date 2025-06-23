@@ -41,6 +41,34 @@ char *check_inventory(player_t *player)
 }
 
 /**
+ * @brief Validate parameters and get the tile for resource operations.
+ *
+ * This helper function validates the input parameters and retrieves the tile
+ * where the player is located for resource operations.
+ *
+ * @param player Pointer to the player structure.
+ * @param map Pointer to the map structure.
+ * @param resource The type of resource to validate.
+ * @return Pointer to the tile if valid, NULL otherwise.
+ */
+static tile_t *validate_and_get_tile(
+    player_t *player, map_t *map, resource_t resource)
+{
+    tile_t *tile;
+
+    if (!player || !map || resource < FOOD || resource >= RESOURCE_COUNT) {
+        fprintf(stderr, "Invalid parameters for resource operation\n");
+        return NULL;
+    }
+    tile = get_tile(map, player->pos);
+    if (!tile) {
+        fprintf(stderr, "Tile not found for player position\n");
+        return NULL;
+    }
+    return tile;
+}
+
+/**
  * @brief Take a resource from the tile where the player is located.
  *
  * This function allows a player to take a specified resource from the tile
@@ -56,18 +84,14 @@ bool take_resource(player_t *player, map_t *map, resource_t resource)
 {
     tile_t *tile;
 
-    if (!player || !map || resource < FOOD || resource >= RESOURCE_COUNT) {
-        fprintf(stderr, "Invalid parameters for taking resource\n");
-        return false;
-    }
-    tile = get_tile(map, player->pos);
+    tile = validate_and_get_tile(player, map, resource);
     if (!tile) {
-        fprintf(stderr, "Tile not found for player position\n");
         return false;
     }
     if (tile->resources[resource] > 0) {
         player->inventory[resource]++;
         tile->resources[resource]--;
+        pin_event(player);
         pgt_event(player, resource);
         if (player->client && player->client->server)
             bct_event(tile, player->pos, player->client->server);
@@ -92,18 +116,14 @@ bool set_resource(player_t *player, map_t *map, resource_t resource)
 {
     tile_t *tile;
 
-    if (!player || !map || resource < FOOD || resource >= RESOURCE_COUNT) {
-        fprintf(stderr, "Invalid parameters for setting resource\n");
-        return false;
-    }
-    tile = get_tile(map, player->pos);
+    tile = validate_and_get_tile(player, map, resource);
     if (!tile) {
-        fprintf(stderr, "Tile not found for player position\n");
         return false;
     }
     if (player->inventory[resource] > 0) {
         player->inventory[resource]--;
         tile->resources[resource]++;
+        pin_event(player);
         pdr_event(player, resource);
         if (player->client && player->client->server)
             bct_event(tile, player->pos, player->client->server);

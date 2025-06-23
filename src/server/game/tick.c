@@ -50,6 +50,7 @@ static bool handle_player_starvation(player_t *player)
         return true;
     }
     player->inventory[FOOD]--;
+    pin_event(player);
     debug_player(player->client->server->options->debug,
         "Player %zu has eaten, remaining food: %zu\n", player->id,
         player->inventory[FOOD]);

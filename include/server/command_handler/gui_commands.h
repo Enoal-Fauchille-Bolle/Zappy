@@ -30,6 +30,7 @@ void sst_command(client_t *client, command_t *command);
 void ppo_event(player_t *player);
 void bct_event(tile_t *tile, pos_t pos, server_t *server);
 void pnw_event(player_t *player);
+void pin_event(player_t *player);
 void pdi_event(player_t *player);
 void enw_event(egg_t *egg);
 void ebo_event(egg_t *egg);
