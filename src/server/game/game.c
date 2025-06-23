@@ -145,8 +145,8 @@ player_t *get_player_by_id(game_t *game, size_t id)
  */
 static bool init_game(game_t *game, server_t *server)
 {
-    game->map = create_map(server->options->width, server->options->height,
-        server->options->debug);
+    game->map =
+        create_map(server->options->width, server->options->height, server);
     if (!game->map) {
         destroy_game(game);
         return FAILURE;
