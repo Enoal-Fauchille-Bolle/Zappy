@@ -263,6 +263,8 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
  * @brief Update the game state and handle time-based events.
  */
 void SimpleGameManager::update() {
+    std::string response = NetworkManager::receive(false);
+    readResponse(response);
     static int time = 0;
     time++;
     if (time == 100) {
