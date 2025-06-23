@@ -155,6 +155,27 @@ static tile_t *get_tile_at_offset(
 }
 
 /**
+ * @brief Add tiles around the player to the contents string.
+ *
+ * This function iterates through all tiles visible to the player based on
+ * their level and adds each tile's contents to the provided string.
+ *
+ * @param player Pointer to the player structure whose position is being used.
+ * @param map Pointer to the map structure containing the tiles.
+ * @param contents Pointer to the string where tile contents will be added.
+ * @param display_eggs Boolean indicating whether to display eggs on tiles.
+ */
+static void add_visible_tiles(player_t *player, map_t *map, char **contents,
+    bool display_eggs)
+{
+    for (size_t depth = 1; depth <= player->level; depth++) {
+        for (size_t width = 0; width < depth * 2 + 1; width++)
+            add_tile_to_list(get_tile_at_offset(map, player, depth, width),
+                contents, display_eggs);
+    }
+}
+
+/**
  * @brief Look around the player's current tile and return their contents.
  *
  * This function retrieves the contents of the tiles where the player is
@@ -172,6 +193,7 @@ static tile_t *get_tile_at_offset(
 char *look(player_t *player, map_t *map)
 {
     char *contents = empty_string(1);
+    bool display_eggs = false;
 
     if (player == NULL || map == NULL) {
         fprintf(stderr, "Invalid player or map pointer\n");
@@ -180,15 +202,13 @@ char *look(player_t *player, map_t *map)
     }
     if (!contents)
         return NULL;
+    if (player->client && player->client->server &&
+        player->client->server->options)
+        display_eggs = player->client->server->options->display_eggs;
     strcat(contents, "[");
-    dyn_strcat_free(
-        &contents, get_tile_contents(get_tile(map, player->pos),
-        player->client->server->options->display_eggs));
-    for (size_t depth = 1; depth <= player->level; depth++) {
-        for (size_t width = 0; width < depth * 2 + 1; width++)
-            add_tile_to_list(get_tile_at_offset(map, player, depth, width),
-                &contents, player->client->server->options->display_eggs);
-    }
+    dyn_strcat_free(&contents,
+        get_tile_contents(get_tile(map, player->pos), display_eggs));
+    add_visible_tiles(player, map, &contents, display_eggs);
     dyn_strcat(&contents, "]");
     return contents;
 }
