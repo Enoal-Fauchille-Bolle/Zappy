@@ -7,14 +7,19 @@
 
 """Zappy AI Package"""
 
+from .client import ZappyAi
 from .network import NetworkManager
 from .utils import GameConstants, MessageParser, AIUtils
-from .vision import PlayerVision
+from .vision import PlayerVision, Tile, TilePos, ResourcePos
 
 __all__ = [
+    "ZappyAi",
     "NetworkManager",
     "GameConstants",
     "MessageParser",
     "AIUtils",
-    "PlayerVision"
+    "PlayerVision",
+    "Tile",
+    "TilePos",
+    "ResourcePos"
 ]

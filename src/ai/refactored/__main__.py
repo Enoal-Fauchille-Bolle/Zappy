@@ -8,6 +8,7 @@
 import sys
 import argparse
 import asyncio
+from refactored import ZappyAi
 
 def validate_port(value: str) -> int:
     """Validate that the port number is within valid range (1024-65535)"""
@@ -36,14 +37,18 @@ def parse_argument() -> argparse.Namespace:
                         help="Show this help message and exit")
     return parser.parse_args()
 
-def main(argc: int, argv: list[str]) -> int:
+async def main(argc: int, argv: list[str]) -> int:
     try:
         args = parse_argument()
+
+        ai = ZappyAi(args.hostname, args.port, args.team_name)
+        await ai.run()
+
         return 0
     except Exception as e:
         print(f"Error: {e}")
         return 84
 
 if __name__ == "__main__":
-    exit_code = main(len(sys.argv), sys.argv)
+    exit_code: int = asyncio.run(main(len(sys.argv), sys.argv))
     sys.exit(exit_code)

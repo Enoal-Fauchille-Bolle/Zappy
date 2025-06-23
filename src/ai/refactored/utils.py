@@ -80,6 +80,9 @@ class MessageParser:
     @staticmethod
     def parse_vision(vision_string: str) -> list[list[str]]:
         """Parse vision string into structured data"""
+        if not vision_string.startswith('[player'):
+            raise Exception("Unexpected message after Look command")
+
         vision_data: list[list[str]] = []
         tiles: list[str] = vision_string.strip("[]").split(",")
         for tile_content in tiles:
@@ -94,6 +97,8 @@ class MessageParser:
     @staticmethod
     def parse_inventory(inventory_string: str) -> dict[str, int]:
         """Parse inventory string into structured data"""
+        if not inventory_string.startswith("[food"):
+            raise Exception("Unexpected message after Inventory command")
         inventory: dict[str, int] = {}
         items: list[str] = inventory_string.strip("[]").split(",")
 
@@ -106,6 +111,8 @@ class MessageParser:
     @staticmethod
     def parse_broadcast(message: str) -> tuple[int, str]:
         """Parse broadcast message into direction and message"""
+        if not message.startswith("message"):
+            raise Exception("Unexpected string")
         parts: list[str] = message.split(',')
         direction = int(parts[0].split()[1])
         text = parts[1].strip().strip("\"")
