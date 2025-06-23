@@ -59,21 +59,21 @@ static void send_tile_info(client_t *client, tile_t *tile, pos_t pos)
  * @param vtable The vector vtable used to access the tiles.
  */
 static void iterate_tiles(
-    client_t *client, pos_t pos, const vector_vtable_t *vtable)
+    client_t *client, pos_t *pos, const vector_vtable_t *vtable)
 {
     tile_t *tile = vtable->at(client->server->game->map->tiles,
-        pos.y * client->server->game->map->width + pos.x);
+        pos->y * client->server->game->map->width + pos->x);
 
     if (tile == NULL) {
         debug_error(client->server->options->debug,
-            "Failed to retrieve tile at (%d, %d)\n", pos.x, pos.y);
+            "Failed to retrieve tile at (%d, %d)\n", pos->x, pos->y);
         return;
     }
-    send_tile_info(client, tile, pos);
-    pos.x++;
-    if (pos.x >= (int)client->server->game->map->width) {
-        pos.x = 0;
-        pos.y++;
+    send_tile_info(client, tile, *pos);
+    pos->x++;
+    if (pos->x >= (int)client->server->game->map->width) {
+        pos->x = 0;
+        pos->y++;
     }
 }
 
@@ -95,6 +95,6 @@ void mct_command(client_t *client, command_t *command)
     (void)command;
     while (pos.y < (int)client->server->game->map->height &&
         pos.x < (int)client->server->game->map->width) {
-        iterate_tiles(client, pos, vtable);
+        iterate_tiles(client, &pos, vtable);
     }
 }
