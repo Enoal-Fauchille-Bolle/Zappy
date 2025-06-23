@@ -37,8 +37,8 @@ public:
     void removeEntity(Entity* entity);
     const std::vector<Entity*>& getEntities() const;
 
-    void setResourceQuantity(const std::string& resourceName, int quantity);
-    int getResourceQuantity(const std::string& resourceName) const;
+    void setResourceQuantity(ResourceType resourceName, int quantity);
+    int getResourceQuantity(ResourceType resourceName) const;
 
     Position getPosition() const;
     std::pair<int, int> getCoordinates() const;
@@ -50,7 +50,7 @@ private:
     std::vector<Resources*> _resources;
     std::vector<Egg*> _eggs;
     std::vector<Entity*> _entities;
-    std::map<std::string, int> _resourceQuantities;
+    std::map<ResourceType, int> _resourceQuantities;
 };
 
 #endif /* !TILE_CONTENT_MANAGER_HPP_ */

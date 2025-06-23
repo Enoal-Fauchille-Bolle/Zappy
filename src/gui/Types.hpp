@@ -72,8 +72,8 @@ namespace Constants {
 
 // Utility functions
 namespace Utils {
-    inline std::string generateResourceId(int x, int y, int index) {
-        return "resource_" + std::to_string(x) + "_" + std::to_string(y) + "_" + std::to_string(index);
+    inline std::string generateResourceId(ResourceType type, int x, int y, int index) {
+        return std::to_string(static_cast<int>(type)) + "_" + std::to_string(x) + "_" + std::to_string(y) + "_" + std::to_string(index);
     }
     
     inline std::string generateTileId(int x, int y) {

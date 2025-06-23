@@ -218,19 +218,42 @@ void SimpleGameManager::removeEgg(int id) {
     _eggs.erase(it);
 }
 
+/** * @brief update resources of the specified type from the given position.
+ *
+ * @param type Type of resource to remove.
+ * @param x X coordinate on the map.
+ * @param y Y coordinate on the map.
+ * @param quantity Number of resources have on tile.
+ */
+
+void SimpleGameManager::updateResource(ResourceType type, int x, int y, int quantity)
+{
+    TileDisplay* tile = getTile(x, y);
+    if (!tile) {
+        std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
+        return;
+    }
+
+    int currentResourceCount = tile->getContentManager()->getResourceQuantity(type);
+
+    if (currentResourceCount < quantity) {
+        createResource(type, x, y, quantity - currentResourceCount);
+    } else if (currentResourceCount > quantity) {
+        removeResource(type, x, y, currentResourceCount - quantity);
+    }
+    tile->getContentManager()->setResourceQuantity(type, quantity);
+}
+
 /**
  * @brief Create resources of the specified type at the given position.
- * 
+ *
  * @param type Type of resource to create.
  * @param x X coordinate on the map.
  * @param y Y coordinate on the map.
  * @param quantity Number of resources to create (default: 1).
+ * @param index Index for positioning resources uniquely.
  */
 void SimpleGameManager::createResource(ResourceType type, int x, int y, int quantity) {
-    if (!isValidPosition(x, y)) {
-        std::cerr << "Invalid position for resource: (" << x << ", " << y << ")" << std::endl;
-        return;
-    }
 
     TileDisplay* tile = getTile(x, y);
     if (!tile) {
@@ -238,24 +261,24 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
         return;
     }
 
-    int currentResourceCount = tile->getContentManager()->getResources().size();
+    int index = tile->getContentManager()->getResources().size();
 
     for (int i = 0; i < quantity; ++i) {
-        int resourceIndex = currentResourceCount + i;
         if (type == ResourceType::FOOD) {
-            Resources* resource = new Resources(Utils::generateResourceId(x, y, resourceIndex), "fish.mesh", type);
+            Resources* resource = new Resources(Utils::generateResourceId(type, x, y, index), "fish.mesh", type);
             resource->attachToScene(_scene->getSceneManager());
             resource->initialize();
             resource->setScale(0.5f, 0.5f, 0.5f);
-            positionResourceOnTile(resource, x, y, resourceIndex);
+            positionResourceOnTile(resource, x, y, index);
             tile->getContentManager()->addResource(resource);
         } else {
-            Resources* resource = new Resources(Utils::generateResourceId(x, y, resourceIndex), "knot.mesh", type);
+            Resources* resource = new Resources(Utils::generateResourceId(type, x, y, index), "knot.mesh", type);
             resource->attachToScene(_scene->getSceneManager());
             resource->initialize();
-            positionResourceOnTile(resource, x, y, resourceIndex);
+            positionResourceOnTile(resource, x, y, index);
             tile->getContentManager()->addResource(resource);
         }
+        index++;
     }
 }
 
@@ -263,17 +286,6 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
  * @brief Update the game state and handle time-based events.
  */
 void SimpleGameManager::update() {
-    std::string response = NetworkManager::receive(false);
-    readResponse(response);
-    static int time = 0;
-    time++;
-    if (time == 100) {
-        updatePlayerPosition(1, 1, 0, Orientation::NORTH);
-        removeResource(ResourceType::FOOD, 2, 2, 2);
-    }
-    if (time == 200) {
-        removePlayer(1);
-    }
     std::string response = NetworkManager::receive(false);
     readResponse(response);
 }
@@ -390,7 +402,7 @@ void SimpleGameManager::positionResourceOnTile(Resources* resource, int x, int y
  * @param type Type of resource to remove.
  * @param x X coordinate of the tile.
  * @param y Y coordinate of the tile.
- * @param quantity Number of resources to remove (default: 1).
+ * @param quantity Number of resources to remove.
  */
 void SimpleGameManager::removeResource(ResourceType type, int x, int y, int quantity) {
     if (!isValidPosition(x, y)) {
