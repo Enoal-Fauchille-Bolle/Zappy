@@ -44,7 +44,7 @@ static void destroy_eggs_on_tile(tile_t *tile, game_t *game)
         egg = *(egg_t **)vtable->at(tile->eggs, i - 1);
         if (!egg)
             continue;
-        edi_command(egg);
+        edi_event(egg);
         debug_map(game->server->options->debug,
             "Destroying egg %zu at (%ld, %ld) for team %s\n", egg->id,
             egg->pos.x, egg->pos.y, egg->team ? egg->team->name : "No Team");

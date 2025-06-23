@@ -45,7 +45,7 @@ static bool handle_player_starvation(player_t *player)
         debug_game(player->client->server->options->debug,
             "Player %zu (Client %d) has starved\n", player->id,
             player->client->index);
-        pdi_command(player);
+        pdi_event(player);
         remove_client(player->client->server, player->client->index + 2);
         return true;
     }

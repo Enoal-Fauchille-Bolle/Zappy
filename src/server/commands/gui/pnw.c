@@ -20,7 +20,7 @@
  *
  * @param player The player whose information is being sent.
  */
-void pnw_command(player_t *player)
+void pnw_event(player_t *player)
 {
     if (player == NULL)
         return;

@@ -20,7 +20,7 @@
  * @param player Pointer to the player structure whose resource is being sent.
  * @param resource The type of resource that the player has gained.
  */
-void pgt_command(player_t *player, resource_t resource)
+void pgt_event(player_t *player, resource_t resource)
 {
     if (player == NULL)
         return;

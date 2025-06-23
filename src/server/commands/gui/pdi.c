@@ -20,7 +20,7 @@
  *
  * @param player The player who has disconnected.
  */
-void pdi_command(player_t *player)
+void pdi_event(player_t *player)
 {
     if (player == NULL)
         return;

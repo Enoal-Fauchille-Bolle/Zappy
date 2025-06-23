@@ -18,7 +18,7 @@
 void eject_command(client_t *client, command_t *command)
 {
     (void)command;
-    pex_command(client->player);
+    pex_event(client->player);
     if (!eject(client->player, client->server->game->map)) {
         write(client->sockfd, "ko\n", 3);
         return;

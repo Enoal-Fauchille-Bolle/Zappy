@@ -154,7 +154,7 @@ player_t *spawn_player_from_egg(
         client->server->options != NULL) {
         debug_player_spawn(client, player, egg);
     }
-    ebo_command(egg);
+    ebo_event(egg);
     remove_egg_from_map(map, egg);
     remove_egg_from_team(egg->team, egg);
     destroy_egg(egg);

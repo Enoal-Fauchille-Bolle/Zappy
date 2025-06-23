@@ -13,23 +13,26 @@
     #include "map/resources.h"
     #include "team/player/player.h"
 
-void msz_command(client_t *client, command_t *command); // Command
-void ppo_command(client_t *client, command_t *command); // Command
-void pnw_command(player_t *player); // Global Event
-void bct_command(client_t *client, command_t *command); // Command
-void mct_command(client_t *client, command_t *command); // Command
-void plv_command(client_t *client, command_t *command); // Command
-void tna_command(client_t *client, command_t *command); // Command
-void pdi_command(player_t *player); // Global Event
-void pin_command(client_t *client, command_t *command); // Command
-void enw_command(egg_t *egg); // Global Event
-void ebo_command(egg_t *egg); // Global Event
-void pfk_command(player_t *player); // Global Event
-void pdr_command(player_t *player, resource_t resource); // Global Event
-void pgt_command(player_t *player, resource_t resource); // Global Event
-void sgt_command(client_t *client, command_t *command); // Command
-void sst_command(client_t *client, command_t *command); // Command
-void edi_command(egg_t *egg); // Global Event
-void pex_command(player_t *player); // Global Event
+// GUI Commands
+void ppo_command(client_t *client, command_t *command);
+void msz_command(client_t *client, command_t *command);
+void bct_command(client_t *client, command_t *command);
+void mct_command(client_t *client, command_t *command);
+void plv_command(client_t *client, command_t *command);
+void tna_command(client_t *client, command_t *command);
+void pin_command(client_t *client, command_t *command);
+void sgt_command(client_t *client, command_t *command);
+void sst_command(client_t *client, command_t *command);
+
+// GUI Events
+void pnw_event(player_t *player);
+void pdi_event(player_t *player);
+void enw_event(egg_t *egg);
+void ebo_event(egg_t *egg);
+void pfk_event(player_t *player);
+void pdr_event(player_t *player, resource_t resource);
+void pgt_event(player_t *player, resource_t resource);
+void edi_event(egg_t *egg);
+void pex_event(player_t *player);
 
 #endif /* !GUI_COMMANDS_H_ */

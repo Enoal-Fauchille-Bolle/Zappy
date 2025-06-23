@@ -20,7 +20,7 @@
  *
  * @param player The player who ejected his tile.
  */
-void pex_command(player_t *player)
+void pex_event(player_t *player)
 {
     if (player == NULL)
         return;

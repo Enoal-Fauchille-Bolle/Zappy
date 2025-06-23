@@ -12,7 +12,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-void enw_command(egg_t *egg)
+void enw_event(egg_t *egg)
 {
     if (egg == NULL || egg->team == NULL)
         return;

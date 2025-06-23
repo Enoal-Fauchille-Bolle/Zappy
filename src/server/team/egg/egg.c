@@ -72,7 +72,7 @@ egg_t *create_egg(
             debug_map(debug, "Egg %zu created at (%zu, %zu) for team %s\n",
                 egg->id, pos.x, pos.y, team->name);
     }
-    enw_command(egg);
+    enw_event(egg);
     return egg;
 }
 

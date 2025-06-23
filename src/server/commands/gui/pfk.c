@@ -21,7 +21,7 @@
  * @param egg Pointer to the egg structure containing the egg ID and team
  * information. If NULL, the function does nothing.
  */
-void pfk_command(player_t *player)
+void pfk_event(player_t *player)
 {
     if (player == NULL)
         return;

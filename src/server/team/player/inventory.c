@@ -68,7 +68,7 @@ bool take_resource(player_t *player, map_t *map, resource_t resource)
     if (tile->resources[resource] > 0) {
         player->inventory[resource]++;
         tile->resources[resource]--;
-        pgt_command(player, resource);
+        pgt_event(player, resource);
         return true;
     }
     return false;
@@ -102,7 +102,7 @@ bool set_resource(player_t *player, map_t *map, resource_t resource)
     if (player->inventory[resource] > 0) {
         player->inventory[resource]--;
         tile->resources[resource]++;
-        pdr_command(player, resource);
+        pdr_event(player, resource);
         return true;
     }
     return false;

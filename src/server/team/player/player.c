@@ -164,7 +164,7 @@ egg_t *lay_egg(player_t *player, map_t *map)
         fprintf(stderr, "Failed to create egg\n");
         return NULL;
     }
-    pfk_command(player);
+    pfk_event(player);
     add_egg_to_map(map, egg);
     return egg;
 }

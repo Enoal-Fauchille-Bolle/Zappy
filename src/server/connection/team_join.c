@@ -89,7 +89,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         write(server->fds[client_index].fd, "ko\n", 3);
         return FAILURE;
     }
-    pnw_command(server->clients[client_index - 2]->player);
+    pnw_event(server->clients[client_index - 2]->player);
     send_new_player_to_guis(server, server->clients[client_index - 2]->player);
     debug_game(server->options->debug,
         "Player %d (Client %d) assigned to team '%s'\n",

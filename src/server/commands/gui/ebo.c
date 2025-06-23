@@ -21,7 +21,7 @@
  * @param egg Pointer to the egg structure containing the egg ID and team
  * information. If NULL, the function does nothing.
  */
-void ebo_command(egg_t *egg)
+void ebo_event(egg_t *egg)
 {
     if (egg == NULL)
         return;
