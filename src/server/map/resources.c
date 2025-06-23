@@ -6,7 +6,9 @@
 */
 
 #include "map/resources.h"
+#include "command_handler/gui_commands.h"
 #include "debug_categories.h"
+#include "map/coordinates.h"
 #include "map/resource_names.h"
 #include "map/tile.h"
 #include <stddef.h>
@@ -93,6 +95,9 @@ static void place_resource_at_random_position(
         if (show_comma)
             printf(", ");
     }
+    bct_event(current_tile,
+        (pos_t){tile_index % map->width, tile_index / map->width},
+        map->server);
 }
 
 /**

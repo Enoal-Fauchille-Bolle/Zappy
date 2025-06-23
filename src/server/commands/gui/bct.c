@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/client_message.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -114,6 +115,19 @@ static void send_tile_info(client_t *client, tile_t *tile, pos_t pos)
         "Client %d: bct command sent for tile at (%d, %d): "
         "%zu food, %zu linemate, %zu deraumere, %zu sibur, "
         "%zu mendiane, %zu phiras, %zu thystame\n", client->index,
+        pos.x, pos.y, tile->resources[FOOD], tile->resources[LINEMATE],
+        tile->resources[DERAUMERE], tile->resources[SIBUR],
+        tile->resources[MENDIANE], tile->resources[PHIRAS],
+        tile->resources[THYSTAME]);
+}
+
+void bct_event(tile_t *tile, pos_t pos, server_t *server)
+{
+    if (tile == NULL || server == NULL) {
+        fprintf(stderr, "Invalid tile or server pointer in bct_event\n");
+        return;
+    }
+    send_to_all_guis(server, "bct %d %d %zu %zu %zu %zu %zu %zu %zu\n",
         pos.x, pos.y, tile->resources[FOOD], tile->resources[LINEMATE],
         tile->resources[DERAUMERE], tile->resources[SIBUR],
         tile->resources[MENDIANE], tile->resources[PHIRAS],

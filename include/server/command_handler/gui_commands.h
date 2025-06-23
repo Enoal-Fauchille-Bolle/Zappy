@@ -10,7 +10,9 @@
 
     #include "command_handler/command.h"
     #include "connection/client.h"
+    #include "map/coordinates.h"
     #include "map/resources.h"
+    #include "map/tile.h"
     #include "team/player/player.h"
 
 // GUI Commands
@@ -26,6 +28,7 @@ void sst_command(client_t *client, command_t *command);
 
 // GUI Events
 void ppo_event(player_t *player);
+void bct_event(tile_t *tile, pos_t pos, server_t *server);
 void pnw_event(player_t *player);
 void pdi_event(player_t *player);
 void enw_event(egg_t *egg);

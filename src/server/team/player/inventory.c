@@ -69,6 +69,8 @@ bool take_resource(player_t *player, map_t *map, resource_t resource)
         player->inventory[resource]++;
         tile->resources[resource]--;
         pgt_event(player, resource);
+        if (player->client && player->client->server)
+            bct_event(tile, player->pos, player->client->server);
         return true;
     }
     return false;
@@ -103,6 +105,8 @@ bool set_resource(player_t *player, map_t *map, resource_t resource)
         player->inventory[resource]--;
         tile->resources[resource]++;
         pdr_event(player, resource);
+        if (player->client && player->client->server)
+            bct_event(tile, player->pos, player->client->server);
         return true;
     }
     return false;
