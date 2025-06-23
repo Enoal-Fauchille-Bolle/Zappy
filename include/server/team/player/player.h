@@ -53,6 +53,8 @@ bool take_resource(player_t *player, map_t *map, resource_t resource);
 bool set_resource(player_t *player, map_t *map, resource_t resource);
 bool eject(player_t *player, map_t *map);
 
+bool check_incantation_requirements(player_t *player, map_t *map);
+
 void add_player_to_tile(tile_t *tile, player_t *player);
 void remove_player_from_tile(tile_t *tile, player_t *player);
 void add_player_to_map(map_t *map, player_t *player);
