@@ -24,5 +24,5 @@ void pdi_command(player_t *player)
 {
     if (player == NULL)
         return;
-    send_to_all_guis(player->client->server, "pdi %zu\n", player->id);
+    send_to_all_guis(player->client->server, "pdi #%zu\n", player->id);
 }
