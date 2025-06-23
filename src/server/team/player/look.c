@@ -5,6 +5,7 @@
 ** look
 */
 
+#include "connection/server.h"
 #include "map/coordinates.h"
 #include "map/map.h"
 #include "map/resource_names.h"
@@ -52,17 +53,43 @@ static void concat_resources(char **contents, tile_t *tile)
 }
 
 /**
+ * @brief Concatenate eggs from a tile into a string.
+ *
+ * This function appends the number of eggs on a tile to the provided contents
+ * string. If the last character of the contents is not a space and there are
+ * eggs on the tile, it adds a space before appending the egg information.
+ *
+ * @param contents Pointer to the string where eggs will be concatenated.
+ * @param tile Pointer to the tile containing eggs.
+ */
+static void concat_eggs(char **contents, tile_t *tile)
+{
+    size_t egg_count;
+
+    if (*contents == NULL || tile == NULL) {
+        fprintf(stderr, "Invalid contents or tile pointer\n");
+        return;
+    }
+    egg_count = get_nb_eggs_on_tile(tile);
+    if (egg_count > 0) {
+        if (strlen(*contents) > 0 && (*contents)[strlen(*contents) - 1] != ' ')
+            dyn_strcat(contents, " ");
+        dyn_strcat_free(contents, repeat_string("egg", " ", egg_count));
+    }
+}
+
+/**
  * @brief Get the contents of a tile as a string.
  *
  * This function retrieves the number of players on the tile and concatenates
- * it with the resources present on that tile. It returns a dynamically
- * allocated string containing this information.
+ * it with the resources and eggs present on that tile. It returns a
+ * dynamically allocated string containing this information.
  *
  * @param tile Pointer to the tile whose contents are being retrieved.
  * @return A dynamically allocated string containing the tile's contents, or
  * NULL if an error occurs.
  */
-static char *get_tile_contents(tile_t *tile)
+static char *get_tile_contents(tile_t *tile, bool display_eggs)
 {
     char *contents = empty_string(0);
 
@@ -76,6 +103,8 @@ static char *get_tile_contents(tile_t *tile)
     dyn_strcat_free(
         &contents, repeat_string("player", " ", get_nb_players_on_tile(tile)));
     concat_resources(&contents, tile);
+    if (display_eggs)
+        concat_eggs(&contents, tile);
     return contents;
 }
 
@@ -90,9 +119,9 @@ static char *get_tile_contents(tile_t *tile)
  * @param contents Pointer to the string where the tile's contents will be
  * appended.
  */
-static void add_tile_to_list(tile_t *tile, char **contents)
+static void add_tile_to_list(tile_t *tile, char **contents, bool display_eggs)
 {
-    char *tile_content = get_tile_contents(tile);
+    char *tile_content = get_tile_contents(tile, display_eggs);
 
     if (tile_content == NULL) {
         fprintf(stderr, "Failed to get tile contents\n");
@@ -152,11 +181,13 @@ char *look(player_t *player, map_t *map)
     if (!contents)
         return NULL;
     strcat(contents, "[");
-    dyn_strcat_free(&contents, get_tile_contents(get_tile(map, player->pos)));
+    dyn_strcat_free(
+        &contents, get_tile_contents(get_tile(map, player->pos),
+        player->client->server->options->display_eggs));
     for (size_t depth = 1; depth <= player->level; depth++) {
         for (size_t width = 0; width < depth * 2 + 1; width++)
-            add_tile_to_list(
-                get_tile_at_offset(map, player, depth, width), &contents);
+            add_tile_to_list(get_tile_at_offset(map, player, depth, width),
+                &contents, player->client->server->options->display_eggs);
     }
     dyn_strcat(&contents, "]");
     return contents;

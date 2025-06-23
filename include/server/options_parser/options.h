@@ -21,6 +21,7 @@ typedef struct server_options_s {
     char **teams;
     size_t clients_nb;
     tick_rate_t frequency;
+    bool display_eggs;
     bool help;
     bool debug;
     bool error;
