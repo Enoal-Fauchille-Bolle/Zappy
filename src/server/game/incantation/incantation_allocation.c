@@ -82,6 +82,7 @@ static void fill_players_array(player_t **players, tile_t *tile, level_t level,
 
     for (size_t i = 0; i < vtable->size(tile->players); i++) {
         player = *(player_t **)vtable->at(tile->players, i);
+        player->in_incantation = true;
         player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
         dprintf(player->client->sockfd, "Elevation underway\n");
         debug_player(player->client->server->options->debug,

@@ -53,6 +53,7 @@ player_t *create_player(
     player->hunger_cooldown = GAME_TICK_FOOD_COOLDOWN;
     player->tick_cooldown = 0;
     player->doing_action = false;
+    player->in_incantation = false;
     add_player_to_team(team, player);
     player->client = client;
     return player;

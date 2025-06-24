@@ -34,6 +34,7 @@ typedef struct player_s {
     tick_t tick_cooldown;       // If 0, player can act
     size_t hunger_cooldown;     // If 0, player NEEDS to eat or die
     bool doing_action;          // If player is currently performing an action
+    bool in_incantation;        // If player is in an incantation
     team_t *team;               // Pointer to the team this player belongs to
     client_t *client;           // Pointer to the client managing this player
 } player_t;
