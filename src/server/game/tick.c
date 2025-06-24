@@ -42,7 +42,7 @@ static bool handle_player_starvation(player_t *player)
         return false;
     }
     if (player->inventory[FOOD] == 0) {
-        debug_game(player->client->server->options->debug,
+        debug_player(player->client->server->options->debug,
             "Player %zu (Client %d) has starved\n", player->id,
             player->client->index);
         pdi_event(player);
