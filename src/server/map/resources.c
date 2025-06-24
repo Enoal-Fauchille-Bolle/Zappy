@@ -172,8 +172,8 @@ char *get_inventory_string(const inventory_t inventory)
         return NULL;
     }
     snprintf(inventory_str, 256,
-        "[food: %zu, linemate: %zu, deraumere: %zu, "
-        "sibur: %zu, mendiane: %zu, phiras: %zu, thystame: %zu]",
+        "[ food %zu, linemate %zu, deraumere %zu, "
+        "sibur %zu, mendiane %zu, phiras %zu, thystame %zu ]",
         inventory[FOOD], inventory[LINEMATE], inventory[DERAUMERE],
         inventory[SIBUR], inventory[MENDIANE], inventory[PHIRAS],
         inventory[THYSTAME]);
