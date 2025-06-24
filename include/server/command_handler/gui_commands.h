@@ -38,5 +38,6 @@ void pdr_event(player_t *player, resource_t resource);
 void pgt_event(player_t *player, resource_t resource);
 void edi_event(egg_t *egg);
 void pex_event(player_t *player);
+void plv_event(player_t *player);
 
 #endif /* !GUI_COMMANDS_H_ */

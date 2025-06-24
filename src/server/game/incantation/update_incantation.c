@@ -5,6 +5,7 @@
 ** Update Incantation
 */
 
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "debug_categories.h"
@@ -57,6 +58,7 @@ static void level_up_players(incantation_t *incantation)
         player = incantation->players[i];
         player->level = incantation->level + 1;
         dprintf(player->client->sockfd, "Current level: %u\n", player->level);
+        plv_event(player);
         debug_player(player->client->server->options->debug,
             "Player %zu has leveled up to level %u\n", player->id,
             player->level);
