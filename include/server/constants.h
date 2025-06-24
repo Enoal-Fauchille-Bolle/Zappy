@@ -29,9 +29,4 @@ extern const int EXIT_ERROR_CODE;
 
     #define MAX_INITIAL_CLIENTS 1000000
 
-    #define GAME_TICK_DEBUG_INTERVAL 100
-    #define GAME_RESOURCE_SPAWN_INTERVAL 20
-
-    #define MAX_PLAYER_LEVEL 8
-
 #endif /* !CONSTANTS_H_ */

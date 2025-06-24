@@ -5,12 +5,12 @@
 ** Take Command
 */
 
-#include "command_handler/ai_commands.h"
 #include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug_categories.h"
+#include "game/game_constants.h"
 #include "map/resource_names.h"
 #include "map/resources.h"
 #include "team/player/player.h"

@@ -5,9 +5,9 @@
 ** Incantation Allocation
 */
 
-#include "command_handler/ai_commands.h"
 #include "connection/client.h"
 #include "game/game.h"
+#include "game/game_constants.h"
 #include "game/incantation.h"
 #include "map/coordinates.h"
 #include "map/tile.h"
