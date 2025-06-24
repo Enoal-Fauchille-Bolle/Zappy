@@ -25,6 +25,7 @@ typedef struct incantation_s {
 
 bool check_incantation_requirements(map_t *map, pos_t pos, level_t level);
 incantation_t *create_incantation(game_t *game, pos_t pos, level_t level);
+void update_incantation(incantation_t *incantation, game_t *game);
 void destroy_incantation(incantation_t *incantation);
 void destroy_incantation_vector(vector_t *incantations);
 

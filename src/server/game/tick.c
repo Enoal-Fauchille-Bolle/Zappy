@@ -16,6 +16,7 @@
 #include "debug_categories.h"
 #include "game/game.h"
 #include "game/game_constants.h"
+#include "game/incantation.h"
 #include "map/resources.h"
 #include "options_parser/options.h"
 #include "team/egg/egg.h"
@@ -208,6 +209,30 @@ static void read_guis_command_buffer(server_t *server)
 }
 
 /**
+ * @brief Update the incantation by decrementing ticks and completing it if
+ * necessary
+ *
+ * This function iterates through all incantations in the game, updating each
+ * one by decrementing its ticks left. If the ticks reach zero, it completes
+ * the incantation and removes it from the vector.
+ *
+ * @param game Pointer to the game structure containing incantations vector
+ */
+static void update_incantations(game_t *game)
+{
+    const vector_vtable_t *vtable = vector_get_vtable(game->incantations);
+    incantation_t *incantation = NULL;
+
+    for (size_t i = vtable->size(game->incantations); i > 0; i--) {
+        incantation = *(incantation_t **)vtable->at(game->incantations, i - 1);
+        if (incantation == NULL) {
+            continue;
+        }
+        update_incantation(incantation, game);
+    }
+}
+
+/**
  * @brief Advances the game tick counter
  *
  * This function increments the game tick counter, which is used to track
@@ -221,6 +246,7 @@ void game_tick(game_t *game, server_options_t *options)
         debug_game(options->debug, "Game tick %u\n", game->game_tick);
     }
     update_players_ticks(game);
+    update_incantations(game);
     read_players_command_buffer(game);
     read_guis_command_buffer(game->server);
     if (game->game_tick % GAME_RESOURCE_SPAWN_INTERVAL == 0) {

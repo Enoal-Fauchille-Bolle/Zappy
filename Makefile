@@ -97,6 +97,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)team/player/ejection.c						\
 				$(SRCDIR_SERVER)game/incantation/check_incantation.c		\
 				$(SRCDIR_SERVER)game/incantation/incantation_allocation.c	\
+				$(SRCDIR_SERVER)game/incantation/update_incantation.c		\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
@@ -253,6 +254,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/player/ejection.c							\
 			$(SRCDIR_SERVER)game/incantation/check_incantation.c			\
 			$(SRCDIR_SERVER)game/incantation/incantation_allocation.c		\
+			$(SRCDIR_SERVER)game/incantation/update_incantation.c			\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
