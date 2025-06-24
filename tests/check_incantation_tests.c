@@ -12,6 +12,7 @@
 #include "map/tile.h"
 #include "team/player/player.h"
 #include "game/incantation.h"
+#include "game/game_constants.h"
 #include <criterion/criterion.h>
 #include <time.h>
 
