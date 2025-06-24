@@ -458,3 +458,55 @@ void SimpleGameManager::removeResource(ResourceType type, int x, int y, int quan
         removedCount++;
     }
 }
+
+/**
+ * @brief Clean up all game resources before shutdown
+ *
+ * This method must be called before Ogre shutdown to prevent segfaults
+ */
+void SimpleGameManager::cleanup()
+{
+    for (auto& [id, player] : _players) {
+        if (player) {
+            for (auto& row : _tiles) {
+                for (auto& tile : row) {
+                    if (tile) {
+                        tile->getContentManager()->removePlayer(player);
+                    }
+                }
+            }
+            delete player;
+        }
+    }
+    _players.clear();
+    for (auto& [id, egg] : _eggs) {
+        if (egg) {
+            for (auto& row : _tiles) {
+                for (auto& tile : row) {
+                    if (tile) {
+                        tile->getContentManager()->removeEgg(egg);
+                    }
+                }
+            }
+            delete egg;
+        }
+    }
+    _eggs.clear();
+    for (auto& row : _tiles) {
+        for (auto& tile : row) {
+            if (tile) {
+                const auto& resources =
+                    tile->getContentManager()->getResources();
+                for (auto* resource : resources) {
+                    delete resource;
+                }
+                delete tile;
+            }
+        }
+    }
+    _tiles.clear();
+    if (_commandHandler) {
+        delete _commandHandler;
+        _commandHandler = nullptr;
+    }
+}
