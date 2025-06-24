@@ -56,8 +56,9 @@ void destroy_incantation_vector(vector_t *incantations)
 
     for (size_t i = 0; i < size; i++) {
         incantation = *(incantation_t **)vtable->at(incantations, i);
+        if (incantation == NULL)
+            continue;
         destroy_incantation(incantation);
-        free(incantation);
     }
     vector_destroy(incantations);
 }
