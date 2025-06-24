@@ -185,8 +185,8 @@ Test(inventory, get_inventory_string, .timeout = 2)
 
     cr_assert_not_null(inventory_str, "Inventory string should not be NULL");
     cr_assert_str_eq(inventory_str,
-        "[food: 10, linemate: 5, deraumere: 3, "
-        "sibur: 2, mendiane: 1, phiras: 9, thystame: 2]",
+        "[ food 10, linemate 5, deraumere 3, "
+        "sibur 2, mendiane 1, phiras 9, thystame 2 ]",
         "Inventory string should match expected format");
     free(inventory_str);
 }
