@@ -6,6 +6,7 @@
 */
 
 #include "options_parser/parser.h"
+#include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,7 @@ static const option_map_t options_map[] = {{"-p", handle_port},
     {"-x", handle_width}, {"-y", handle_height}, {"-n", handle_teams},
     {"-c", handle_clients}, {"-f", handle_frequency}, {"-h", handle_help},
     {"--help", handle_help}, {"-d", handle_debug}, {"--debug", handle_debug},
+    {"-de", handle_display_eggs}, {"--display-eggs", handle_display_eggs},
     {NULL, NULL}};
 static const server_options_t default_options = {.port = 0,
     .width = 0,
@@ -21,6 +23,7 @@ static const server_options_t default_options = {.port = 0,
     .teams = NULL,
     .clients_nb = 0,
     .frequency = 0,
+    .display_eggs = false,
     .help = false,
     .debug = false,
     .error = false};

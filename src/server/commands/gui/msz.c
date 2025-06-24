@@ -26,6 +26,7 @@ void msz_command(client_t *client, command_t *command)
     (void)command;
     dprintf(client->sockfd, "msz %zu %zu\n", client->server->game->map->width,
         client->server->game->map->height);
-    debug_map(client->server->options->debug, "msz command sent: %zu %zu\n",
+    debug_map(client->server->options->debug,
+        "Client %d: msz command sent: %zu %zu\n", client->index,
         client->server->game->map->width, client->server->game->map->height);
 }

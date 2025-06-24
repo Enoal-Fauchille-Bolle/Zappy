@@ -32,6 +32,10 @@ void add_player_to_team(team_t *team, player_t *player)
     }
     player->team = team;
     vtable = vector_get_vtable(team->players);
+    if (!vtable) {
+        fprintf(stderr, "Invalid vtable pointer\n");
+        return;
+    }
     vtable->push_back(team->players, &player);
 }
 
@@ -66,6 +70,16 @@ void remove_player_from_team(team_t *team, player_t *player)
     fprintf(stderr, "Player not found on team\n");
 }
 
+/**
+ * @brief Get the number of players in a team.
+ *
+ * This function returns the number of players in a team's players vector.
+ * It checks if the team pointer and its players vector are valid before
+ * attempting to retrieve the size.
+ *
+ * @param team Pointer to the team structure
+ * @return size_t The number of players in the team, or 0 if invalid
+ */
 size_t get_team_player_count(const team_t *team)
 {
     const vector_vtable_t *vtable;

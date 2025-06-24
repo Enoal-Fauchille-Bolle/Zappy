@@ -56,7 +56,7 @@ static vector_t *init_eggs_vector(void)
  * @return Pointer to the newly created team_t structure on success,
  *         NULL if memory allocation fails
  */
-team_t *create_team(const char *name)
+team_t *create_team(const char *name, game_t *game)
 {
     team_t *team = malloc(sizeof(team_t));
 
@@ -72,6 +72,7 @@ team_t *create_team(const char *name)
         destroy_team(team);
         return NULL;
     }
+    team->game = game;
     return team;
 }
 

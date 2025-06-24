@@ -5,7 +5,9 @@
 ** map
 */
 
+#include "connection/server.h"
 #include "debug_categories.h"
+#include "map/coordinates.h"
 #include "map/tile.h"
 #include "vector.h"
 #include <stddef.h>
@@ -41,6 +43,28 @@ static vector_t *init_tiles_vector(size_t width, size_t height)
 }
 
 /**
+ * @brief Initialize a tile with default values.
+ *
+ * This function sets the resources of a tile to zero and initializes its
+ * players and eggs vectors. It should be called for each tile in the map.
+ *
+ * @param tile Pointer to the tile structure to be initialized
+ */
+static void init_map(map_t *map, size_t width, size_t height, server_t *server)
+{
+    if (map == NULL) {
+        fprintf(stderr, "Invalid map pointer\n");
+        return;
+    }
+    map->width = width;
+    map->height = height;
+    map->tiles = init_tiles_vector(width, height);
+    map->server = server;
+    for (size_t i = 0; i < width * height; i++)
+        init_tile(get_tile_by_index(map, i));
+}
+
+/**
  * @brief Create a new map with specified dimensions.
  *
  * This function allocates memory for a map structure and initializes its
@@ -55,7 +79,7 @@ static vector_t *init_tiles_vector(size_t width, size_t height)
  * @note Caller is responsible for freeing the returned structure using
  *       destroy_map() when it is no longer needed.
  */
-map_t *create_map(size_t width, size_t height, bool debug)
+map_t *create_map(size_t width, size_t height, server_t *server)
 {
     map_t *map = malloc(sizeof(map_t));
 
@@ -69,12 +93,11 @@ map_t *create_map(size_t width, size_t height, bool debug)
         free(map);
         return NULL;
     }
-    map->width = width;
-    map->height = height;
-    map->tiles = init_tiles_vector(width, height);
-    for (size_t i = 0; i < width * height; i++)
-        init_tile(get_tile_by_index(map, i));
-    debug_map(debug, "Map created with dimensions %zu x %zu\n", width, height);
+    init_map(map, width, height, server);
+    if (server && server->options) {
+        debug_map(server->options->debug,
+        "Map created with dimensions %zu x %zu\n", width, height);
+    }
     return map;
 }
 

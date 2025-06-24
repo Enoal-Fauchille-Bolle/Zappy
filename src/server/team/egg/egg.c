@@ -6,13 +6,41 @@
 */
 
 #include "team/egg/egg.h"
+#include "command_handler/gui_commands.h"
 #include "debug_categories.h"
+#include "game/game.h"
 #include "map/coordinates.h"
 #include "map/tile.h"
 #include "team/team.h"
 #include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+/**
+ * @brief Initializes an egg structure with the provided parameters
+ *
+ * Sets up an egg by assigning it a unique ID, position, parent player ID,
+ * and associating it with a team. The egg ID is automatically incremented
+ * from the game's next available egg ID.
+ *
+ * @param egg Pointer to the egg structure to initialize
+ * @param pos Position where the egg will be placed
+ * @param team Pointer to the team that owns this egg
+ * @param parent_id ID of the player that created this egg
+ */
+static void setup_egg(
+    egg_t *egg, const pos_t pos, team_t *team, player_id_t parent_id)
+{
+    if (team != NULL) {
+        egg->id = team->game->next_egg_id;
+        team->game->next_egg_id++;
+    } else {
+        egg->id = 0;
+    }
+    egg->parent_id = parent_id;
+    egg->pos = pos;
+    egg->team = team;
+}
 
 /**
  * @brief Create a new egg at a specified position with a team pointer.
@@ -26,7 +54,8 @@
  * @return Pointer to the newly created egg_t structure on success,
  *         NULL if memory allocation fails
  */
-egg_t *create_egg(const pos_t pos, team_t *team, bool debug)
+egg_t *create_egg(
+    const pos_t pos, team_t *team, player_id_t parent_id, bool debug)
 {
     egg_t *egg = malloc(sizeof(egg_t));
 
@@ -34,16 +63,16 @@ egg_t *create_egg(const pos_t pos, team_t *team, bool debug)
         perror("Failed to allocate memory for egg");
         return NULL;
     }
-    egg->pos = pos;
-    egg->team = team;
+    setup_egg(egg, pos, team, parent_id);
     if (team == NULL) {
         perror("Team pointer is NULL, egg will not be associated with a team");
     } else {
         add_egg_to_team(team, egg);
         if (team->name)
-            debug_map(debug, "Egg created at (%zu, %zu) for team %s\n", pos.x,
-                pos.y, team->name);
+            debug_map(debug, "Egg %zu created at (%zu, %zu) for team %s\n",
+                egg->id, pos.x, pos.y, team->name);
     }
+    enw_event(egg);
     return egg;
 }
 

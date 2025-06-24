@@ -10,6 +10,7 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
+#include "game/game_constants.h"
 #include "options_parser/options.h"
 #include "team/player/player.h"
 #include <criterion/internal/assert.h>
@@ -104,7 +105,7 @@ static player_t *create_mock_player(void)
     player->orientation = NORTH;
     player->level = 1;
     player->tick_cooldown = 0;
-    player->hunger_cooldown = 126;
+    player->hunger_cooldown = GAME_TICK_FOOD_COOLDOWN;
     player->doing_action = false;
     player->team = NULL;
     player->client = NULL;

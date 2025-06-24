@@ -15,6 +15,8 @@
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
+#include "game/game_constants.h"
+#include "game/incantation.h"
 #include "map/resources.h"
 #include "options_parser/options.h"
 #include "team/egg/egg.h"
@@ -42,18 +44,19 @@ static bool handle_player_starvation(player_t *player)
         return false;
     }
     if (player->inventory[FOOD] == 0) {
-        debug_game(player->client->server->options->debug,
+        debug_player(player->client->server->options->debug,
             "Player %zu (Client %d) has starved\n", player->id,
             player->client->index);
-        pdi_command(player);
+        pdi_event(player);
         remove_client(player->client->server, player->client->index + 2);
         return true;
     }
     player->inventory[FOOD]--;
+    pin_event(player);
     debug_player(player->client->server->options->debug,
         "Player %zu has eaten, remaining food: %zu\n", player->id,
         player->inventory[FOOD]);
-    player->hunger_cooldown = 126;
+    player->hunger_cooldown = GAME_TICK_FOOD_COOLDOWN;
     return false;
 }
 
@@ -70,7 +73,7 @@ static void update_player_tick_cooldown(player_t *player)
     if (player->tick_cooldown > 0)
         player->tick_cooldown--;
     if (player->doing_action && player->tick_cooldown == 0) {
-        debug_player(player->client->server->options->debug,
+        debug_cmd(player->client->server->options->debug,
             "Player %zu is ready to act again\n", player->id);
         player->doing_action = false;
     }
@@ -150,6 +153,9 @@ static void read_player_command_buffer(player_t *player)
     player->doing_action = true;
     execute_command(player->client, command);
     destroy_command(command);
+    if (player->tick_cooldown == 0) {
+        read_player_command_buffer(player);
+    }
 }
 
 /**
@@ -204,6 +210,30 @@ static void read_guis_command_buffer(server_t *server)
 }
 
 /**
+ * @brief Update the incantation by decrementing ticks and completing it if
+ * necessary
+ *
+ * This function iterates through all incantations in the game, updating each
+ * one by decrementing its ticks left. If the ticks reach zero, it completes
+ * the incantation and removes it from the vector.
+ *
+ * @param game Pointer to the game structure containing incantations vector
+ */
+static void update_incantations(game_t *game)
+{
+    const vector_vtable_t *vtable = vector_get_vtable(game->incantations);
+    incantation_t *incantation = NULL;
+
+    for (size_t i = vtable->size(game->incantations); i > 0; i--) {
+        incantation = *(incantation_t **)vtable->at(game->incantations, i - 1);
+        if (incantation == NULL) {
+            continue;
+        }
+        update_incantation(incantation, game);
+    }
+}
+
+/**
  * @brief Advances the game tick counter
  *
  * This function increments the game tick counter, which is used to track
@@ -216,12 +246,13 @@ void game_tick(game_t *game, server_options_t *options)
     if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0) {
         debug_game(options->debug, "Game tick %u\n", game->game_tick);
     }
+    update_players_ticks(game);
+    update_incantations(game);
+    read_players_command_buffer(game);
+    read_guis_command_buffer(game->server);
     if (game->game_tick % GAME_RESOURCE_SPAWN_INTERVAL == 0) {
         spread_resources(game->map, options->debug);
     }
-    update_players_ticks(game);
-    read_players_command_buffer(game);
-    read_guis_command_buffer(game->server);
     for (int i = 0; game->teams[i] != NULL; i++) {
         spawn_min_eggs(
             game->map, game->teams[i], options->clients_nb, options->debug);

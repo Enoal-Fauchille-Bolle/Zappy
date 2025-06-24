@@ -30,6 +30,8 @@ static void print_help_page(void)
     puts("  -n team1 team2 ...  Names of teams");
     puts("  -c clientsNb        Number of clients");
     puts("  -f freq             Frequency of the server (default: 100)");
+    puts("  -de --display-eggs  Eggs are visible and destructible (default: "
+        "false)");
     puts("  -h --help           Display this help message");
     puts("  -d --debug          Enable debug mode");
 }
@@ -54,6 +56,7 @@ static void option_debug(server_options_t *options)
     }
     debug_server(true, "Clients: %zu\n", options->clients_nb);
     debug_server(true, "Frequency: %u\n", options->frequency);
+    debug_server(true, "Display eggs: %d\n", options->display_eggs);
     debug_server(true, "Help: %d\n", options->help);
     debug_server(true, "Debug: %d\n", options->debug);
     debug_server(true, "Error: %d\n", options->error);

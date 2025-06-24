@@ -120,3 +120,25 @@ size_t get_nb_players_on_tile(const tile_t *tile)
     vtable = vector_get_vtable(tile->players);
     return vtable->size(tile->players);
 }
+
+/**
+ * @brief Get the number of eggs on a tile.
+ *
+ * This function returns the number of eggs currently present on the
+ * specified tile. If the tile pointer is NULL, it prints an error message
+ * and returns 0.
+ *
+ * @param tile Pointer to the tile_t structure from which to get the egg count
+ * @return Number of eggs on the tile, or 0 if the tile pointer is NULL.
+ */
+size_t get_nb_eggs_on_tile(const tile_t *tile)
+{
+    const vector_vtable_t *vtable;
+
+    if (tile == NULL) {
+        fprintf(stderr, "Invalid tile pointer\n");
+        return 0;
+    }
+    vtable = vector_get_vtable(tile->eggs);
+    return vtable->size(tile->eggs);
+}

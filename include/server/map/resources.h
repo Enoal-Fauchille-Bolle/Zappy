@@ -27,7 +27,8 @@ typedef enum resource_e {
     SIBUR,
     MENDIANE,
     PHIRAS,
-    THYSTAME
+    THYSTAME,
+    RESOURCE_COUNT
 } resource_t;
 
 static const float resource_densities[7] = {FOOD_DENSITY, LINEMATE_DENSITY,

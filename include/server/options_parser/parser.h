@@ -30,6 +30,7 @@ void handle_height(server_options_t *opts, int *i, int ac, char **av);
 void handle_teams(server_options_t *options, int *i, int ac, char **av);
 void handle_clients(server_options_t *options, int *i, int ac, char **av);
 void handle_frequency(server_options_t *options, int *i, int ac, char **av);
+void handle_display_eggs(server_options_t *options, int *i, int ac, char **av);
 void handle_help(server_options_t *options, int *i, int ac, char **av);
 void handle_debug(server_options_t *options, int *i, int ac, char **av);
 

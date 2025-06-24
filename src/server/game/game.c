@@ -9,6 +9,7 @@
 #include "connection/server.h"
 #include "constants.h"
 #include "game/game_state.h"
+#include "game/incantation.h"
 #include "game/teams.h"
 #include "map/map.h"
 #include "map/resources.h"
@@ -42,6 +43,9 @@ void destroy_game(game_t *game)
     }
     if (game->map != NULL)
         destroy_map(game->map);
+    if (game->incantations != NULL) {
+        destroy_incantation_vector(game->incantations);
+    }
     free(game);
     game = NULL;
 }
@@ -55,7 +59,7 @@ void destroy_game(game_t *game)
  * @param teams_name Array of team names (NULL-terminated)
  * @return team_t** Pointer to array of team pointers, or NULL on failure
  */
-static team_t **create_teams(char **teams_name)
+static team_t **create_teams(char **teams_name, game_t *game)
 {
     int teams_count = get_teams_name_count(teams_name);
     team_t **team_array = malloc(sizeof(team_t) * (teams_count + 1));
@@ -65,7 +69,7 @@ static team_t **create_teams(char **teams_name)
         return NULL;
     }
     for (int i = 0; i < teams_count; i++) {
-        team_array[i] = create_team(teams_name[i]);
+        team_array[i] = create_team(teams_name[i], game);
     }
     team_array[teams_count] = NULL;
     return team_array;
@@ -132,32 +136,58 @@ player_t *get_player_by_id(game_t *game, size_t id)
 }
 
 /**
+ * @brief Initializes game core components (map, teams, incantations)
+ *
+ * This function sets up the fundamental components of the game including
+ * the map, teams array, and incantations vector.
+ *
+ * @param game Pointer to the game structure to initialize
+ * @param server Pointer to server containing configuration options
+ * @return true on successful initialization, false on failure
+ *
+ * @note On failure, allocated resources are automatically cleaned up
+ */
+static bool init_game_components(game_t *game, server_t *server)
+{
+    game->map =
+        create_map(server->options->width, server->options->height, server);
+    if (!game->map) {
+        destroy_game(game);
+        return FAILURE;
+    }
+    game->teams = create_teams(server->options->teams, game);
+    if (!game->teams) {
+        destroy_game(game);
+        return FAILURE;
+    }
+    game->incantations = vector_new(sizeof(incantation_t *));
+    if (!game->incantations) {
+        destroy_game(game);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+/**
  * @brief Initializes a game instance with the provided server options
  *
  * This function sets up all the necessary components for a new game including
  * the map, teams, and initial game state parameters.
  *
  * @param game Pointer to the game structure to initialize
- * @param options Pointer to server options containing game configuration
+ * @param server Pointer to server containing configuration options
  * @return true on successful initialization, false on failure
  *
  * @note On failure, allocated resources are automatically cleaned up
  */
 static bool init_game(game_t *game, server_t *server)
 {
-    game->map = create_map(server->options->width, server->options->height,
-        server->options->debug);
-    if (!game->map) {
-        destroy_game(game);
-        return FAILURE;
-    }
-    game->teams = create_teams(server->options->teams);
-    if (!game->teams) {
-        destroy_game(game);
+    if (init_game_components(game, server) == FAILURE) {
         return FAILURE;
     }
     game->server = server;
     game->next_player_id = 1;
+    game->next_egg_id = 1;
     game->tick_rate = server->options->frequency;
     game->game_tick = 0;
     game->game_state = GAME_RUNNING;

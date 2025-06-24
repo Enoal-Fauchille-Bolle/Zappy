@@ -20,9 +20,9 @@
  *
  * @param player The player who has disconnected.
  */
-void pdi_command(player_t *player)
+void pdi_event(player_t *player)
 {
     if (player == NULL)
         return;
-    send_to_all_guis(player->client->server, "pdi %zu\n", player->id);
+    send_to_all_guis(player->client->server, "pdi #%zu\n", player->id);
 }

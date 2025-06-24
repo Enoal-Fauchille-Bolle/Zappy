@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/client_message.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -32,19 +33,20 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    dprintf(client->sockfd, "pin %zu %d %d %zu %zu %zu %zu %zu %zu %zu\n",
+    dprintf(client->sockfd, "pin #%zu %d %d %zu %zu %zu %zu %zu %zu %zu\n",
         player->id, player->pos.x, player->pos.y, player->inventory[FOOD],
         player->inventory[LINEMATE], player->inventory[DERAUMERE],
         player->inventory[SIBUR], player->inventory[MENDIANE],
         player->inventory[PHIRAS], player->inventory[THYSTAME]);
     debug_player(client->server->options->debug,
-        "pin command sent: player ID %zu, position (%d, %d), "
+        "Client %d: pin command sent: player ID %zu, position (%d, %d), "
         "inventory (food: %zu, linemate: %zu, deraumere: %zu, sibur: %zu, "
         "mendiane: %zu, phiras: %zu, thystame: %zu)\n",
-        player->id, player->pos.x, player->pos.y, player->inventory[FOOD],
-        player->inventory[LINEMATE], player->inventory[DERAUMERE],
-        player->inventory[SIBUR], player->inventory[MENDIANE],
-        player->inventory[PHIRAS], player->inventory[THYSTAME]);
+        client->index, player->id, player->pos.x, player->pos.y,
+        player->inventory[FOOD], player->inventory[LINEMATE],
+        player->inventory[DERAUMERE], player->inventory[SIBUR],
+        player->inventory[MENDIANE], player->inventory[PHIRAS],
+        player->inventory[THYSTAME]);
 }
 
 /**
@@ -108,6 +110,21 @@ static bool check_player_exists(player_t *player, client_t *client)
         return FAILURE;
     }
     return SUCCESS;
+}
+
+void pin_event(player_t *player)
+{
+    if (player == NULL || player->client == NULL ||
+        player->client->server == NULL) {
+        fprintf(stderr, "Invalid player or client pointer in pin_event\n");
+        return;
+    }
+    send_to_all_guis(player->client->server,
+        "pin #%zu %d %d %zu %zu %zu %zu %zu %zu %zu\n", player->id,
+        player->pos.x, player->pos.y, player->inventory[FOOD],
+        player->inventory[LINEMATE], player->inventory[DERAUMERE],
+        player->inventory[SIBUR], player->inventory[MENDIANE],
+        player->inventory[PHIRAS], player->inventory[THYSTAME]);
 }
 
 /**

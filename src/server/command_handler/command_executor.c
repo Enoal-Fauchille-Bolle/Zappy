@@ -19,11 +19,15 @@
 const command_registry_entry_t ai_command_registry[] = {
     {"forward", forward_command}, {"left", left_command},
     {"right", right_command}, {"look", look_command},
-    {"inventory", inventory_command}, {NULL, NULL}};
+    {"inventory", inventory_command}, {"connect_nbr", connect_nbr_command},
+    {"fork", fork_command}, {"take", take_command}, {"set", set_command},
+    {"eject", eject_command}, {"incantation", incantation_command},
+    {NULL, NULL}};
 
 const command_registry_entry_t gui_command_registry[] = {{"msz", msz_command},
-    {"ppo", ppo_command}, {"bct", bct_command}, {"plv", plv_command},
-    {"tna", tna_command}, {"pin", pin_command}, {NULL, NULL}};
+    {"ppo", ppo_command}, {"bct", bct_command}, {"mct", mct_command},
+    {"plv", plv_command}, {"tna", tna_command}, {"pin", pin_command},
+    {"sgt", sgt_command}, {"sst", sst_command}, {NULL, NULL}};
 
 /**
  * @brief Get the command handler for a given command.

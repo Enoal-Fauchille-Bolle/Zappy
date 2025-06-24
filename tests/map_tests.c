@@ -286,3 +286,76 @@ Test(wrap_coordinates, large_coordinates)
     cr_assert_eq(wrapped_pos.x, 2, "Wrapped X should be 2 for large X");
     cr_assert_eq(wrapped_pos.y, 5, "Wrapped Y should be 5 for large Y");
 }
+
+Test(tile, get_nb_players_on_tile_with_level_null, .timeout = 2)
+{
+    tile_t *tile = NULL;
+    size_t count = get_nb_players_on_tile_with_level(tile, 1);
+
+    cr_assert_eq(count, 0, "Count should be 0 for NULL tile");
+}
+
+Test(tile, get_nb_players_on_tile_with_level_empty_tile, .timeout = 2)
+{
+    map_t *map = create_map(1, 1, false);
+    size_t count =
+        get_nb_players_on_tile_with_level(get_tile_by_index(map, 0), 1);
+
+    cr_assert_eq(count, 0, "Count should be 0 for empty tile");
+}
+
+Test(tile, get_nb_players_on_tile_with_level_one_equal_player, .timeout = 2)
+{
+    map_t *map = create_map(1, 1, false);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
+    add_player_to_tile(get_tile_by_index(map, 0), player);
+
+    size_t count =
+        get_nb_players_on_tile_with_level(get_tile_by_index(map, 0), 1);
+    cr_assert_eq(
+        count, 1, "Count should be 1 for tile with one player at level 1");
+}
+
+Test(
+    tile, get_nb_players_on_tile_with_level_one_not_equal_player, .timeout = 2)
+{
+    map_t *map = create_map(1, 1, false);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
+    add_player_to_tile(get_tile_by_index(map, 0), player);
+    player->level = 2;
+
+    size_t count =
+        get_nb_players_on_tile_with_level(get_tile_by_index(map, 0), 1);
+    cr_assert_eq(
+        count, 0, "Count should be 0 for tile with one player at level 2");
+}
+
+Test(tile, get_nb_players_on_tile_with_level_multiple_players, .timeout = 2)
+{
+    map_t *map = create_map(1, 1, false);
+    player_t *player = create_player((pos_t){0, 0}, 1, NULL, NULL);
+    add_player_to_tile(get_tile_by_index(map, 0), player);
+    player->level = 2;
+    player_t *player2 = create_player((pos_t){0, 0}, 2, NULL, NULL);
+    add_player_to_tile(get_tile_by_index(map, 0), player2);
+
+    size_t count =
+        get_nb_players_on_tile_with_level(get_tile_by_index(map, 0), 1);
+    cr_assert_eq(
+        count, 1, "Count should be 1 for tile with one player at level 1");
+}
+
+Test(tile, get_nb_players_on_tile_with_level_multiple_players_equals,
+    .timeout = 2)
+{
+    map_t *map = create_map(1, 1, false);
+    for (int i = 0; i < 5; i++) {
+        player_t *player = create_player((pos_t){0, 0}, i + 1, NULL, NULL);
+        add_player_to_tile(get_tile_by_index(map, 0), player);
+    }
+
+    size_t count =
+        get_nb_players_on_tile_with_level(get_tile_by_index(map, 0), 1);
+    cr_assert_eq(
+        count, 5, "Count should be 5 for tile with one player at level 1");
+}

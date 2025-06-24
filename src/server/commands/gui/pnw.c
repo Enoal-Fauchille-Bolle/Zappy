@@ -20,11 +20,11 @@
  *
  * @param player The player whose information is being sent.
  */
-void pnw_command(player_t *player)
+void pnw_event(player_t *player)
 {
     if (player == NULL)
         return;
-    send_to_all_guis(player->client->server, "pnw %zu %d %d %d %u %s\n",
+    send_to_all_guis(player->client->server, "pnw #%zu %d %d %d %u %s\n",
         player->id, player->pos.x, player->pos.y, player->orientation + 1,
         player->level, player->team->name);
 }
