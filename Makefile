@@ -231,18 +231,17 @@ zappy_gui: $(OBJ_GUI)
 NAME_AI = zappy_ai
 
 # Folder name
-SRCDIR_AI = ${SRCDIR}ai/
+SRCDIR_AI = ${SRCDIR}ai/refactored/
 
 # Headers folder
 INCLUDES_AI = ${INCLUDES}ai/
 
 # Sources
-SRC_AI = $(SRCDIR_AI)main.py	\
-		$(SRCDIR_AI)ai_generator.py	\
-		$(SRCDIR_AI)commands.py	\
-		$(SRCDIR_AI)connexions.py	\
-		$(SRCDIR_AI)loop.py	\
-		$(SRCDIR_AI)parser.py	\
+SRC_AI = $(SRCDIR_AI)__main__.py	\
+		$(SRCDIR_AI)client.py	\
+		$(SRCDIR_AI)network.py	\
+		$(SRCDIR_AI)utils.py	\
+		$(SRCDIR_AI)vision.py
 
 # Objects
 OBJ_AI =
@@ -255,8 +254,8 @@ CC_AI := python3
 
 # Rule
 zappy_ai:
-	@echo "#!/usr/bin/env python3" > $(NAME_AI)
-	@echo "$(CC_AI) $(SRCDIR_AI)main.py \$$@" >> $(NAME_AI)
+	@echo "#!/bin/bash" > $(NAME_AI)
+	@echo "$(CC_AI) $(SRCDIR_AI)__main__.py \$$@" >> $(NAME_AI)
 	@chmod +x $(NAME_AI)
 
 ################################### Tests ###################################

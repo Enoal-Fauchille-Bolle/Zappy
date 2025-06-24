@@ -13,7 +13,7 @@ from ai_generator import AIGenerator
 """@brief Main function for the Zappy AI client.
 This function processes command line arguments, validates them, and initializes the AI client.
 It returns 0 on success and 84 on failure."""
-def main(argc, argv):
+def main(argc: int, argv: list[str]):
     port, name, machine = None, None, "localhost"
     if argc == 1 or argc == 2 and argv[1] == "--help":
         print("USAGE: ./zappy_ai -p port -n name -h machine")

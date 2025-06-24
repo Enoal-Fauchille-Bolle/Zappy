@@ -14,11 +14,11 @@ import signal
 import atexit
 
 class AIGenerator:
-    def __init__(self, port, name, machine):
+    def __init__(self, port: int, name: str, machine: str):
         self.port = port
         self.name = name
         self.machine = machine
-        self.child_pids = []
+        self.child_pids: list[int] = []
         signal.signal(signal.SIGINT, self.handle_signal)
         signal.signal(signal.SIGTERM, self.handle_signal)
         atexit.register(self.clean_up)
@@ -48,18 +48,19 @@ class AIGenerator:
         @param machine: The machine address of the server.
         @param connection: The Connection object used to communicate with the server.
         """
-    def re_fork(self, port, name, machine, connection):
+    def re_fork(self, port: int, name: str, machine: str, connection: Connection):
         if connection.connected:
-            response = connection.receive()
-            print(f"Server response received: {response}")
-            if response is not None:
+            client_number = connection.receive()
+            print(f"Server response received (client number): {client_number}")
+            if client_number is not None:
                 try:
-                    parts = response.split('\n')
-                    client_number = parts[0].strip()
-                    num = int(client_number)
+                    num = int(client_number.strip())
+                    print(f"Server returned client number: {num}")
+                    map_size_response = connection.receive()
+                    print(f"Server response received (map size): {map_size_response}")
                     map_size = None
-                    if len(parts) > 1 and parts[1].strip():
-                        dimensions = parts[1].strip().split()
+                    if map_size_response and map_size_response.strip():
+                        dimensions = map_size_response.strip().split()
                         if len(dimensions) >= 2:
                             map_width = int(dimensions[0])
                             map_height = int(dimensions[1])
@@ -83,15 +84,20 @@ class AIGenerator:
         @param machine: The machine address of the server.
         @return The PID of the forked process, or None if the fork failed.
         """
-    def fork(self, port, name, machine):
+    def fork(self, port: int, name: str, machine: str):
         pid = os.fork()
         if pid == 0:
             signal.signal(signal.SIGINT, signal.SIG_DFL)
             signal.signal(signal.SIGTERM, signal.SIG_DFL)
             connection = Connection(port, name, machine)
             if connection.connect():
-                print(connection.receive())
-                connection.send(name)
+                welcome = connection.receive()
+                print(f"Server says: {welcome}")
+                
+                # Actually send the team name to the server
+                connection.send(name)  # Your Connection.send() already adds newlines as needed
+                print(f"Sent team name: {name}")
+                
                 self.re_fork(port, name, machine, connection)
                 ai_loop = Loop(connection)
                 ai_loop.run(connection.map_size if hasattr(connection, 'map_size') else None)
