@@ -6,6 +6,8 @@
 */
 
 #include "connection/client.h"
+#include "connection/server.h"
+#include "debug_categories.h"
 #include "game/game.h"
 #include "game/game_constants.h"
 #include "game/incantation.h"
@@ -80,6 +82,11 @@ static void fill_players_array(player_t **players, tile_t *tile, level_t level,
 
     for (size_t i = 0; i < vtable->size(tile->players); i++) {
         player = *(player_t **)vtable->at(tile->players, i);
+        player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
+        dprintf(player->client->sockfd, "Elevation underway\n");
+        debug_player(player->client->server->options->debug,
+            "Player %zu is in an incantation at (%d, %d) for level %u\n",
+            player->id, player->pos.x, player->pos.y, level);
         if (player->level == level) {
             players[count] = player;
             count++;
