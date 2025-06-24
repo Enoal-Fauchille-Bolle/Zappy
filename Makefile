@@ -10,10 +10,10 @@
 # Source folder
 SRCDIR = ./src/
 
+SRC_INCLUDE = ./src/
+
 # Headers folder
 INCLUDES = ./include/
-
-SRC_INCLUDE = ./src/
 
 # GCC Flags
 ERROR = -Werror -Wall -Wextra -Wshadow
@@ -27,13 +27,11 @@ DEP	=	$(SRC_SERVER:.c=.d)	\
 -include $(DEP)
 
 clean:
-	rm -f $(OBJ_SERVER)
-	rm -f $(OBJ_GUI)
-	rm -f $(OBJ_AI)
-	rm -f $(TESTS_SRC:.c=.o)
-	rm -f $(DEP)
-	rm -f *.gcno
-	rm -f *.gcda
+	find . -name "*.gcda" -delete
+	find . -name "*.gcno" -delete
+	find . -name "*.a" -delete
+	find . -name "*.o" -delete
+	find . -name "*.d" -delete
 
 fclean: clean
 	rm -f $(NAME_SERVER)
@@ -47,7 +45,7 @@ re_clean: fclean all clean
 
 .PHONY: all clean \
 	fclean re \
-	tests_run unit_tests coverage
+	tests_run unit_tests coverage cs
 
 ################################### Server ###################################
 
@@ -55,10 +53,73 @@ re_clean: fclean all clean
 NAME_SERVER = zappy_server
 
 # Folder name
-SRCDIR_SERVER = ${SRCDIR}server/
+SRCDIR_SERVER = $(SRCDIR)server/
+LIB_SERVER	=	$(SRCDIR_SERVER)utils/
+
+# Headers folder
+INCLUDES_SERVER = $(INCLUDES)server/
 
 # Sources
-SRC_SERVER = $(SRCDIR_SERVER)main.c	\
+SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
+			 	$(SRCDIR_SERVER)constants.c									\
+			 	$(SRCDIR_SERVER)options_parser/options.c					\
+			 	$(SRCDIR_SERVER)options_parser/parser.c						\
+			 	$(SRCDIR_SERVER)options_parser/processor.c					\
+			 	$(SRCDIR_SERVER)options_parser/options/port.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/width.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/height.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/teams.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/clients.c			\
+			 	$(SRCDIR_SERVER)options_parser/options/frequency.c			\
+			 	$(SRCDIR_SERVER)options_parser/options/help.c				\
+			 	$(SRCDIR_SERVER)options_parser/options/debug.c				\
+			 	$(SRCDIR_SERVER)connection/server.c							\
+			 	$(SRCDIR_SERVER)connection/client.c							\
+			 	$(SRCDIR_SERVER)connection/client_message.c					\
+			 	$(SRCDIR_SERVER)connection/team_join.c						\
+			 	$(SRCDIR_SERVER)connection/socket.c							\
+			 	$(SRCDIR_SERVER)connection/connection_handler.c				\
+			 	$(SRCDIR_SERVER)connection/signal_handler.c					\
+			 	$(SRCDIR_SERVER)connection/time.c							\
+			 	$(SRCDIR_SERVER)map/map.c									\
+			 	$(SRCDIR_SERVER)map/coordinates.c							\
+			 	$(SRCDIR_SERVER)map/player_management.c						\
+			 	$(SRCDIR_SERVER)map/egg_management.c						\
+			 	$(SRCDIR_SERVER)map/resources.c								\
+			 	$(SRCDIR_SERVER)map/tile.c									\
+			 	$(SRCDIR_SERVER)team/player/player.c						\
+			 	$(SRCDIR_SERVER)team/player/movement.c						\
+				$(SRCDIR_SERVER)team/player/look.c							\
+				$(SRCDIR_SERVER)team/player/inventory.c						\
+			 	$(SRCDIR_SERVER)team/egg/egg.c								\
+				$(SRCDIR_SERVER)team/egg/spawn.c							\
+				$(SRCDIR_SERVER)team/team_allocation.c						\
+			 	$(SRCDIR_SERVER)team/team_egg.c								\
+			 	$(SRCDIR_SERVER)team/team_player.c							\
+				$(SRCDIR_SERVER)utils/string/string.c						\
+				$(SRCDIR_SERVER)utils/string/repeat_string.c				\
+				$(SRCDIR_SERVER)game/game.c									\
+				$(SRCDIR_SERVER)game/teams_util.c							\
+				$(SRCDIR_SERVER)game/tick.c									\
+				$(SRCDIR_SERVER)command_handler/command_parser.c			\
+				$(SRCDIR_SERVER)command_handler/command_factory.c			\
+				$(SRCDIR_SERVER)command_handler/command_tokenizer.c			\
+				$(SRCDIR_SERVER)command_handler/command_validator.c			\
+				$(SRCDIR_SERVER)command_handler/command_executor.c			\
+				$(SRCDIR_SERVER)command_handler/command_buffer.c			\
+				$(SRCDIR_SERVER)commands/ai/forward.c						\
+				$(SRCDIR_SERVER)commands/ai/left.c							\
+				$(SRCDIR_SERVER)commands/ai/right.c							\
+				$(SRCDIR_SERVER)commands/ai/look_cmd.c						\
+				$(SRCDIR_SERVER)commands/ai/inventory_cmd.c					\
+				$(SRCDIR_SERVER)commands/gui/msz.c							\
+				$(SRCDIR_SERVER)commands/gui/ppo.c							\
+				$(SRCDIR_SERVER)commands/gui/pnw.c							\
+				$(SRCDIR_SERVER)commands/gui/bct.c							\
+				$(SRCDIR_SERVER)commands/gui/plv.c							\
+				$(SRCDIR_SERVER)commands/gui/tna.c							\
+				$(SRCDIR_SERVER)commands/gui/pdi.c							\
+				$(SRCDIR_SERVER)commands/gui/pin.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -66,14 +127,22 @@ $(SRCDIR_SERVER)%.o: $(SRCDIR_SERVER)%.c
 	$(CC_SERVER) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_SERVER)
 
 # Compilation Flags
-CFLAGS_SERVER += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_SERVER += $(ERROR) -I$(INCLUDES_SERVER) -I$(SRC_INCLUDE) -g	\
 
 # Pre Compilation
 CC_SERVER := gcc
 
 # Rule
-zappy_server: $(OBJ_SERVER)
-	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)
+
+$(LIB_SERVER)libvector.a:
+		make -C $(LIB_SERVER)
+
+libclean: fclean
+		make -C $(LIB_SERVER) fclean
+
+zappy_server: $(OBJ_SERVER) $(LIB_SERVER)libvector.a
+	$(CC_SERVER) -o $(NAME_SERVER) $(OBJ_SERVER) $(CFLAGS_SERVER)	\
+	-L$(LIB_SERVER) -lvector
 
 #################################### GUI ####################################
 
@@ -82,6 +151,7 @@ NAME_GUI = zappy_gui
 
 # Folder name
 SRCDIR_GUI = ${SRCDIR}gui/
+
 
 NET_GUI	=	$(SRCDIR_GUI)network/
 POSIX	=	$(NET_GUI)POSIX_wrapper/
@@ -163,23 +233,31 @@ NAME_AI = zappy_ai
 # Folder name
 SRCDIR_AI = ${SRCDIR}ai/
 
+# Headers folder
+INCLUDES_AI = ${INCLUDES}ai/
+
 # Sources
-SRC_AI = $(SRCDIR_AI)main.c	\
+SRC_AI = $(SRCDIR_AI)main.py	\
+		$(SRCDIR_AI)ai_generator.py	\
+		$(SRCDIR_AI)commands.py	\
+		$(SRCDIR_AI)connexions.py	\
+		$(SRCDIR_AI)loop.py	\
+		$(SRCDIR_AI)parser.py	\
 
 # Objects
-OBJ_AI = $(SRC_AI:.c=.o)
-$(SRCDIR_AI)%.o: $(SRCDIR_AI)%.c
-	$(CC_AI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_AI)
+OBJ_AI =
 
 # Compilation Flags
-CFLAGS_AI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+CFLAGS_AI +=
 
 # Pre Compilation
-CC_AI := gcc
+CC_AI := python3
 
 # Rule
-zappy_ai: $(OBJ_AI)
-	$(CC_AI) -o $(NAME_AI) $(OBJ_AI) $(CFLAGS_AI)
+zappy_ai:
+	@echo "#!/usr/bin/env python3" > $(NAME_AI)
+	@echo "$(CC_AI) $(SRCDIR_AI)main.py \$$@" >> $(NAME_AI)
+	@chmod +x $(NAME_AI)
 
 ################################### Tests ###################################
 
@@ -189,23 +267,104 @@ TESTS_NAME = unit_tests.out
 TESTS = ./tests/
 
 # Sources
-TESTS_SRC =	\
+TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
+			$(SRCDIR_SERVER)map/coordinates.c								\
+			$(SRCDIR_SERVER)map/player_management.c							\
+			$(SRCDIR_SERVER)map/egg_management.c							\
+			$(SRCDIR_SERVER)map/resources.c									\
+			$(SRCDIR_SERVER)map/tile.c										\
+			$(SRCDIR_SERVER)team/player/player.c							\
+			$(SRCDIR_SERVER)team/player/movement.c							\
+			$(SRCDIR_SERVER)team/player/look.c								\
+			$(SRCDIR_SERVER)team/player/inventory.c							\
+			$(SRCDIR_SERVER)team/egg/egg.c									\
+			$(SRCDIR_SERVER)team/egg/spawn.c								\
+			$(SRCDIR_SERVER)team/team_allocation.c							\
+			$(SRCDIR_SERVER)team/team_egg.c									\
+			$(SRCDIR_SERVER)team/team_player.c								\
+			$(SRCDIR_SERVER)constants.c										\
+			$(SRCDIR_SERVER)connection/server.c								\
+			$(SRCDIR_SERVER)connection/client.c								\
+			$(SRCDIR_SERVER)connection/client_message.c						\
+			$(SRCDIR_SERVER)connection/socket.c								\
+			$(SRCDIR_SERVER)connection/time.c								\
+			$(SRCDIR_SERVER)connection/connection_handler.c					\
+			$(SRCDIR_SERVER)connection/signal_handler.c						\
+			$(SRCDIR_SERVER)connection/team_join.c							\
+			$(SRCDIR_SERVER)options_parser/options.c						\
+			$(SRCDIR_SERVER)options_parser/parser.c							\
+			$(SRCDIR_SERVER)options_parser/processor.c						\
+			$(SRCDIR_SERVER)options_parser/options/port.c					\
+			$(SRCDIR_SERVER)options_parser/options/width.c					\
+			$(SRCDIR_SERVER)options_parser/options/height.c					\
+			$(SRCDIR_SERVER)options_parser/options/teams.c					\
+			$(SRCDIR_SERVER)options_parser/options/clients.c				\
+			$(SRCDIR_SERVER)options_parser/options/frequency.c				\
+			$(SRCDIR_SERVER)options_parser/options/help.c					\
+			$(SRCDIR_SERVER)options_parser/options/debug.c					\
+			$(SRCDIR_SERVER)command_handler/command_executor.c				\
+			$(SRCDIR_SERVER)game/game.c										\
+			$(SRCDIR_SERVER)game/tick.c										\
+			$(SRCDIR_SERVER)game/teams_util.c								\
+			$(SRCDIR_SERVER)commands/ai/forward.c							\
+			$(SRCDIR_SERVER)commands/ai/left.c								\
+			$(SRCDIR_SERVER)commands/ai/right.c								\
+			$(SRCDIR_SERVER)commands/ai/look_cmd.c							\
+			$(SRCDIR_SERVER)commands/ai/inventory_cmd.c						\
+			$(SRCDIR_SERVER)commands/gui/msz.c								\
+			$(SRCDIR_SERVER)commands/gui/ppo.c								\
+			$(SRCDIR_SERVER)commands/gui/pnw.c								\
+			$(SRCDIR_SERVER)commands/gui/bct.c								\
+			$(SRCDIR_SERVER)commands/gui/plv.c								\
+			$(SRCDIR_SERVER)commands/gui/tna.c								\
+			$(SRCDIR_SERVER)commands/gui/pdi.c								\
+			$(SRCDIR_SERVER)commands/gui/pin.c								\
+			${TESTS}player_tests.c											\
+			${TESTS}resources_tests.c										\
+			${TESTS}map_tests.c												\
+			${TESTS}egg_tests.c												\
+			${TESTS}team_tests.c											\
+			${TESTS}look_tests.c											\
+			$(SRCDIR_SERVER)utils/string/string.c							\
+			$(SRCDIR_SERVER)utils/string/repeat_string.c					\
+			$(SRCDIR_SERVER)command_handler/command_parser.c				\
+			$(SRCDIR_SERVER)command_handler/command_factory.c				\
+			$(SRCDIR_SERVER)command_handler/command_tokenizer.c				\
+			$(SRCDIR_SERVER)command_handler/command_validator.c				\
+			$(SRCDIR_SERVER)command_handler/command_buffer.c				\
+			${TESTS}command_parser_tests.c									\
+            ${TESTS}command_tokenizer_tests.c								\
+            ${TESTS}command_validator_tests.c								\
+            ${TESTS}command_factory_tests.c									\
+            ${TESTS}command_buffer_tests.c									\
+            ${TESTS}command_executor_tests.c								\
+            ${TESTS}command_parser_edge_tests.c								\
+            ${TESTS}command_tokenizer_edge_tests.c							\
+			${TESTS}debug_tests.c											\
+			${TESTS}string_tests.c											\
+			${TESTS}client_tests.c											\
+			${TESTS}time_tests.c											\
+			${TESTS}options_parser/integration_tests.c						\
+			${TESTS}options_parser/parser_tests.c							\
+			${TESTS}options_parser/processor_tests.c						\
+			${TESTS}options_parser/port_option_tests.c						\
+			${TESTS}options_parser/width_option_tests.c						\
+			${TESTS}options_parser/height_option_tests.c					\
+			${TESTS}options_parser/frequency_option_tests.c					\
+			${TESTS}options_parser/clients_option_tests.c					\
+			${TESTS}options_parser/teams_option_tests.c						\
+			${TESTS}options_parser/help_option_tests.c						\
+			${TESTS}options_parser/debug_option_tests.c						\
 
 # Test Compilation Flags
-UNIT_FLAGS = $(FLAGS) -lcriterion --coverage
-
-# Compilation Flags
-CFLAGS_TESTS += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g	\
+UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
+			-lvector -lcriterion --coverage -g
 
 # Pre Compilation
 CC_TESTS := gcc
 
-$(TESTS)%.o: $(TESTS)%.cpp
-	$(CC_TESTS) -c $< -o $@ $(CFLAGS_TESTS)
-
-unit_tests: $(TESTS_SRC:.cpp=.o)
-	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC:.cpp=.o)	\
-		$(UNIT_FLAGS)
+unit_tests: $(LIB_SERVER)libvector.a
+	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC) $(UNIT_FLAGS)
 
 tests_run: unit_tests
 	./$(TESTS_NAME) --verbose
@@ -213,3 +372,8 @@ tests_run: unit_tests
 coverage: tests_run
 	gcovr --exclude tests/
 	gcovr --exclude tests/ --txt-metric branch
+
+cs:	clean
+	@coding-style . .
+	@cat coding-style-reports.log
+	@rm -f coding-style-reports.log
