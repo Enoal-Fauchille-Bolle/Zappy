@@ -15,11 +15,12 @@ class Timer:
         self.start_time: float = time.time()
         self.lap_time: float = self.start_time
 
-    def lap(self) -> float:
+    def lap(self, reset: bool = True) -> float:
         """Get time since last lap"""
         current_time: float = time.time()
         elasped: float = current_time - self.lap_time
-        self.lap_time = current_time
+        if reset:
+            self.lap_time = current_time
         return elasped
 
     def total(self) -> float:
@@ -80,16 +81,16 @@ class MessageParser:
     @staticmethod
     def parse_vision(vision_string: str) -> list[list[str]]:
         """Parse vision string into structured data"""
-        if not vision_string.startswith('[player'):
+        if not vision_string.startswith('[ player'):
             raise Exception("Unexpected message after Look command")
 
         vision_data: list[list[str]] = []
-        tiles: list[str] = vision_string.strip("[]").split(",")
+        tiles: list[str] = vision_string.strip("[] ").split(",")
         for tile_content in tiles:
             tile_content = tile_content.strip()
             if tile_content:
-                content: list[str] = tile_content.split()
-                vision_data.append(content)
+                item: list[str] = tile_content.split()
+                vision_data.append(item)
             else:
                 vision_data.append([])
         return vision_data
@@ -97,10 +98,10 @@ class MessageParser:
     @staticmethod
     def parse_inventory(inventory_string: str) -> dict[str, int]:
         """Parse inventory string into structured data"""
-        if not inventory_string.startswith("[food"):
+        if not inventory_string.startswith("[ food"):
             raise Exception("Unexpected message after Inventory command")
         inventory: dict[str, int] = {}
-        items: list[str] = inventory_string.strip("[]").split(",")
+        items: list[str] = inventory_string.strip("[] ").split(",")
 
         for resource in items:
             name, count = resource.strip().split(" ", 1)

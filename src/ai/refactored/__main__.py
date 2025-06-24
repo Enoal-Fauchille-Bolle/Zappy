@@ -8,7 +8,14 @@
 import sys
 import argparse
 import asyncio
-from refactored import ZappyAi
+import os
+
+# Add the parent directory to the path to allow relative imports
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from refactored.client import ZappyAi
+else:
+    from .client import ZappyAi
 
 def validate_port(value: str) -> int:
     """Validate that the port number is within valid range (1024-65535)"""
@@ -41,14 +48,20 @@ async def main(argc: int, argv: list[str]) -> int:
     try:
         args = parse_argument()
 
-        ai = ZappyAi(args.hostname, args.port, args.team_name)
+        ai = ZappyAi(args.hostname, args.port, args.name)
         await ai.run()
 
+        return 0
+    except KeyboardInterrupt:
         return 0
     except Exception as e:
         print(f"Error: {e}")
         return 84
 
 if __name__ == "__main__":
-    exit_code: int = asyncio.run(main(len(sys.argv), sys.argv))
+    try:
+        exit_code: int = asyncio.run(main(len(sys.argv), sys.argv))
+    except KeyboardInterrupt:
+        print("\nAi shutting down")
+        sys.exit(0)
     sys.exit(exit_code)
