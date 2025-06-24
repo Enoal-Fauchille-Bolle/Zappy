@@ -25,16 +25,9 @@ Entity::Entity(const std::string &id, const std::string &meshName)
  */
 Entity::~Entity()
 {
-    if (_sceneNode) {
-        Ogre::SceneManager* sceneManager = _sceneNode->getCreator();
-        if (sceneManager && _ogreEntity) {
-            sceneManager->destroyEntity(_ogreEntity);
-        }
-        sceneManager->destroySceneNode(_sceneNode);
-    }
-    _ogreEntity = nullptr;
-    _sceneNode = nullptr;
-    _isAttached = false;
+    Ogre::SceneManager* sceneManager = _sceneNode->getCreator();
+    sceneManager->destroyEntity(_ogreEntity);
+    sceneManager->destroySceneNode(_sceneNode);
 }
 
 /**
@@ -123,6 +116,16 @@ void Entity::setColor(const Color& color)
 std::string Entity::getId() const
 {
     return _id;
+}
+
+/**
+ * @brief Get the Ogre entity associated with this Entity.
+ *
+ * @return Ogre::Entity* Pointer to the Ogre entity.
+ */
+Ogre::Entity* Entity::getOgreEntity() const
+{
+    return _ogreEntity;
 }
 
 /**

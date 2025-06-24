@@ -71,13 +71,13 @@ void Player::updateVisualOrientation()
 {
     switch (_orientation) {
         case Orientation::NORTH:
-            setRotation(0, 0, 0);
+            setRotation(0, 180, 0);
             break;
         case Orientation::EAST:
             setRotation(0, 90, 0);
             break;
         case Orientation::SOUTH:
-            setRotation(0, 180, 0);
+            setRotation(0, 0, 0);
             break;
         case Orientation::WEST:
             setRotation(0, 270, 0);

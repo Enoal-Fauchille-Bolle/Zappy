@@ -8,12 +8,20 @@
 #include "BoardContentCommand.hpp"
 #include <iostream>
 #include <string>
+#include <sstream>
 
 BoardContentCommand::BoardContentCommand()
 {
 }
 
 void BoardContentCommand::execute(const std::string& args, SimpleGameManager& gameManager) {
-    (void)gameManager;
-    std::cout << "BoardContentCommand " << args << std::endl;
+    std::istringstream iss(args);
+    int x, y, quantity;
+    iss >> x >> y;
+    int resourceType = 0;
+
+    while (iss >> quantity) {
+        gameManager.updateResource(static_cast<ResourceType>(resourceType), x, y, quantity);
+        resourceType++;
+    }
 }
