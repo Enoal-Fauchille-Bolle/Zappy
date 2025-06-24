@@ -351,6 +351,8 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}options_parser/help_option_tests.c						\
 			${TESTS}options_parser/debug_option_tests.c						\
 			${TESTS}check_incantation_tests.c								\
+			${TESTS}incantation_allocation_tests.c							\
+			${TESTS}update_incantation_tests.c							\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
