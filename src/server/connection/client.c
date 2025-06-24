@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "game/game_state.h"
 #include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "team/team.h"
@@ -52,6 +53,20 @@ void destroy_client(client_t *client)
     client = NULL;
 }
 
+static void send_close_message(server_t *server, int client_index)
+{
+    if (!server->clients[client_index - 2]->is_gui) {
+        write(server->fds[client_index].fd, "dead\n", 5);
+        debug_conn(server->options->debug, "AI Client %d disconnected\n",
+            client_index - 2);
+    } else {
+        if (server->game->game_state != GAME_END)
+            write(server->fds[client_index].fd, "seg\n", 4);
+        debug_conn(server->options->debug, "GUI Client %d disconnected\n",
+            client_index - 2);
+    }
+}
+
 /**
  * @brief Closes the connection for a client and updates the server state
  *
@@ -66,15 +81,7 @@ void destroy_client(client_t *client)
 static void close_client_connection(server_t *server, int client_index)
 {
     if (server->clients[client_index - 2] != NULL) {
-        if (!server->clients[client_index - 2]->is_gui) {
-            write(server->fds[client_index].fd, "dead\n", 5);
-            debug_conn(server->options->debug, "AI Client %d disconnected\n",
-                client_index - 2);
-        } else {
-            write(server->fds[client_index].fd, "seg\n", 4);
-            debug_conn(server->options->debug, "GUI Client %d disconnected\n",
-                client_index - 2);
-        }
+        send_close_message(server, client_index);
     }
     close(server->fds[client_index].fd);
     server->fds[client_index].fd = -1;
