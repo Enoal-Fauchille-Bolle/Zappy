@@ -44,6 +44,5 @@ void pic_event(incantation_t *incantation, server_t *server)
             " %lu", player->id);
     }
     strncat(message, "\n", sizeof(message) - strlen(message) - 1);
-    printf("Sending to all GUIs: %s", message);
     send_to_all_guis(server, "%s", message);
 }
