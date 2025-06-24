@@ -122,11 +122,13 @@ static void complete_incantation(incantation_t *incantation, game_t *game)
             game->map, incantation->pos, incantation->level)) {
         remove_stones(incantation, game->map);
         level_up_players(incantation);
+        pie_event(incantation->pos, true, game->server);
         debug_game(game->server->options->debug,
             "Incantation at (%d, %d) completed for level %u\n",
             incantation->pos.x, incantation->pos.y, incantation->level);
     } else {
         send_elevation_failed_to_players(incantation);
+        pie_event(incantation->pos, false, game->server);
         debug_game(game->server->options->debug,
             "Incantation at (%d, %d) failed for level %u\n",
             incantation->pos.x, incantation->pos.y, incantation->level);
