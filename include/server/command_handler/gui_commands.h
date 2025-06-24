@@ -42,5 +42,6 @@ void pex_event(player_t *player);
 void plv_event(player_t *player);
 void pic_event(incantation_t *incantation, server_t *server);
 void pie_event(pos_t pos, bool success, server_t *server);
+void seg_event(team_t *team, server_t *server);
 
 #endif /* !GUI_COMMANDS_H_ */
