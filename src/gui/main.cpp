@@ -5,10 +5,57 @@
 ** GUI Main File
 */
 
-#include <iostream>
+/**
+ * @file main.cpp
+ * @brief GUI Main File for Zappy project.
+ *
+ * This file contains the entry point for the GUI application.
+ */
 
-int main(void)
+#include <iostream>
+#include <ostream>
+#include <string>
+#include <chrono>
+#include "Parsing.hpp"
+#include "ZappyApp.hpp"
+#include "GameManager.hpp"
+#include "network/NetworkManager.hpp"
+
+/**
+ * @brief Main entry point for the Zappy GUI application.
+ *
+ * Parses command line arguments, initializes the application, game manager, and
+ * main loop.
+ *
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ * @return int Returns 0 on success, 84 on error.
+ */
+int main(int argc, char **argv)
 {
-    std::cout << "Hello world! (gui)" << std::endl;
-    return 0;
+    try {
+        gui::Parser parser(argc, argv);
+
+        NetworkManager::initialize(parser.getHost(), parser.getPort());
+        NetworkManager::send("GRAPHIC");
+        std::string response = NetworkManager::receive();
+
+        ZappyApp app;
+        app.initApp();
+
+        SimpleGameManager gameManager;
+        gameManager.initialize(&app.getScene());
+
+        bool running = true;
+        while (running && !app.getRoot()->endRenderingQueued()) {
+            gameManager.update();
+            app.getRoot()->renderOneFrame();
+        }
+        gameManager.cleanup();
+        app.closeApp();
+        return 0;
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 84;
+    }
 }
