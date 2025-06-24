@@ -155,7 +155,8 @@ incantation_t *create_incantation(game_t *game, pos_t pos, level_t level)
     incantation->players = init_players(game, pos, level);
     if (incantation->players == NULL) {
         fprintf(stderr, "Failed to initialize players for incantation\n");
-        return incantation;
+        destroy_incantation(incantation);
+        return NULL;
     }
     incantation->pos = pos;
     incantation->level = level;
