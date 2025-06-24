@@ -33,6 +33,7 @@ void destroy_incantation(incantation_t *incantation)
     if (incantation->players != NULL) {
         free(incantation->players);
     }
+    free(incantation);
     incantation = NULL;
 }
 
