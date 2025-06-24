@@ -21,7 +21,8 @@ static const direction_t direction_map[4][9] = {
     {MIDDLE, BACK, BACK_LEFT, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT,
         BACK_RIGHT},
     {MIDDLE, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT, BACK_RIGHT, BACK,
-        BACK_LEFT}};
+        BACK_LEFT}
+};
 
 /**
  * @brief Compare two positions for equality.
