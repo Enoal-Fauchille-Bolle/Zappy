@@ -21,15 +21,15 @@ typedef unsigned int tick_t;
 typedef unsigned int tick_rate_t;
 
 typedef struct game_s {
-    server_t *server;
-    map_t *map;
-    team_t **teams;
-    vector_t *incantations;
-    size_t next_player_id;
-    size_t next_egg_id;
-    tick_rate_t tick_rate;
-    tick_t game_tick;
-    game_state_t game_state;
+    server_t *server;           // Pointer to the server managing the game
+    map_t *map;                 // Pointer to the game map
+    team_t **teams;             // Array of teams in the game, NULL-terminated
+    vector_t *incantations;     // Vector of incantations in progress
+    size_t next_player_id;      // Next player ID to assign
+    size_t next_egg_id;         // Next egg ID to assign
+    tick_rate_t tick_rate;      // Rate at which the game ticks
+    tick_t game_tick;           // Current game tick count
+    game_state_t game_state;    // Current state of the game
 } game_t;
 
 game_t *create_game(server_t *server);
