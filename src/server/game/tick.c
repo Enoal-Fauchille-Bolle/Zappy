@@ -15,6 +15,7 @@
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
+#include "game/game_constants.h"
 #include "map/resources.h"
 #include "options_parser/options.h"
 #include "team/egg/egg.h"
@@ -53,7 +54,7 @@ static bool handle_player_starvation(player_t *player)
     debug_player(player->client->server->options->debug,
         "Player %zu has eaten, remaining food: %zu\n", player->id,
         player->inventory[FOOD]);
-    player->hunger_cooldown = 126;
+    player->hunger_cooldown = GAME_TICK_FOOD_COOLDOWN;
     return false;
 }
 
