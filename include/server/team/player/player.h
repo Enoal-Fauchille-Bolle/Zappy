@@ -26,16 +26,17 @@ typedef size_t player_id_t;
 typedef size_t egg_id_t;
 
 typedef struct player_s {
-    player_id_t id;
-    pos_t pos;
-    orientation_t orientation;
-    level_t level;      // Player's level, starting at 1
-    inventory_t inventory;
-    tick_t tick_cooldown;        // If 0, player can act
-    size_t hunger_cooldown;      // If 0, player NEEDS to eat or die
-    bool doing_action;
-    team_t *team;
-    client_t *client;      // Pointer to the client managing this player
+    player_id_t id;             // Unique identifier for the player
+    pos_t pos;                  // Player's position on the map
+    orientation_t orientation;  // Player's orientation
+    level_t level;              // Player's level, starting at 1
+    inventory_t inventory;      // Player's inventory, indexed by resource_t
+    tick_t tick_cooldown;       // If 0, player can act
+    size_t hunger_cooldown;     // If 0, player NEEDS to eat or die
+    bool doing_action;          // If player is currently performing an action
+    bool in_incantation;        // If player is in an incantation
+    team_t *team;               // Pointer to the team this player belongs to
+    client_t *client;           // Pointer to the client managing this player
 } player_t;
 
 player_t *create_player(

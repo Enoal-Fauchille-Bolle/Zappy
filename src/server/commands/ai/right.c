@@ -5,11 +5,11 @@
 ** Right Command
 */
 
-#include "command_handler/ai_commands.h"
 #include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "debug_categories.h"
+#include "game/game_constants.h"
 #include "map/orientation_names.h"
 #include "team/player/player.h"
 #include <stdbool.h>

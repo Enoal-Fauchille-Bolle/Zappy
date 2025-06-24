@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/client_message.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -97,6 +98,25 @@ static bool check_player_exists(player_t *player, client_t *client)
         return FAILURE;
     }
     return SUCCESS;
+}
+
+/**
+ * @brief Sends player level event to all GUI clients.
+ *
+ * This function sends the player's level to all GUI clients in the format
+ * "plv <player_id> <level>\n". It is called when a player's level changes.
+ *
+ * @param player The player whose level has changed.
+ */
+void plv_event(player_t *player)
+{
+    if (player == NULL || player->client == NULL) {
+        debug_warning(player->client->server->options->debug,
+            "Player or client is NULL in plv_event\n");
+        return;
+    }
+    send_to_all_guis(
+        player->client->server, "plv #%zu %d\n", player->id, player->level);
 }
 
 /**
