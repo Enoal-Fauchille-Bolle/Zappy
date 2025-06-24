@@ -220,12 +220,12 @@ void game_tick(game_t *game, server_options_t *options)
     if (game->game_tick % GAME_TICK_DEBUG_INTERVAL == 0) {
         debug_game(options->debug, "Game tick %u\n", game->game_tick);
     }
-    if (game->game_tick % GAME_RESOURCE_SPAWN_INTERVAL == 0) {
-        spread_resources(game->map, options->debug);
-    }
     update_players_ticks(game);
     read_players_command_buffer(game);
     read_guis_command_buffer(game->server);
+    if (game->game_tick % GAME_RESOURCE_SPAWN_INTERVAL == 0) {
+        spread_resources(game->map, options->debug);
+    }
     for (int i = 0; game->teams[i] != NULL; i++) {
         spawn_min_eggs(
             game->map, game->teams[i], options->clients_nb, options->debug);
