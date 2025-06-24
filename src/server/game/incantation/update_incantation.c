@@ -126,6 +126,7 @@ static void complete_incantation(incantation_t *incantation, game_t *game)
         debug_game(game->server->options->debug,
             "Incantation at (%d, %d) completed for level %u\n",
             incantation->pos.x, incantation->pos.y, incantation->level);
+        update_end(game);
     } else {
         send_elevation_failed_to_players(incantation);
         pie_event(incantation->pos, false, game->server);
