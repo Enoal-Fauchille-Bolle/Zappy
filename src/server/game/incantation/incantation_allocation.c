@@ -5,6 +5,7 @@
 ** Incantation Allocation
 */
 
+#include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "debug_categories.h"
@@ -159,6 +160,7 @@ incantation_t *create_incantation(game_t *game, pos_t pos, level_t level)
     incantation->pos = pos;
     incantation->level = level;
     incantation->ticks_left = INCANTATION_COMMAND_COOLDOWN;
+    pic_event(incantation, game->server);
     vtable->push_back(game->incantations, &incantation);
     return incantation;
 }

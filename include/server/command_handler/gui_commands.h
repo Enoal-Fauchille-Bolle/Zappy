@@ -10,6 +10,7 @@
 
     #include "command_handler/command.h"
     #include "connection/client.h"
+    #include "game/incantation.h"
     #include "map/coordinates.h"
     #include "map/resources.h"
     #include "map/tile.h"
@@ -39,5 +40,6 @@ void pgt_event(player_t *player, resource_t resource);
 void edi_event(egg_t *egg);
 void pex_event(player_t *player);
 void plv_event(player_t *player);
+void pic_event(incantation_t *incantation, server_t *server);
 
 #endif /* !GUI_COMMANDS_H_ */
