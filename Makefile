@@ -89,11 +89,15 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)map/resources.c								\
 			 	$(SRCDIR_SERVER)map/resource_names.c						\
 			 	$(SRCDIR_SERVER)map/tile.c									\
+			 	$(SRCDIR_SERVER)map/tile_utils.c							\
 			 	$(SRCDIR_SERVER)team/player/player.c						\
 			 	$(SRCDIR_SERVER)team/player/movement.c						\
 				$(SRCDIR_SERVER)team/player/look.c							\
 				$(SRCDIR_SERVER)team/player/inventory.c						\
 				$(SRCDIR_SERVER)team/player/ejection.c						\
+				$(SRCDIR_SERVER)game/incantation/check_incantation.c		\
+				$(SRCDIR_SERVER)game/incantation/incantation_allocation.c	\
+				$(SRCDIR_SERVER)game/incantation/update_incantation.c		\
 			 	$(SRCDIR_SERVER)team/egg/egg.c								\
 				$(SRCDIR_SERVER)team/egg/spawn.c							\
 				$(SRCDIR_SERVER)team/team_allocation.c						\
@@ -104,6 +108,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)game/game.c									\
 				$(SRCDIR_SERVER)game/teams_util.c							\
 				$(SRCDIR_SERVER)game/tick.c									\
+				$(SRCDIR_SERVER)game/update_end.c							\
 				$(SRCDIR_SERVER)command_handler/command_parser.c			\
 				$(SRCDIR_SERVER)command_handler/command_factory.c			\
 				$(SRCDIR_SERVER)command_handler/command_tokenizer.c			\
@@ -120,6 +125,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/take.c							\
 				$(SRCDIR_SERVER)commands/ai/set.c							\
 				$(SRCDIR_SERVER)commands/ai/eject.c							\
+				$(SRCDIR_SERVER)commands/ai/incantation_cmd.c				\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
 				$(SRCDIR_SERVER)commands/gui/ppo.c							\
 				$(SRCDIR_SERVER)commands/gui/pnw.c							\
@@ -138,6 +144,9 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/gui/sst.c							\
 				$(SRCDIR_SERVER)commands/gui/edi.c							\
 				$(SRCDIR_SERVER)commands/gui/pex.c							\
+				$(SRCDIR_SERVER)commands/gui/pic.c							\
+				$(SRCDIR_SERVER)commands/gui/pie.c							\
+				$(SRCDIR_SERVER)commands/gui/seg.c							\
 
 # Objects
 OBJ_SERVER = $(SRC_SERVER:.c=.o)
@@ -241,11 +250,15 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)map/resources.c									\
 			$(SRCDIR_SERVER)map/resource_names.c							\
 			$(SRCDIR_SERVER)map/tile.c										\
+			$(SRCDIR_SERVER)map/tile_utils.c								\
 			$(SRCDIR_SERVER)team/player/player.c							\
 			$(SRCDIR_SERVER)team/player/movement.c							\
 			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/player/inventory.c							\
 			$(SRCDIR_SERVER)team/player/ejection.c							\
+			$(SRCDIR_SERVER)game/incantation/check_incantation.c			\
+			$(SRCDIR_SERVER)game/incantation/incantation_allocation.c		\
+			$(SRCDIR_SERVER)game/incantation/update_incantation.c			\
 			$(SRCDIR_SERVER)team/egg/egg.c									\
 			$(SRCDIR_SERVER)team/egg/spawn.c								\
 			$(SRCDIR_SERVER)team/team_allocation.c							\
@@ -276,6 +289,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)game/game.c										\
 			$(SRCDIR_SERVER)game/tick.c										\
 			$(SRCDIR_SERVER)game/teams_util.c								\
+			$(SRCDIR_SERVER)game/update_end.c								\
 			$(SRCDIR_SERVER)commands/ai/forward.c							\
 			$(SRCDIR_SERVER)commands/ai/left.c								\
 			$(SRCDIR_SERVER)commands/ai/right.c								\
@@ -286,6 +300,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/take.c								\
 			$(SRCDIR_SERVER)commands/ai/set.c								\
 			$(SRCDIR_SERVER)commands/ai/eject.c								\
+			$(SRCDIR_SERVER)commands/ai/incantation_cmd.c					\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
 			$(SRCDIR_SERVER)commands/gui/ppo.c								\
 			$(SRCDIR_SERVER)commands/gui/pnw.c								\
@@ -304,6 +319,9 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/gui/sst.c								\
 			$(SRCDIR_SERVER)commands/gui/edi.c								\
 			$(SRCDIR_SERVER)commands/gui/pex.c								\
+			$(SRCDIR_SERVER)commands/gui/pic.c								\
+			$(SRCDIR_SERVER)commands/gui/pie.c								\
+			$(SRCDIR_SERVER)commands/gui/seg.c								\
 			${TESTS}player_tests.c											\
 			${TESTS}resources_tests.c										\
 			${TESTS}map_tests.c												\
@@ -340,6 +358,9 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}options_parser/teams_option_tests.c						\
 			${TESTS}options_parser/help_option_tests.c						\
 			${TESTS}options_parser/debug_option_tests.c						\
+			${TESTS}check_incantation_tests.c								\
+			${TESTS}incantation_allocation_tests.c							\
+			${TESTS}update_incantation_tests.c							\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
@@ -352,7 +373,7 @@ unit_tests: $(LIB_SERVER)libvector.a
 	$(CC_TESTS) -o $(TESTS_NAME) $(TESTS_SRC) $(UNIT_FLAGS)
 
 tests_run: unit_tests
-	./$(TESTS_NAME) --verbose
+	./$(TESTS_NAME)
 
 coverage: tests_run
 	gcovr --exclude tests/

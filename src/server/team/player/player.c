@@ -10,6 +10,7 @@
 #include "connection/client.h"
 #include "connection/server.h"
 #include "game/game.h"
+#include "game/game_constants.h"
 #include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
@@ -49,9 +50,10 @@ player_t *create_player(
     for (size_t i = 0; i <= THYSTAME; i++)
         player->inventory[i] = 0;
     player->inventory[FOOD] = 10;
-    player->hunger_cooldown = 126;
+    player->hunger_cooldown = GAME_TICK_FOOD_COOLDOWN;
     player->tick_cooldown = 0;
     player->doing_action = false;
+    player->in_incantation = false;
     add_player_to_team(team, player);
     player->client = client;
     return player;
