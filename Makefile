@@ -124,6 +124,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/fork.c							\
 				$(SRCDIR_SERVER)commands/ai/take.c							\
 				$(SRCDIR_SERVER)commands/ai/set.c							\
+				$(SRCDIR_SERVER)commands/ai/broadcast_cmd.c					\
 				$(SRCDIR_SERVER)commands/ai/eject.c							\
 				$(SRCDIR_SERVER)commands/ai/incantation_cmd.c				\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
@@ -299,6 +300,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/fork.c								\
 			$(SRCDIR_SERVER)commands/ai/take.c								\
 			$(SRCDIR_SERVER)commands/ai/set.c								\
+			$(SRCDIR_SERVER)commands/ai/broadcast_cmd.c						\
 			$(SRCDIR_SERVER)commands/ai/eject.c								\
 			$(SRCDIR_SERVER)commands/ai/incantation_cmd.c					\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
