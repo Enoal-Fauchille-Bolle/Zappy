@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/poll.h>
+#include <time.h>
 #include <unistd.h>
 
 /**
@@ -170,6 +171,22 @@ server_t *create_server(server_options_t *options)
         return NULL;
     }
     return server;
+}
+
+/**
+ * @brief Gets the current time in milliseconds since the epoch
+ *
+ * This function retrieves the current time using CLOCK_MONOTONIC and converts
+ * it to milliseconds.
+ *
+ * @return long long Current time in milliseconds
+ */
+static long long get_current_time_ms(void)
+{
+    struct timespec ts;
+
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (ts.tv_sec * 1000LL) + (ts.tv_nsec / 1000000LL);
 }
 
 /**
