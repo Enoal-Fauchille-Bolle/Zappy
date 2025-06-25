@@ -65,6 +65,26 @@ void destroy_incantation_vector(vector_t *incantations)
 }
 
 /**
+ * @brief Sets a player in incantation state and sends a message to the player
+ *
+ * This function marks the player as being in an incantation, sets their
+ * cooldown tick, and sends a message indicating that the elevation is
+ * underway. It also logs debug information about the player's incantation.
+ *
+ * @param player Pointer to the player structure to update
+ * @param level Level of the incantation being performed
+ */
+static void set_player_in_incantation(player_t *player, level_t level)
+{
+    player->in_incantation = true;
+    player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
+    dprintf(player->client->sockfd, "Elevation underway\n");
+    debug_player(player->client->server->options->debug,
+        "Player %zu is in an incantation at (%d, %d) for level %u -> %u\n",
+        player->id, player->pos.x, player->pos.y, level, level + 1);
+}
+
+/**
  * @brief Fills an array of players with those matching a specific level
  *
  * This function iterates through the players in a tile and fills the provided
@@ -84,12 +104,11 @@ static void fill_players_array(player_t **players, tile_t *tile, level_t level,
 
     for (size_t i = 0; i < vtable->size(tile->players); i++) {
         player = *(player_t **)vtable->at(tile->players, i);
-        player->in_incantation = true;
-        player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
-        dprintf(player->client->sockfd, "Elevation underway\n");
-        debug_player(player->client->server->options->debug,
-            "Player %zu is in an incantation at (%d, %d) for level %u\n",
-            player->id, player->pos.x, player->pos.y, level);
+        if (player == NULL || player->level != level ||
+            player->in_incantation) {
+            continue;
+        }
+        set_player_in_incantation(player, level);
         if (player->level == level) {
             players[count] = player;
             count++;
