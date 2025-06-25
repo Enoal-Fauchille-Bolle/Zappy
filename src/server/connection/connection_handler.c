@@ -10,6 +10,7 @@
 #include "connection/server.h"
 #include "connection/signal_handler.h"
 #include "constants.h"
+#include "debug.h"
 #include "debug_categories.h"
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
@@ -17,6 +18,7 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -84,6 +86,60 @@ static void refuse_connection(server_t *server, int client_sockfd)
 }
 
 /**
+ * @brief Checks socket error status using getsockopt
+ *
+ * @param sockfd Socket file descriptor to check
+ * @param debug Debug flag for logging
+ * @return true if socket has no errors, false otherwise
+ */
+static bool check_socket_error(int sockfd, bool debug)
+{
+    socklen_t errlen = sizeof(errno);
+
+    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &errno, &errlen) != 0) {
+        debug_warning(debug, "getsockopt failed on socket %d: %s\n", sockfd,
+            strerror(errno));
+        return false;
+    }
+    if (errno) {
+        debug_warning(
+            debug, "Socket %d is not writable: %s\n", sockfd, strerror(errno));
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Polls socket for write readiness
+ *
+ * @param sockfd Socket file descriptor to poll
+ * @param debug Debug flag for logging
+ * @return true if socket is ready for writing, false otherwise
+ */
+static bool poll_socket_write(int sockfd, bool debug)
+{
+    struct pollfd pfd = {sockfd, POLLOUT, 0};
+
+    if (poll(&pfd, 1, 0) <= 0) {
+        if (errno != EINTR) {
+            debug_warning(debug, "poll failed on socket %d: %s\n", sockfd,
+                strerror(errno));
+        }
+        return false;
+    }
+    if (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) {
+        debug_warning(debug, "Socket %d has error events: %s\n", sockfd,
+            strerror(errno));
+        return false;
+    }
+    if (!(pfd.revents & POLLOUT)) {
+        debug_warning(debug, "Socket %d is not ready for writing\n", sockfd);
+        return false;
+    }
+    return true;
+}
+
+/**
  * @brief Checks if a socket is writable using a non-blocking write test
  *
  * Uses a non-blocking approach to test if the server can write to a client
@@ -91,20 +147,13 @@ static void refuse_connection(server_t *server, int client_sockfd)
  * operations.
  *
  * @param sockfd Socket file descriptor to test
+ * @param debug Debug flag for logging
  * @return true if socket is writable, false otherwise
  */
 static bool is_socket_writable(int sockfd, bool debug)
 {
-    int error = 0;
-    socklen_t len = sizeof(error);
-
-    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) != 0 ||
-        error != 0) {
-        debug_conn(debug, "Connection rejected - socket not writable\n");
-        close(sockfd);
-        return false;
-    }
-    return true;
+    return check_socket_error(sockfd, debug) &&
+           poll_socket_write(sockfd, debug);
 }
 
 /**
