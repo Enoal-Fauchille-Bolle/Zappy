@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Client Message Handler
+** Message Receiver
 */
 
 #include "command_handler/command.h"

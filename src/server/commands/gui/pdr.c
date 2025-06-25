@@ -6,7 +6,7 @@
 */
 
 #include "connection/client.h"
-#include "connection/client_message.h"
+#include "connection/message_receiver.h"
 #include "map/resources.h"
 #include "team/player/player.h"
 
