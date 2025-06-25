@@ -157,6 +157,18 @@ static bool send_ai_welcome_message(server_t *server, int client_index)
     return SUCCESS;
 }
 
+/**
+ * @brief Displays information about all eggs in a team to a specific client
+ *
+ * Iterates through all eggs in the specified team and sends their details
+ * (ID, parent ID, position) to the client. Also logs debug information about
+ * each egg.
+ *
+ * @param server Pointer to the server structure
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @param team Pointer to the team whose eggs are being displayed
+ */
 static void display_team_eggs_info(
     server_t *server, int client_index, team_t *team)
 {
@@ -178,6 +190,16 @@ static void display_team_eggs_info(
     }
 }
 
+/**
+ * @brief Displays information about all eggs in all teams to a specific client
+ *
+ * Iterates through all teams in the server's game and sends egg information
+ * for each team to the specified client.
+ *
+ * @param server Pointer to the server structure
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ */
 static void display_eggs_info(server_t *server, int client_index)
 {
     team_t *team = NULL;
@@ -191,6 +213,17 @@ static void display_eggs_info(server_t *server, int client_index)
     }
 }
 
+/**
+ * @brief Sends a welcome message to a GUI client
+ *
+ * This function sends the initial connection response to a GUI client,
+ * including the current map state and team information.
+ *
+ * @param server Pointer to the server structure containing client file
+ * descriptors and options
+ * @param client_index Index of the GUI client in the server's file descriptor
+ * array
+ */
 static void send_gui_welcome_message(server_t *server, int client_index)
 {
     msz_command(server->clients[client_index - 2], NULL);
@@ -200,6 +233,19 @@ static void send_gui_welcome_message(server_t *server, int client_index)
     display_eggs_info(server, client_index);
 }
 
+/**
+ * @brief Handles a GUI client connection
+ *
+ * If the team name is "GRAPHIC", creates a new GUI client, sends a welcome
+ * message, and returns SUCCESS. Otherwise, returns FAILURE.
+ *
+ * @param server Pointer to the server structure
+ * @param team_name Name of the team the client wants to join
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ *
+ * @return true if the GUI client was successfully handled, false otherwise
+ */
 static bool handle_gui_client(
     server_t *server, const char *team_name, int client_index)
 {
