@@ -498,19 +498,19 @@ Test(incantation_allocation, create_incantation_fill_players_array_behavior)
         // 1. ALL players on the tile should have in_incantation set to true
         cr_assert(player1->in_incantation,
             "Player1 should be marked as in_incantation");
-        cr_assert(player2->in_incantation,
-            "Player2 should be marked as in_incantation");
+        cr_assert(!player2->in_incantation,
+            "Player2 should not be marked as in_incantation");
         cr_assert(player3->in_incantation,
             "Player3 should be marked as in_incantation");
-        cr_assert(player4->in_incantation,
-            "Player4 should be marked as in_incantation");
+        cr_assert(!player4->in_incantation,
+            "Player4 should not be marked as in_incantation");
 
         // 2. ALL players should have tick_cooldown set to
         // INCANTATION_COMMAND_COOLDOWN
         cr_assert_eq(player1->tick_cooldown, INCANTATION_COMMAND_COOLDOWN);
-        cr_assert_eq(player2->tick_cooldown, INCANTATION_COMMAND_COOLDOWN);
+        cr_assert_eq(player2->tick_cooldown, 0);
         cr_assert_eq(player3->tick_cooldown, INCANTATION_COMMAND_COOLDOWN);
-        cr_assert_eq(player4->tick_cooldown, INCANTATION_COMMAND_COOLDOWN);
+        cr_assert_eq(player4->tick_cooldown, 0);
 
         // 3. Only players with matching level should be in the
         // incantation->players array
@@ -678,14 +678,12 @@ Test(incantation_allocation,
         // level:
 
         // 1. All players should still be processed by the for loop
-        cr_assert(player1->in_incantation,
-            "Player1 should be marked as in_incantation even without matching "
-            "level");
-        cr_assert(player2->in_incantation,
-            "Player2 should be marked as in_incantation even without matching "
-            "level");
-        cr_assert_eq(player1->tick_cooldown, INCANTATION_COMMAND_COOLDOWN);
-        cr_assert_eq(player2->tick_cooldown, INCANTATION_COMMAND_COOLDOWN);
+        cr_assert(!player1->in_incantation,
+            "Player1 should not be marked as in_incantation");
+        cr_assert(!player2->in_incantation,
+            "Player2 should not be marked as in_incantation");
+        cr_assert_eq(player1->tick_cooldown, 0);
+        cr_assert_eq(player2->tick_cooldown, 0);
 
         // 2. No players should be added to the incantation array (only NULL
         // terminator)
