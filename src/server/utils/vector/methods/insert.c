@@ -22,7 +22,7 @@ static void move_forward(vector_t *self, size_t index)
 
 void vector_insert_impl(vector_t *self, size_t index, const void *item)
 {
-    void *insert_pos;
+    void *insert_pos = NULL;
 
     assert(self && item && index <= self->size);
     if (index < self->size) {

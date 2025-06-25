@@ -37,7 +37,7 @@ Test(look, valid, .timeout = 2)
     map_t *map = create_map(7, 7, false);
     team_t *team = create_team("Team1", NULL);
     player_t *player = create_player((pos_t){3, 3}, 1, team, NULL);
-    char *look_result;
+    char *look_result = NULL;
 
     player->orientation = NORTH;
     add_player_to_map(map, player);
@@ -67,7 +67,7 @@ Test(look, empty_map, .timeout = 2)
     map_t *map = create_map(1, 1, false);
     team_t *team = create_team("Team1", NULL);
     player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
-    char *look_result;
+    char *look_result = NULL;
 
     look_result = look(player, map);
     cr_assert_str_eq(look_result, "[,,,]",
@@ -92,7 +92,7 @@ Test(look, player_on_one_by_one_map, .timeout = 2)
     map_t *map = create_map(1, 1, false);
     team_t *team = create_team("Team1", NULL);
     player_t *player = create_player((pos_t){0, 0}, 1, team, NULL);
-    char *look_result;
+    char *look_result = NULL;
 
     player->orientation = NORTH;
     add_player_to_map(map, player);
@@ -128,7 +128,7 @@ Test(look, object_in_each_direction, .timeout = 2)
     map_t *map = create_map(3, 3, false);
     team_t *team = create_team("Team1", NULL);
     player_t *player = create_player((pos_t){1, 1}, 1, team, NULL);
-    char *look_result;
+    char *look_result = NULL;
 
     add_player_to_map(map, player);
     get_tile(map, (pos_t){0, 0})->resources[LINEMATE] =

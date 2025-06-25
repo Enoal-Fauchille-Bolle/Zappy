@@ -74,7 +74,7 @@ void trim(char *str)
  */
 char *dyn_strcat(char **original_dest, const char *src)
 {
-    char *dest;
+    char *dest = NULL;
 
     if (!original_dest || !*original_dest || !src) {
         fprintf(stderr, "Invalid string pointer\n");

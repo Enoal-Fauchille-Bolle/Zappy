@@ -121,7 +121,7 @@ void add_player_to_tile(tile_t *tile, player_t *player)
 void remove_player_from_tile(tile_t *tile, player_t *player)
 {
     const vector_vtable_t *vtable;
-    player_t *current_player;
+    player_t *current_player = NULL;
 
     if (tile == NULL || player == NULL) {
         fprintf(stderr, "Invalid tile or player pointer\n");
@@ -155,7 +155,7 @@ void remove_player_from_tile(tile_t *tile, player_t *player)
  */
 egg_t *lay_egg(player_t *player, map_t *map)
 {
-    egg_t *egg;
+    egg_t *egg = NULL;
 
     if (player == NULL || map == NULL || player->team == NULL ||
         player->client == NULL || player->client->server == NULL ||

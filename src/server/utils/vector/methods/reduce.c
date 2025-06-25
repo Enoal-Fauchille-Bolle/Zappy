@@ -14,7 +14,7 @@ void vector_reduce_impl(const vector_t *self, reduce_function_t reduce_fn,
     accumulator_t *acc, void *context)
 {
     size_t start;
-    void *element;
+    void *element = NULL;
 
     assert(self && reduce_fn && acc && acc->result);
     if (acc->initial_value) {

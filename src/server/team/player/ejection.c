@@ -138,7 +138,7 @@ static void eject_players_from_tile(
     tile_t *tile, player_t *ejecting_player, bool debug)
 {
     const vector_vtable_t *vtable = vector_get_vtable(tile->players);
-    player_t *current_player;
+    player_t *current_player = NULL;
 
     for (size_t i = vtable->size(tile->players); i > 0; i--) {
         current_player = *(player_t **)vtable->at(tile->players, i - 1);

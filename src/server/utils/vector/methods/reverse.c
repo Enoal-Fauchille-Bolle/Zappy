@@ -12,8 +12,8 @@
 
 vector_t *vector_reverse_impl(const vector_t *self)
 {
-    vector_t *result;
-    void *element;
+    vector_t *result = NULL;
+    void *element = NULL;
 
     assert(self);
     result = vector_new(self->element_size);

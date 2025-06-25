@@ -114,7 +114,7 @@ map_t *create_map(size_t width, size_t height, server_t *server)
  */
 void destroy_map(map_t *map)
 {
-    tile_t *tile;
+    tile_t *tile = NULL;
 
     if (map == NULL)
         return;

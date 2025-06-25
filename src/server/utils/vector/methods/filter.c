@@ -12,8 +12,8 @@
 vector_t *vector_filter_impl(
     const vector_t *self, predicate_function_t predicate, void *context)
 {
-    vector_t *result;
-    void *element;
+    vector_t *result = NULL;
+    void *element = NULL;
 
     assert(self && predicate);
     result = vector_new(self->element_size);

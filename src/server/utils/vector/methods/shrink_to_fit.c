@@ -23,7 +23,7 @@ static void *shrink(vector_t *self)
 
 void vector_shrink_to_fit_impl(vector_t *self)
 {
-    void *new_data;
+    void *new_data = NULL;
 
     assert(self);
     if (self->size == self->capacity) {

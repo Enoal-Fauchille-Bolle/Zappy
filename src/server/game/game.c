@@ -90,7 +90,7 @@ static team_t **create_teams(char **teams_name, game_t *game)
 static player_t *get_player_by_id_in_team(team_t *team, size_t id)
 {
     const vector_vtable_t *vtable;
-    player_t *player;
+    player_t *player = NULL;
 
     if (team == NULL) {
         fprintf(stderr, "Team pointer is NULL\n");
@@ -120,7 +120,7 @@ static player_t *get_player_by_id_in_team(team_t *team, size_t id)
  */
 player_t *get_player_by_id(game_t *game, size_t id)
 {
-    player_t *player;
+    player_t *player = NULL;
 
     if (game == NULL) {
         fprintf(stderr, "Game pointer is NULL\n");

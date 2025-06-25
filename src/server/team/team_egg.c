@@ -70,7 +70,7 @@ void add_egg_to_team(team_t *team, egg_t *egg)
 void remove_egg_from_team(team_t *team, egg_t *egg)
 {
     const vector_vtable_t *vtable;
-    egg_t *current_egg;
+    egg_t *current_egg = NULL;
 
     if (team == NULL || egg == NULL) {
         fprintf(stderr, "Invalid team or egg pointer\n");

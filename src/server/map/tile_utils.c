@@ -28,7 +28,7 @@ size_t get_nb_players_on_tile_with_level(const tile_t *tile, level_t level)
 {
     const vector_vtable_t *vtable;
     size_t count = 0;
-    player_t *current_player;
+    player_t *current_player = NULL;
 
     if (tile == NULL) {
         fprintf(stderr, "Invalid tile pointer\n");

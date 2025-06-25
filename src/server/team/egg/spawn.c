@@ -32,7 +32,7 @@
 void spawn_min_eggs(map_t *map, team_t *team, size_t min, bool debug)
 {
     pos_t random_pos;
-    egg_t *current_egg;
+    egg_t *current_egg = NULL;
 
     if (map == NULL || team == NULL) {
         fprintf(stderr, "Invalid map or team pointer\n");
@@ -141,7 +141,7 @@ static void debug_player_spawn(client_t *client, player_t *player,
 player_t *spawn_player_from_egg(
     egg_t *egg, map_t *map, const size_t player_id, client_t *client)
 {
-    player_t *player;
+    player_t *player = NULL;
 
     if (check_egg_validity(egg) == FAILURE ||
         check_map_validity(map) == FAILURE)

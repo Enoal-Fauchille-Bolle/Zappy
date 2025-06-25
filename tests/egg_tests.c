@@ -293,7 +293,7 @@ Test(egg, spawn_player_from_egg_valid, .timeout = 2)
     team_t *team = create_team("TestTeam", game);
     egg_t *egg = create_egg((pos_t){7, 4}, team, 1, false);
     map_t *map = create_map(10, 10, false);
-    player_t *player;
+    player_t *player = NULL;
     tile_t *tile = get_tile(map, (pos_t){7, 4});
 
     cr_assert_eq(vector_get_vtable(tile->players)->size(tile->players), 0,
@@ -415,7 +415,7 @@ Test(egg, player_lays_egg_valid, .timeout = 2)
     server->clients[0] = create_client(server, server->game->teams[0], 0);
     client_t *client = server->clients[0];
     player_t *player = client->player;
-    egg_t *egg;
+    egg_t *egg = NULL;
 
     cr_assert_eq(player->tick_cooldown, 0,
         "Player should have no cooldown before laying an egg");

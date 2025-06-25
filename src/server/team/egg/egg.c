@@ -128,7 +128,7 @@ void add_egg_to_tile(tile_t *tile, egg_t *egg)
 void remove_egg_from_tile(tile_t *tile, egg_t *egg)
 {
     const vector_vtable_t *vtable;
-    egg_t *current_egg;
+    egg_t *current_egg = NULL;
 
     if (tile == NULL || egg == NULL) {
         fprintf(stderr, "Invalid tile or egg pointer\n");

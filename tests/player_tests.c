@@ -155,7 +155,7 @@ Test(player, move_player_on_map, .timeout = 2)
     pos_t pos = {5, 5};
     player_t *player = create_player(pos, 0, NULL, NULL);
     map_t *map = create_map(10, 10, false);
-    tile_t *prev_tile;
+    tile_t *prev_tile = NULL;
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(map, "Map should not be NULL");
@@ -183,8 +183,8 @@ Test(player, move_two_player_on_map, .timeout = 2)
     player_t *player = create_player((pos_t){0, 0}, 0, NULL, NULL);
     player_t *player2 = create_player((pos_t){1, 0}, 0, NULL, NULL);
     map_t *map = create_map(10, 10, false);
-    tile_t *prev_tile_A;
-    tile_t *prev_tile_B;
+    tile_t *prev_tile_A = NULL;
+    tile_t *prev_tile_B = NULL;
 
     cr_assert_not_null(player, "Player should not be NULL");
     cr_assert_not_null(player2, "Player2 should not be NULL");
@@ -311,7 +311,7 @@ Test(player, destroy_player_null, .timeout = 2)
 Test(player, check_inventory_null, .timeout = 2)
 {
     player_t *player = create_player((pos_t){5, 5}, 0, NULL, NULL);
-    char *inventory_str;
+    char *inventory_str = NULL;
 
     cr_assert_not_null(player, "Player should not be NULL");
     inventory_str = check_inventory(NULL);

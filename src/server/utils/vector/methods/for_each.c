@@ -11,7 +11,7 @@
 void vector_for_each_impl(
     vector_t *self, for_each_function_t foreach_fn, void *context)
 {
-    void *element;
+    void *element = NULL;
 
     assert(self && foreach_fn);
     for (size_t i = 0; i < self->size; i++) {

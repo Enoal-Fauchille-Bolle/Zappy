@@ -12,7 +12,7 @@
 
 void vector_reserve_impl(vector_t *self, size_t new_cap)
 {
-    void *new_data;
+    void *new_data = NULL;
 
     assert(self);
     if (new_cap <= self->capacity) {

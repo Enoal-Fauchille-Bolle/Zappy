@@ -52,7 +52,7 @@ void add_player_to_team(team_t *team, player_t *player)
 void remove_player_from_team(team_t *team, player_t *player)
 {
     const vector_vtable_t *vtable;
-    player_t *current_player;
+    player_t *current_player = NULL;
 
     if (team == NULL || player == NULL) {
         fprintf(stderr, "Invalid team or player pointer\n");
