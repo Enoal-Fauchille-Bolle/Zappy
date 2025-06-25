@@ -15,8 +15,8 @@ static void *shrink(vector_t *self)
     void *new_data = realloc(self->data, self->size * self->element_size);
 
     if (!new_data) {
-        perror("vector_shrink_to_fit");
-        exit(EXIT_ERROR_CODE);
+        perror("vector_shrink_to_fit realloc failed");
+        return NULL;
     }
     return new_data;
 }
@@ -36,6 +36,8 @@ void vector_shrink_to_fit_impl(vector_t *self)
         return;
     }
     new_data = shrink(self);
+    if (!new_data)
+        return;
     self->data = new_data;
     self->capacity = self->size;
     return;

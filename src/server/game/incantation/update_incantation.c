@@ -56,6 +56,8 @@ static void level_up_players(incantation_t *incantation)
 
     for (size_t i = 0; incantation->players[i] != NULL; i++) {
         player = incantation->players[i];
+        if (player == NULL)
+            continue;
         player->level = incantation->level + 1;
         dprintf(player->client->sockfd, "Current level: %u\n", player->level);
         plv_event(player);
@@ -124,15 +126,17 @@ static void complete_incantation(incantation_t *incantation, game_t *game)
         level_up_players(incantation);
         pie_event(incantation->pos, true, game->server);
         debug_game(game->server->options->debug,
-            "Incantation at (%d, %d) completed for level %u\n",
-            incantation->pos.x, incantation->pos.y, incantation->level);
+            "Incantation at (%d, %d) completed for level %u -> %u\n",
+            incantation->pos.x, incantation->pos.y, incantation->level,
+            incantation->level + 1);
         update_end(game);
     } else {
         send_elevation_failed_to_players(incantation);
         pie_event(incantation->pos, false, game->server);
         debug_game(game->server->options->debug,
-            "Incantation at (%d, %d) failed for level %u\n",
-            incantation->pos.x, incantation->pos.y, incantation->level);
+            "Incantation at (%d, %d) failed for level %u -> %u\n",
+            incantation->pos.x, incantation->pos.y, incantation->level,
+            incantation->level + 1);
     }
 }
 

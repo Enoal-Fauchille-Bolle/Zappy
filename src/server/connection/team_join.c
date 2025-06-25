@@ -12,6 +12,7 @@
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "game/game_state.h"
 #include "game/teams.h"
 #include "map/resources.h"
 #include "team/egg/egg.h"
@@ -231,6 +232,10 @@ static bool handle_gui_client(
 bool handle_team_join(
     server_t *server, const char *team_name, int client_index)
 {
+    if (server->game->game_state == GAME_END) {
+        write(server->fds[client_index].fd, "ko\n", 3);
+        return FAILURE;
+    }
     if (handle_gui_client(server, team_name, client_index) == SUCCESS) {
         return SUCCESS;
     }

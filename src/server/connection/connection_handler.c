@@ -13,6 +13,7 @@
 #include "debug_categories.h"
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
+#include <asm-generic/socket.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -83,6 +84,30 @@ static void refuse_connection(server_t *server, int client_sockfd)
 }
 
 /**
+ * @brief Checks if a socket is writable using a non-blocking write test
+ *
+ * Uses a non-blocking approach to test if the server can write to a client
+ * socket. This is more efficient than using poll() as it doesn't block other
+ * operations.
+ *
+ * @param sockfd Socket file descriptor to test
+ * @return true if socket is writable, false otherwise
+ */
+static bool is_socket_writable(int sockfd, bool debug)
+{
+    int error = 0;
+    socklen_t len = sizeof(error);
+
+    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) != 0 ||
+        error != 0) {
+        debug_conn(debug, "Connection rejected - socket not writable\n");
+        close(sockfd);
+        return false;
+    }
+    return true;
+}
+
+/**
  * @brief Accepts a new client connection and adds it to the server's client
  * pool
  *
@@ -109,6 +134,8 @@ static void accept_new_connection(server_t *server)
 
     if (client_sockfd == -1)
         return perror("accept");
+    if (!is_socket_writable(client_sockfd, server->options->debug))
+        return;
     for (int i = 2; i < MAX_CLIENTS + 2; i++) {
         if (server->fds[i].fd < 0) {
             debug_conn(server->options->debug,
@@ -131,29 +158,30 @@ static void accept_new_connection(server_t *server)
  *
  * @param server Pointer to the server structure containing game state and
  * client data
- * @param fds Array of pollfd structures for monitoring file descriptors
+ * @param timeout_ms Timeout in milliseconds for the poll() call
+ * @param timed_out Pointer to bool indicating if poll() timed out (set to true
+ * if timeout, false if activity detected)
  * @return true on success, false on failure (poll error)
  *
- * @note Uses a timeout defined by the game tick rate to limit the
- * polling duration
  * @note Monitors up to MAX_CLIENTS + 2 file descriptors
  */
-bool process_connection(server_t *server)
+bool process_connection(server_t *server, int timeout_ms, bool *timed_out)
 {
-    int result = poll(server->fds, MAX_CLIENTS + 2,
-        (1.0 / server->game->tick_rate) * 1000.0);
+    int result = poll(server->fds, MAX_CLIENTS + 2, timeout_ms);
 
     if (result < 0) {
         if (errno != EINTR)
             perror("poll");
         return FAILURE;
     }
+    *timed_out = (result == 0);
     if (server->fds[1].revents & POLLIN) {
         if (!handle_signal(server->fds[1].fd, server->options->debug)) {
             return FAILURE;
         }
     }
-    if (server->fds[0].revents & POLLIN) {
+    if ((server->fds[0].revents & POLLIN) &&
+        !(server->fds[0].revents & (POLLERR | POLLHUP | POLLNVAL))) {
         accept_new_connection(server);
     }
     process_client_events(server, MAX_CLIENTS + 2);

@@ -81,7 +81,6 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)connection/socket.c							\
 			 	$(SRCDIR_SERVER)connection/connection_handler.c				\
 			 	$(SRCDIR_SERVER)connection/signal_handler.c					\
-			 	$(SRCDIR_SERVER)connection/time.c							\
 			 	$(SRCDIR_SERVER)map/map.c									\
 			 	$(SRCDIR_SERVER)map/coordinates.c							\
 			 	$(SRCDIR_SERVER)map/player_management.c						\
@@ -269,7 +268,6 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)connection/client.c								\
 			$(SRCDIR_SERVER)connection/client_message.c						\
 			$(SRCDIR_SERVER)connection/socket.c								\
-			$(SRCDIR_SERVER)connection/time.c								\
 			$(SRCDIR_SERVER)connection/connection_handler.c					\
 			$(SRCDIR_SERVER)connection/signal_handler.c						\
 			$(SRCDIR_SERVER)connection/team_join.c							\
@@ -346,7 +344,6 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}debug_tests.c											\
 			${TESTS}string_tests.c											\
 			${TESTS}client_tests.c											\
-			${TESTS}time_tests.c											\
 			${TESTS}options_parser/integration_tests.c						\
 			${TESTS}options_parser/parser_tests.c							\
 			${TESTS}options_parser/processor_tests.c						\

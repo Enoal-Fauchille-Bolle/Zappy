@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "command_handler/command_buffer.h"
+#include "command_handler/command_factory.h"
 #include "command_handler/command_parser.h"
 #include "connection/client.h"
 #include "connection/server.h"
@@ -14,6 +15,7 @@
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "game/game_state.h"
 #include "team/player/player.h"
 #include "utils/string.h"
 #include <stdarg.h>
@@ -41,6 +43,63 @@ void send_to_all_guis(server_t *server, const char *format, ...)
     }
 }
 
+static void send_command_failed(client_t *client)
+{
+    if (client->is_gui) {
+        write(client->sockfd, "sbp\n", 4);
+    } else {
+        write(client->sockfd, "ko\n", 3);
+    }
+}
+
+/**
+ * @brief Checks if the command is valid
+ *
+ * If the command is NULL, sends a failure response to the client and returns
+ * FAILURE. Otherwise, returns SUCCESS.
+ *
+ * @param server Pointer to the server structure
+ * @param command Pointer to the command structure
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @return SUCCESS if command is valid, FAILURE otherwise
+ */
+static bool check_command(
+    server_t *server, command_t *command, int client_index)
+{
+    if (command == NULL) {
+        debug_warning(server->options->debug,
+            "Failed to parse command from client %d\n", client_index - 2);
+        write(server->fds[client_index].fd, "ko\n", 3);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+/**
+ * @brief Checks if the game state allows for command execution
+ *
+ * If the game state is GAME_END, sends a failure response to the client and
+ * destroys the command. Returns FAILURE if the game is over, otherwise returns
+ * SUCCESS.
+ *
+ * @param server Pointer to the server structure
+ * @param command Pointer to the command structure
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @return SUCCESS if game state allows command execution, FAILURE otherwise
+ */
+static bool check_game_state(
+    server_t *server, command_t *command, int client_index)
+{
+    if (server->game->game_state == GAME_END) {
+        send_command_failed(server->clients[client_index - 2]);
+        destroy_command(command);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
 /**
  * @brief Handles a command received from a client
  *
@@ -59,12 +118,10 @@ static void handle_command(
 {
     command_t *command = parse_command_buffer(command_buffer);
 
-    if (command == NULL) {
-        debug_warning(server->options->debug,
-            "Failed to parse command from client %d\n", client_index - 2);
-        write(server->fds[client_index].fd, "ko\n", 3);
+    if (!check_command(server, command, client_index))
         return;
-    }
+    if (!check_game_state(server, command, client_index))
+        return;
     add_command_to_buffer(server->clients[client_index - 2], command);
     if (!server->clients[client_index - 2]->is_gui) {
         debug_cmd(server->options->debug,
