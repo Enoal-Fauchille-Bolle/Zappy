@@ -53,6 +53,8 @@ char *check_inventory(player_t *player);
 bool take_resource(player_t *player, map_t *map, resource_t resource);
 bool set_resource(player_t *player, map_t *map, resource_t resource);
 bool eject(player_t *player, map_t *map);
+direction_t get_broadcast_direction(player_t *listening_player,
+    player_t *broadcasting_player, const map_t *map);
 
 void add_player_to_tile(tile_t *tile, player_t *player);
 void remove_player_from_tile(tile_t *tile, player_t *player);

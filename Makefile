@@ -94,6 +94,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)team/player/look.c							\
 				$(SRCDIR_SERVER)team/player/inventory.c						\
 				$(SRCDIR_SERVER)team/player/ejection.c						\
+				$(SRCDIR_SERVER)team/player/broadcast.c						\
 				$(SRCDIR_SERVER)game/incantation/check_incantation.c		\
 				$(SRCDIR_SERVER)game/incantation/incantation_allocation.c	\
 				$(SRCDIR_SERVER)game/incantation/update_incantation.c		\
@@ -123,6 +124,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/fork.c							\
 				$(SRCDIR_SERVER)commands/ai/take.c							\
 				$(SRCDIR_SERVER)commands/ai/set.c							\
+				$(SRCDIR_SERVER)commands/ai/broadcast_cmd.c					\
 				$(SRCDIR_SERVER)commands/ai/eject.c							\
 				$(SRCDIR_SERVER)commands/ai/incantation_cmd.c				\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
@@ -143,6 +145,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/gui/sst.c							\
 				$(SRCDIR_SERVER)commands/gui/edi.c							\
 				$(SRCDIR_SERVER)commands/gui/pex.c							\
+				$(SRCDIR_SERVER)commands/gui/pbc.c							\
 				$(SRCDIR_SERVER)commands/gui/pic.c							\
 				$(SRCDIR_SERVER)commands/gui/pie.c							\
 				$(SRCDIR_SERVER)commands/gui/seg.c							\
@@ -255,6 +258,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/player/inventory.c							\
 			$(SRCDIR_SERVER)team/player/ejection.c							\
+			$(SRCDIR_SERVER)team/player/broadcast.c							\
 			$(SRCDIR_SERVER)game/incantation/check_incantation.c			\
 			$(SRCDIR_SERVER)game/incantation/incantation_allocation.c		\
 			$(SRCDIR_SERVER)game/incantation/update_incantation.c			\
@@ -297,6 +301,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/fork.c								\
 			$(SRCDIR_SERVER)commands/ai/take.c								\
 			$(SRCDIR_SERVER)commands/ai/set.c								\
+			$(SRCDIR_SERVER)commands/ai/broadcast_cmd.c						\
 			$(SRCDIR_SERVER)commands/ai/eject.c								\
 			$(SRCDIR_SERVER)commands/ai/incantation_cmd.c					\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
@@ -317,6 +322,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/gui/sst.c								\
 			$(SRCDIR_SERVER)commands/gui/edi.c								\
 			$(SRCDIR_SERVER)commands/gui/pex.c								\
+			$(SRCDIR_SERVER)commands/gui/pbc.c								\
 			$(SRCDIR_SERVER)commands/gui/pic.c								\
 			$(SRCDIR_SERVER)commands/gui/pie.c								\
 			$(SRCDIR_SERVER)commands/gui/seg.c								\
