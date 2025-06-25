@@ -16,7 +16,8 @@
  * @brief Broadcast a message to all GUI clients.
  *
  * This function formats the broadcast message and sends it to all GUI clients
- * connected to the server. The message format is "pbc <player_id> <message>\n".
+ * connected to the server. The message format is "pbc <player_id>
+ * <message>\n".
  *
  * @param player The player who is broadcasting the message.
  * @param message The message to broadcast.

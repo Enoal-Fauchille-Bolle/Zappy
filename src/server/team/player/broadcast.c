@@ -24,7 +24,8 @@ static const direction_t direction_map[4][9] = {
     {MIDDLE, BACK, BACK_LEFT, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT,
         BACK_RIGHT},
     {MIDDLE, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT, BACK_RIGHT, BACK,
-        BACK_LEFT}};
+        BACK_LEFT}
+};
 
 /**
  * @brief Calculate the shortest delta between two positions on one axis.
@@ -194,6 +195,7 @@ void broadcast_to_all_players(
     game_t *game, player_t *sender, const char *message)
 {
     const vector_vtable_t *vtable;
+    team_t *team = NULL;
     player_t *receiver = NULL;
 
     if (!game || !message) {
@@ -202,7 +204,7 @@ void broadcast_to_all_players(
         return;
     }
     for (size_t i = 0; game->teams[i] != NULL; i++) {
-        team_t *team = game->teams[i];
+        team = game->teams[i];
         vtable = vector_get_vtable(team->players);
         for (size_t j = 0; j < vtable->size(team->players); j++) {
             receiver = *(player_t **)vtable->at(team->players, j);
