@@ -5,9 +5,12 @@
 ** listen_broadcast
 */
 
+#include "connection/server.h"
+#include "game/game.h"
 #include "map/coordinates.h"
 #include "map/map.h"
 #include "team/player/player.h"
+#include "vector.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,24 +24,7 @@ static const direction_t direction_map[4][9] = {
     {MIDDLE, BACK, BACK_LEFT, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT,
         BACK_RIGHT},
     {MIDDLE, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT, BACK_RIGHT, BACK,
-        BACK_LEFT}
-};
-
-/**
- * @brief Compare two positions for equality.
- *
- * This function checks if two positions are equal by comparing their x and y
- * coordinates. It returns true if both coordinates are the same, otherwise
- * false.
- *
- * @param a The first position to compare.
- * @param b The second position to compare.
- * * @return true if the positions are equal, false otherwise.
- */
-static bool pos_cmp(const pos_t a, const pos_t b)
-{
-    return a.x == b.x && a.y == b.y;
-}
+        BACK_LEFT}};
 
 /**
  * @brief Calculate the shortest delta between two positions on one axis.
@@ -169,4 +155,58 @@ direction_t get_broadcast_direction(player_t *listening_player,
     }
     return get_direction(listening_player->pos, listening_player->orientation,
         broadcasting_player->pos, map);
+}
+
+/**
+ * @brief Broadcast a message to a specific player.
+ *
+ * This function sends a broadcast message to a player, including the direction
+ * of the broadcast. It checks for NULL pointers to avoid dereferencing errors.
+ *
+ * @param player Pointer to the player structure to whom the message is sent.
+ * @param message The message to broadcast to the player.
+ */
+static void broadcast_to_player(
+    player_t *sender, player_t *receiver, const char *message)
+{
+    if (!receiver || !message) {
+        fprintf(stderr,
+            "Error: NULL player or message in send_broadcast_message\n");
+        return;
+    }
+    dprintf(receiver->client->sockfd, "message %d, %s\n",
+        get_broadcast_direction(
+            receiver, sender, receiver->client->server->game->map),
+        message);
+}
+
+/**
+ * @brief Broadcast a message to all players in the game.
+ *
+ * This function iterates through all teams and their players, sending the
+ * specified message to each player. It checks for NULL pointers to avoid
+ * dereferencing errors.
+ *
+ * @param game Pointer to the game structure containing teams and players.
+ * @param message The message to broadcast to all players.
+ */
+void broadcast_to_all_players(
+    game_t *game, player_t *sender, const char *message)
+{
+    const vector_vtable_t *vtable;
+    player_t *receiver = NULL;
+
+    if (!game || !message) {
+        fprintf(stderr,
+            "Error: NULL game or message in broadcast_to_all_players\n");
+        return;
+    }
+    for (size_t i = 0; game->teams[i] != NULL; i++) {
+        team_t *team = game->teams[i];
+        vtable = vector_get_vtable(team->players);
+        for (size_t j = 0; j < vtable->size(team->players); j++) {
+            receiver = *(player_t **)vtable->at(team->players, j);
+            broadcast_to_player(sender, receiver, message);
+        }
+    }
 }

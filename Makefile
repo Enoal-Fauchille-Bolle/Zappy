@@ -94,6 +94,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)team/player/look.c							\
 				$(SRCDIR_SERVER)team/player/inventory.c						\
 				$(SRCDIR_SERVER)team/player/ejection.c						\
+				$(SRCDIR_SERVER)team/player/broadcast.c						\
 				$(SRCDIR_SERVER)game/incantation/check_incantation.c		\
 				$(SRCDIR_SERVER)game/incantation/incantation_allocation.c	\
 				$(SRCDIR_SERVER)game/incantation/update_incantation.c		\
@@ -255,6 +256,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/player/inventory.c							\
 			$(SRCDIR_SERVER)team/player/ejection.c							\
+			$(SRCDIR_SERVER)team/player/broadcast.c							\
 			$(SRCDIR_SERVER)game/incantation/check_incantation.c			\
 			$(SRCDIR_SERVER)game/incantation/incantation_allocation.c		\
 			$(SRCDIR_SERVER)game/incantation/update_incantation.c			\
