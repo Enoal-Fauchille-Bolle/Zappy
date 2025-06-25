@@ -158,23 +158,23 @@ static void accept_new_connection(server_t *server)
  *
  * @param server Pointer to the server structure containing game state and
  * client data
- * @param fds Array of pollfd structures for monitoring file descriptors
+ * @param timeout_ms Timeout in milliseconds for the poll() call
+ * @param timed_out Pointer to bool indicating if poll() timed out (set to true
+ * if timeout, false if activity detected)
  * @return true on success, false on failure (poll error)
  *
- * @note Uses a timeout defined by the game tick rate to limit the
- * polling duration
  * @note Monitors up to MAX_CLIENTS + 2 file descriptors
  */
-bool process_connection(server_t *server)
+bool process_connection(server_t *server, int timeout_ms, bool *timed_out)
 {
-    int result = poll(server->fds, MAX_CLIENTS + 2,
-        (1.0 / server->game->tick_rate) * 1000.0);
+    int result = poll(server->fds, MAX_CLIENTS + 2, timeout_ms);
 
     if (result < 0) {
         if (errno != EINTR)
             perror("poll");
         return FAILURE;
     }
+    *timed_out = (result == 0);
     if (server->fds[1].revents & POLLIN) {
         if (!handle_signal(server->fds[1].fd, server->options->debug)) {
             return FAILURE;

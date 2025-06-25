@@ -10,11 +10,11 @@
 #include "connection/connection_handler.h"
 #include "connection/signal_handler.h"
 #include "connection/socket.h"
-#include "connection/time.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
 #include "options_parser/options.h"
+#include <bits/time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -190,6 +190,62 @@ static long long get_current_time_ms(void)
 }
 
 /**
+ * @brief Calculates the timeout for poll() based on next tick timing
+ *
+ * This function determines how long poll() should wait before timing out,
+ * ensuring the game tick executes at the correct time while keeping the
+ * timeout within reasonable bounds.
+ *
+ * @param next_tick_time Absolute time when the next game tick should occur
+ * @param tick_duration_ms Duration of one game tick in milliseconds
+ * @return int Timeout value in milliseconds for poll()
+ */
+static int calculate_poll_timeout(
+    long long next_tick_time, long long tick_duration_ms)
+{
+    long long current_time = get_current_time_ms();
+    int timeout_ms = (int)(next_tick_time - current_time);
+
+    if (timeout_ms < 1)
+        timeout_ms = 1;
+    if (timeout_ms > tick_duration_ms)
+        timeout_ms = tick_duration_ms;
+    return timeout_ms;
+}
+
+/**
+ * @brief Processes a single server loop iteration
+ *
+ * This function handles one iteration of the server loop, including timing
+ * calculations, game tick execution, and connection processing.
+ *
+ * @param server Pointer to the server structure
+ * @param next_tick_time Pointer to the next tick time (modified)
+ * @param tick_duration_ms Duration of one game tick in milliseconds
+ * @return true to continue the loop, false to break
+ */
+static bool process_server_iteration(
+    server_t *server, long long *next_tick_time, long long tick_duration_ms)
+{
+    long long current_time = get_current_time_ms();
+    int timeout_ms = 0;
+    bool poll_timed_out = false;
+
+    if (current_time >= *next_tick_time) {
+        game_tick(server->game, server->options);
+        *next_tick_time += tick_duration_ms;
+        current_time = get_current_time_ms();
+        if (current_time >= *next_tick_time) {
+            *next_tick_time = current_time + tick_duration_ms;
+        }
+    }
+    timeout_ms = calculate_poll_timeout(*next_tick_time, tick_duration_ms);
+    if (process_connection(server, timeout_ms, &poll_timed_out) == FAILURE)
+        return false;
+    return true;
+}
+
+/**
  * @brief Runs the main server loop to handle incoming connections
  *
  * This function starts the server listening process and continuously accepts
@@ -202,18 +258,14 @@ static long long get_current_time_ms(void)
  */
 void run_server(server_t *server)
 {
-    long long tick_start_time = 0;
+    long long tick_duration_ms = 1000 / (long long)server->game->tick_rate;
+    long long next_tick_time = 0;
 
     debug_server(server->options->debug, "Listening on port %u\n",
         server->options->port);
     puts("Waiting for connections...");
-    debug_game(server->options->debug, "1 tick = %.2f ms\n",
-        (1.0 / server->game->tick_rate) * 1000.0);
-    while (true) {
-        tick_start_time = get_current_time_ms();
-        if (process_connection(server) == FAILURE)
-            break;
-        game_tick(server->game, server->options);
-        wait_remaining_tick_time(server, tick_start_time);
-    }
+    debug_game(server->options->debug, "1 tick = %lld ms\n", tick_duration_ms);
+    next_tick_time = get_current_time_ms() + tick_duration_ms;
+    while (process_server_iteration(server, &next_tick_time, tick_duration_ms))
+        ;
 }
