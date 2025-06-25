@@ -180,7 +180,8 @@ bool process_connection(server_t *server)
             return FAILURE;
         }
     }
-    if (server->fds[0].revents & POLLIN) {
+    if ((server->fds[0].revents & POLLIN) &&
+        !(server->fds[0].revents & (POLLERR | POLLHUP | POLLNVAL))) {
         accept_new_connection(server);
     }
     process_client_events(server, MAX_CLIENTS + 2);
