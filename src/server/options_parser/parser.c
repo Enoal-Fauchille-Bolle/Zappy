@@ -100,7 +100,7 @@ void parse_options(server_options_t *options, int ac, char **av)
         if (option_map != NULL && option_map->handler != NULL) {
             option_map->handler(options, &i, ac, av);
         } else {
-            dprintf(fileno(stderr), "Unknown option: %s\n", av[i]);
+            fprintf(stderr, "Unknown option: %s\n", av[i]);
             options->error = true;
             return;
         }
