@@ -7,7 +7,7 @@
 
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
-#include "connection/message_receiver.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
