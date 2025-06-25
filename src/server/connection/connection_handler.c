@@ -153,7 +153,7 @@ static bool poll_socket_write(int sockfd, bool debug)
 static bool is_socket_writable(int sockfd, bool debug)
 {
     return check_socket_error(sockfd, debug) &&
-           poll_socket_write(sockfd, debug);
+        poll_socket_write(sockfd, debug);
 }
 
 /**
