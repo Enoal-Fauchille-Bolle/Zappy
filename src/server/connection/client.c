@@ -18,8 +18,65 @@
 #include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "team/team.h"
+#include "vector.h"
 #include <stdlib.h>
 #include <unistd.h>
+
+/**
+ * @brief Cleans up the command buffer for a client
+ *
+ * This function iterates through the client's command buffer and destroys
+ * all pending commands, setting each buffer slot to NULL.
+ *
+ * @param client Pointer to the client structure
+ */
+static void cleanup_command_buffer(client_t *client)
+{
+    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
+        if (client->command_buffer[i] != NULL) {
+            destroy_command(client->command_buffer[i]);
+            client->command_buffer[i] = NULL;
+        }
+    }
+}
+
+/**
+ * @brief Cleans up the writing buffer for a client
+ *
+ * This function clears and destroys the client's writing buffer,
+ * freeing all associated memory.
+ *
+ * @param client Pointer to the client structure
+ */
+static void cleanup_writing_buffer(client_t *client)
+{
+    clear_writing_buffer(client);
+    if (client->writing_buffer != NULL) {
+        vector_destroy(client->writing_buffer);
+        client->writing_buffer = NULL;
+    }
+}
+
+/**
+ * @brief Cleans up the player object for a client
+ *
+ * This function safely destroys the client's player object, handling
+ * different scenarios based on whether the server and game are available.
+ *
+ * @param client Pointer to the client structure
+ */
+static void cleanup_player(client_t *client)
+{
+    if (client->player == NULL) {
+        return;
+    }
+    if (client->server != NULL && client->server->game != NULL) {
+        destroy_player(client->player);
+    } else {
+        free(client->player);
+    }
+    client->player = NULL;
+}
 
 /**
  * @brief Destroys a client structure and frees all associated memory
@@ -38,21 +95,9 @@ void destroy_client(client_t *client)
 {
     if (client == NULL)
         return;
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command_buffer[i] != NULL) {
-            destroy_command(client->command_buffer[i]);
-            client->command_buffer[i] = NULL;
-        }
-    }
-    clear_writing_buffer(client);
-    if (client->player != NULL && client->server != NULL &&
-        client->server->game != NULL) {
-        destroy_player(client->player);
-        client->player = NULL;
-    } else if (client->player != NULL) {
-        free(client->player);
-        client->player = NULL;
-    }
+    cleanup_command_buffer(client);
+    cleanup_writing_buffer(client);
+    cleanup_player(client);
     free(client);
     client = NULL;
 }
@@ -146,9 +191,7 @@ static void setup_client(
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         client->command_buffer[i] = NULL;
     }
-    for (int i = 0; i < MAX_WRITING_BUFFER_SIZE; i++) {
-        client->writing_buffer[i] = NULL;
-    }
+    client->writing_buffer = vector_new(sizeof(char *));
     client->is_gui = is_gui;
 }
 

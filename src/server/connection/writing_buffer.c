@@ -11,116 +11,145 @@
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
+#include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 /**
- * @brief Shifts all messages in the buffer to the left starting from a given
- * index
- *
- * This function moves all messages one position to the left in the client's
- * writing buffer, starting from the specified index. The last position is set
- * to NULL.
- *
- * @param client Pointer to the client structure containing the writing buffer
- * @param start_index The index from which to start shifting messages left
- */
-static void shift_messages_left(client_t *client, int start_index)
-{
-    for (int i = start_index; i < MAX_WRITING_BUFFER_SIZE - 1; i++) {
-        client->writing_buffer[i] = client->writing_buffer[i + 1];
-        client->writing_buffer[i + 1] = NULL;
-    }
-}
-
-/**
  * @brief Removes the first message from the client's writing buffer
  *
- * This function checks if the client pointer is valid, then iterates through
- * the writing buffer to find and remove the first non-NULL message. After
- * removing the message, it shifts all remaining messages to the left to
- * maintain queue order.
+ * This function checks if the client pointer is valid, then removes the first
+ * message from the vector-based writing buffer. Maintains FIFO queue order.
  *
  * @param client Pointer to the client structure
  * @return char* Pointer to the removed message, or NULL if buffer is empty
  */
 char *pop_message_from_buffer(client_t *client)
 {
+    const vector_vtable_t *vtable;
     char *message = NULL;
+    char **message_ptr;
 
-    if (client == NULL) {
-        fprintf(stderr, "Invalid client pointer\n");
+    if (client == NULL || client->writing_buffer == NULL) {
+        fprintf(stderr, "Invalid client pointer or writing buffer\n");
         return NULL;
     }
-    for (int i = 0; i < MAX_WRITING_BUFFER_SIZE; i++) {
-        if (client->writing_buffer[i] != NULL) {
-            message = client->writing_buffer[i];
-            client->writing_buffer[i] = NULL;
-            shift_messages_left(client, i);
-            return message;
-        }
+    vtable = vector_get_vtable(client->writing_buffer);
+    if (vtable->size(client->writing_buffer) == 0) {
+        return NULL;
     }
-    return NULL;
+    message_ptr = (char **)vtable->at(client->writing_buffer, 0);
+    if (message_ptr == NULL) {
+        return NULL;
+    }
+    message = *message_ptr;
+    vtable->erase(client->writing_buffer, 0);
+    return message;
+}
+
+/**
+ * @brief Validates client and message parameters for buffer operations
+ *
+ * This function checks if the client and message pointers are valid
+ * and handles cleanup if validation fails.
+ *
+ * @param client Pointer to the client structure
+ * @param message Pointer to the message string
+ * @return true if parameters are valid, false otherwise
+ */
+static bool validate_buffer_parameters(client_t *client, char *message)
+{
+    if (client == NULL || message == NULL) {
+        fprintf(stderr, "Invalid client or message pointer\n");
+        if (message != NULL)
+            free(message);
+        return false;
+    }
+    if (client->writing_buffer == NULL) {
+        fprintf(stderr, "Writing buffer not initialized for client %d\n",
+            client->index);
+        free(message);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Checks if the writing buffer has space for new messages
+ *
+ * This function checks if the client's writing buffer can accept new messages.
+ * For AI clients, it enforces the MAX_WRITING_BUFFER_SIZE limit.
+ * GUI clients have no limit.
+ *
+ * @param client Pointer to the client structure
+ * @param vtable Pointer to the vector vtable
+ * @param message Pointer to the message (for cleanup on failure)
+ * @return true if buffer has space, false otherwise
+ */
+static bool check_buffer_capacity(
+    client_t *client, const vector_vtable_t *vtable, char *message)
+{
+    if (!client->is_gui &&
+        vtable->size(client->writing_buffer) >= MAX_WRITING_BUFFER_SIZE) {
+        debug_warning(client->server->options->debug,
+            "Writing buffer is full for AI client %d\n", client->index);
+        free(message);
+        return false;
+    }
+    return true;
 }
 
 /**
  * @brief Adds a message to the client's writing buffer
  *
  * This function checks if the client and message pointers are valid, then
- * attempts to add the message to the client's writing buffer at the first
- * available position (FIFO queue - add to end). If the buffer is full, it
- * logs a warning message and frees the message to prevent memory leaks.
+ * adds the message to the client's vector-based writing buffer. For AI
+ * clients, it enforces the MAX_WRITING_BUFFER_SIZE limit. GUI clients have no
+ * limit.
  *
  * @param client Pointer to the client structure
  * @param message Pointer to the message string to be added
  */
 void add_message_to_buffer(client_t *client, char *message)
 {
-    if (client == NULL || message == NULL) {
-        fprintf(stderr, "Invalid client or message pointer\n");
-        if (message != NULL)
-            free(message);
+    const vector_vtable_t *vtable;
+
+    if (!validate_buffer_parameters(client, message)) {
         return;
     }
-    for (int i = 0; i < MAX_WRITING_BUFFER_SIZE; i++) {
-        if (client->writing_buffer[i] == NULL) {
-            client->writing_buffer[i] = message;
-            return;
-        }
+    vtable = vector_get_vtable(client->writing_buffer);
+    if (!check_buffer_capacity(client, vtable, message)) {
+        return;
     }
-    debug_warning(client->server->options->debug,
-        "Writing buffer is full for client %d\n", client->index);
-    free(message);
+    vtable->push_back(client->writing_buffer, &message);
 }
 
 /**
  * @brief Checks if the client's writing buffer is empty
  *
- * This function iterates through the writing buffer to check if there are
- * any pending messages to be sent.
+ * This function checks if the vector-based writing buffer contains any
+ * pending messages to be sent.
  *
  * @param client Pointer to the client structure
  * @return true if the buffer is empty, false otherwise
  */
 static bool is_writing_buffer_empty(client_t *client)
 {
-    if (client == NULL) {
+    const vector_vtable_t *vtable;
+
+    if (client == NULL || client->writing_buffer == NULL) {
         return true;
     }
-    for (int i = 0; i < MAX_WRITING_BUFFER_SIZE; i++) {
-        if (client->writing_buffer[i] != NULL) {
-            return false;
-        }
-    }
-    return true;
+    vtable = vector_get_vtable(client->writing_buffer);
+    return vtable->size(client->writing_buffer) == 0;
 }
 
 /**
  * @brief Handle writing buffer for a single client
  *
  * This function checks if the client's writing buffer is empty. If not, it
- * pops a message from the buffer and writes it to the client. It then calls
- * itself recursively to handle any remaining messages in the buffer.
+ * pops messages from the buffer and writes them to the client in a loop until
+ * the buffer is empty.
  *
  * @param client Pointer to the client structure to handle writing buffer for
  */
@@ -128,15 +157,18 @@ static void handle_client_writing_buffer(client_t *client)
 {
     char *message = NULL;
 
-    if (client == NULL || is_writing_buffer_empty(client)) {
+    if (client == NULL) {
         return;
     }
-    message = pop_message_from_buffer(client);
-    if (message != NULL) {
-        write_to_client(client, message);
-        free(message);
+    while (!is_writing_buffer_empty(client)) {
+        message = pop_message_from_buffer(client);
+        if (message != NULL) {
+            write_to_client(client, message);
+            free(message);
+        } else {
+            break;
+        }
     }
-    handle_client_writing_buffer(client);
 }
 
 /**
@@ -161,20 +193,27 @@ void handle_clients_writing_buffer(server_t *server)
 /**
  * @brief Clears all messages from the client's writing buffer
  *
- * This function frees all allocated messages in the writing buffer and
- * sets all positions to NULL.
+ * This function frees all allocated messages in the vector-based writing
+ * buffer and clears the vector.
  *
  * @param client Pointer to the client structure
  */
 void clear_writing_buffer(client_t *client)
 {
-    if (client == NULL) {
+    const vector_vtable_t *vtable;
+    char **message_ptr = NULL;
+    size_t size = 0;
+
+    if (client == NULL || client->writing_buffer == NULL) {
         return;
     }
-    for (int i = 0; i < MAX_WRITING_BUFFER_SIZE; i++) {
-        if (client->writing_buffer[i] != NULL) {
-            free(client->writing_buffer[i]);
-            client->writing_buffer[i] = NULL;
+    vtable = vector_get_vtable(client->writing_buffer);
+    size = vtable->size(client->writing_buffer);
+    for (size_t i = 0; i < size; i++) {
+        message_ptr = (char **)vtable->at(client->writing_buffer, i);
+        if (message_ptr != NULL && *message_ptr != NULL) {
+            free(*message_ptr);
         }
     }
+    vtable->clear(client->writing_buffer);
 }
