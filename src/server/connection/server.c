@@ -14,7 +14,6 @@
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
-#include "game/game_state.h"
 #include "options_parser/options.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -193,7 +192,7 @@ void run_server(server_t *server)
     puts("Waiting for connections...");
     debug_game(server->options->debug, "1 tick = %.2f ms\n",
         (1.0 / server->game->tick_rate) * 1000.0);
-    while (server->game->game_state == GAME_RUNNING) {
+    while (true) {
         tick_start_time = get_current_time_ms();
         if (process_connection(server) == FAILURE)
             break;

@@ -16,6 +16,7 @@
 #include "debug_categories.h"
 #include "game/game.h"
 #include "game/game_constants.h"
+#include "game/game_state.h"
 #include "game/incantation.h"
 #include "map/resources.h"
 #include "options_parser/options.h"
@@ -101,7 +102,8 @@ static void update_players_team_ticks(team_t *team)
             continue;
         }
         update_player_tick_cooldown(player);
-        if (handle_player_starvation(player)) {
+        if (player->client->server->game->game_state == GAME_RUNNING &&
+            handle_player_starvation(player)) {
             continue;
         }
         i++;
