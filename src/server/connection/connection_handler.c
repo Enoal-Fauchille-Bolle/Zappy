@@ -13,6 +13,7 @@
 #include "debug_categories.h"
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
+#include <asm-generic/socket.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -83,6 +84,30 @@ static void refuse_connection(server_t *server, int client_sockfd)
 }
 
 /**
+ * @brief Checks if a socket is writable using a non-blocking write test
+ *
+ * Uses a non-blocking approach to test if the server can write to a client
+ * socket. This is more efficient than using poll() as it doesn't block other
+ * operations.
+ *
+ * @param sockfd Socket file descriptor to test
+ * @return true if socket is writable, false otherwise
+ */
+static bool is_socket_writable(int sockfd, bool debug)
+{
+    int error = 0;
+    socklen_t len = sizeof(error);
+
+    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) != 0 ||
+        error != 0) {
+        debug_conn(debug, "Connection rejected - socket not writable\n");
+        close(sockfd);
+        return false;
+    }
+    return true;
+}
+
+/**
  * @brief Accepts a new client connection and adds it to the server's client
  * pool
  *
@@ -109,6 +134,8 @@ static void accept_new_connection(server_t *server)
 
     if (client_sockfd == -1)
         return perror("accept");
+    if (!is_socket_writable(client_sockfd, server->options->debug))
+        return;
     for (int i = 2; i < MAX_CLIENTS + 2; i++) {
         if (server->fds[i].fd < 0) {
             debug_conn(server->options->debug,
