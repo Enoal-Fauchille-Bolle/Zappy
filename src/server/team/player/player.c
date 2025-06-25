@@ -11,6 +11,7 @@
 #include "connection/server.h"
 #include "game/game.h"
 #include "game/game_constants.h"
+#include "game/incantation.h"
 #include "map/coordinates.h"
 #include "map/resources.h"
 #include "map/tile.h"
@@ -77,6 +78,8 @@ void destroy_player(player_t *player)
     if (player->client && player->client->server &&
         player->client->server->game) {
         remove_player_from_map(player->client->server->game->map, player);
+        remove_player_from_all_incantations(
+            player->client->server->game, player);
     }
     if (player->team != NULL) {
         remove_player_from_team(player->team, player);

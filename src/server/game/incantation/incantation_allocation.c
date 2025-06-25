@@ -165,3 +165,71 @@ incantation_t *create_incantation(game_t *game, pos_t pos, level_t level)
     vtable->push_back(game->incantations, &incantation);
     return incantation;
 }
+
+/**
+ * @brief Removes a player from an incantation by compacting the player array
+ *
+ * This function searches for the specified player in the incantation's player
+ * array and removes them by shifting the remaining players down to fill the
+ * gap, maintaining the NULL-terminated structure.
+ *
+ * @param incantation Pointer to the incantation structure containing players
+ * @param player Pointer to the player to remove from the incantation
+ * @param debug Boolean indicating whether to print debug information
+ */
+static void remove_player_from_incantation(
+    incantation_t *incantation, player_t *player, bool debug)
+{
+    size_t write_idx = 0;
+    bool found = false;
+
+    for (size_t read_idx = 0; incantation->players[read_idx] != NULL;
+        read_idx++) {
+        if (incantation->players[read_idx] == player) {
+            found = true;
+            continue;
+        }
+        incantation->players[write_idx] = incantation->players[read_idx];
+        write_idx++;
+    }
+    incantation->players[write_idx] = NULL;
+    if (found) {
+        debug_game(debug,
+            "Removed player %zu from incantation at (%d, %d) for level "
+            "%u -> %u\n",
+            player->id, incantation->pos.x, incantation->pos.y,
+            incantation->level, incantation->level + 1);
+    }
+}
+
+/**
+ * @brief Removes a player from all incantations by compacting the player
+ * arrays
+ *
+ * This function iterates through all incantations in the game and removes any
+ * occurrence of the specified player. The array is compacted to maintain the
+ * NULL-terminated structure without holes.
+ *
+ * @param game Pointer to the game structure containing incantations vector
+ * @param player Pointer to the player to remove from all incantations
+ */
+void remove_player_from_all_incantations(game_t *game, player_t *player)
+{
+    const vector_vtable_t *vtable;
+    incantation_t *incantation = NULL;
+    size_t incantations_count = 0;
+
+    if (game == NULL || game->incantations == NULL || player == NULL) {
+        return;
+    }
+    vtable = vector_get_vtable(game->incantations);
+    incantations_count = vtable->size(game->incantations);
+    for (size_t i = 0; i < incantations_count; i++) {
+        incantation = *(incantation_t **)vtable->at(game->incantations, i);
+        if (incantation == NULL || incantation->players == NULL) {
+            continue;
+        }
+        remove_player_from_incantation(
+            incantation, player, game->server->options->debug);
+    }
+}

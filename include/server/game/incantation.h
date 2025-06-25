@@ -28,5 +28,6 @@ incantation_t *create_incantation(game_t *game, pos_t pos, level_t level);
 void update_incantation(incantation_t *incantation, game_t *game);
 void destroy_incantation(incantation_t *incantation);
 void destroy_incantation_vector(vector_t *incantations);
+void remove_player_from_all_incantations(game_t *game, player_t *player);
 
 #endif /* !INCANTATION_H_ */
