@@ -17,14 +17,14 @@
 
 // [orientation][base_direction]
 static const direction_t direction_map[4][9] = {
-    {MIDDLE, FRONT, FRONT_RIGHT, RIGHT, BACK_RIGHT, BACK, BACK_LEFT, LEFT,
-        FRONT_LEFT},
-    {MIDDLE, RIGHT, BACK_RIGHT, BACK, BACK_LEFT, LEFT, FRONT_LEFT, FRONT,
+    {MIDDLE, FRONT, FRONT_LEFT, LEFT, BACK_LEFT, BACK, BACK_RIGHT, RIGHT,
         FRONT_RIGHT},
-    {MIDDLE, BACK, BACK_LEFT, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT,
-        BACK_RIGHT},
-    {MIDDLE, LEFT, FRONT_LEFT, FRONT, FRONT_RIGHT, RIGHT, BACK_RIGHT, BACK,
-        BACK_LEFT}
+    {MIDDLE, LEFT, BACK_LEFT, BACK, BACK_RIGHT, RIGHT, FRONT_RIGHT, FRONT,
+        FRONT_LEFT},
+    {MIDDLE, BACK, BACK_RIGHT, RIGHT, FRONT_RIGHT, FRONT, FRONT_LEFT, LEFT,
+        BACK_LEFT},
+    {MIDDLE, RIGHT, FRONT_RIGHT, FRONT, FRONT_LEFT, LEFT, BACK_LEFT, BACK,
+        BACK_RIGHT}
 };
 
 /**
@@ -74,10 +74,8 @@ static vec_t get_shortest_path(
 /**
  * @brief Get the base direction from a vector.
  *
- * This function determines the base direction based on the vector's x and y
- * components. It returns one of the predefined directions (FRONT, FRONT_RIGHT,
- * RIGHT, BACK_RIGHT, BACK, BACK_LEFT, LEFT, FRONT_LEFT) or MIDDLE if the
- * vector does not match any specific direction.
+ * This function returns the direction corresponding to the base vector when
+ * looking north.
  *
  * @param v The vector to analyze.
  * @return The base direction corresponding to the vector.
