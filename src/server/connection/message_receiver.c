@@ -10,6 +10,7 @@
 #include "command_handler/command_factory.h"
 #include "command_handler/command_parser.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "connection/socket.h"
 #include "constants.h"
@@ -21,14 +22,13 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 static void send_command_failed(client_t *client)
 {
     if (client->is_gui) {
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
     } else {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
     }
 }
 
@@ -50,7 +50,9 @@ static bool check_command(
     if (command == NULL) {
         debug_warning(server->options->debug,
             "Failed to parse command from client %d\n", client_index - 2);
-        write(server->fds[client_index].fd, "ko\n", 3);
+        if (server->clients[client_index - 2] != NULL) {
+            send_to_client(server->clients[client_index - 2], "ko\n");
+        }
         return FAILURE;
     }
     return SUCCESS;

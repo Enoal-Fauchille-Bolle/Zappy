@@ -7,6 +7,7 @@
 
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -119,7 +120,7 @@ static void eject_player_from_tile(tile_t *tile, player_t *ejecting_player,
         "%s\n",
         ejected_player->id, ejecting_player->pos.x, ejecting_player->pos.y,
         pos.x, pos.y, orientation_names[ejected_player->orientation]);
-    dprintf(ejected_player->client->sockfd, "eject: %d\n", orientation_origin);
+    send_to_client(ejected_player->client, "eject: %d\n", orientation_origin);
     ppo_event(ejected_player);
 }
 

@@ -7,12 +7,12 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include "game/game_constants.h"
 #include "team/player/player.h"
 #include <stdbool.h>
-#include <unistd.h>
 
 /**
  * @brief Handles the forward command to move the player forward.
@@ -29,7 +29,7 @@ void forward_command(client_t *client, command_t *command)
     (void)command;
     move_player_forward(client->player, client->server->game->map);
     client->player->tick_cooldown = FORWARD_COMMAND_COOLDOWN;
-    write(client->sockfd, "ok\n", 3);
+    send_to_client(client, "ok\n");
     debug_map(client->server->options->debug, "Player %zu moved forward\n",
         client->player->id);
     debug_map(client->server->options->debug,

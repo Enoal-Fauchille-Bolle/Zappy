@@ -5,6 +5,7 @@
 ** listen_broadcast
 */
 
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "game/game.h"
 #include "map/coordinates.h"
@@ -173,7 +174,7 @@ static void broadcast_to_player(
             "Error: NULL player or message in send_broadcast_message\n");
         return;
     }
-    dprintf(receiver->client->sockfd, "message %d, %s\n",
+    send_to_client(receiver->client, "message %d, %s\n",
         get_broadcast_direction(
             receiver, sender, receiver->client->server->game->map),
         message);

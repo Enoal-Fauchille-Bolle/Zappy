@@ -8,6 +8,7 @@
 #include "connection/client.h"
 #include "command_handler/command_factory.h"
 #include "command_handler/gui_commands.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "connection/writing_buffer.h"
 #include "constants.h"
@@ -59,13 +60,15 @@ void destroy_client(client_t *client)
 static void send_close_message(server_t *server, int client_index)
 {
     if (!server->clients[client_index - 2]->is_gui) {
-        write(server->fds[client_index].fd, "dead\n", 5);
+        send_to_client(server->clients[client_index - 2],
+            "dead\n");
         pdi_event(server->clients[client_index - 2]->player);
         debug_conn(server->options->debug, "AI Client %d disconnected\n",
             client_index - 2);
     } else {
         if (server->game->game_state != GAME_END)
-            write(server->fds[client_index].fd, "seg\n", 4);
+            send_to_client(server->clients[client_index - 2],
+                "seg\n");
         debug_conn(server->options->debug, "GUI Client %d disconnected\n",
             client_index - 2);
     }

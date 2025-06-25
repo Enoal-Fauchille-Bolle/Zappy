@@ -44,14 +44,14 @@ static bool validate_team(
         debug_conn(server->options->debug,
             "Client %d tried to join invalid team '%s'\n", client_index - 2,
             team_name);
-        write(server->fds[client_index].fd, "ko\n", 3);
+        send_to_client(server->clients[client_index - 2], "ko\n");
         return FAILURE;
     }
     if (get_egg_count(team) == 0) {
         debug_conn(server->options->debug,
             "Client %d tried to join full team '%s'\n", client_index - 2,
             team->name);
-        write(server->fds[client_index].fd, "ko\n", 3);
+        send_to_client(server->clients[client_index - 2], "ko\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -87,7 +87,7 @@ static bool assign_team(server_t *server, team_t *team, int client_index)
         debug_warning(server->options->debug,
             "Failed to create client for team '%s' at index %d\n", team->name,
             client_index - 2);
-        write(server->fds[client_index].fd, "ko\n", 3);
+        send_to_client(server->clients[client_index - 2], "ko\n");
         return FAILURE;
     }
     pnw_event(server->clients[client_index - 2]->player);
@@ -150,9 +150,10 @@ static bool send_ai_welcome_message(server_t *server, int client_index)
 {
     team_t *team = server->clients[client_index - 2]->player->team;
 
-    dprintf(server->fds[client_index].fd, "%ld\n", get_egg_count(team));
-    dprintf(server->fds[client_index].fd, "%ld %ld\n", server->options->width,
-        server->options->height);
+    send_to_client(
+        server->clients[client_index - 2], "%ld\n", get_egg_count(team));
+    send_to_client(server->clients[client_index - 2], "%ld %ld\n",
+        server->options->width, server->options->height);
     return SUCCESS;
 }
 
@@ -167,11 +168,12 @@ static void display_team_eggs_info(
         if (egg == NULL) {
             continue;
         }
-        dprintf(server->fds[client_index].fd, "enw #%zu #%d %d %d\n", egg->id,
+        send_to_client(server->clients[client_index - 2],
+            "enw #%zu #%d %d %d\n", egg->id,
             egg->parent_id != 0 ? (int)egg->parent_id : -1, egg->pos.x,
             egg->pos.y);
         debug_map(server->options->debug,
-            "Egg #%zu spawned by player #%zu at (%d, %d)\n", egg->id,
+            "Egg #%zu spawned by player %zu at (%d, %d)\n", egg->id,
             egg->parent_id, egg->pos.x, egg->pos.y);
     }
 }
@@ -233,7 +235,7 @@ bool handle_team_join(
     server_t *server, const char *team_name, int client_index)
 {
     if (server->game->game_state == GAME_END) {
-        write(server->fds[client_index].fd, "ko\n", 3);
+        send_to_client(server->clients[client_index - 2], "ko\n");
         return FAILURE;
     }
     if (handle_gui_client(server, team_name, client_index) == SUCCESS) {

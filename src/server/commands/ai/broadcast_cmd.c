@@ -9,6 +9,7 @@
 #include "command_handler/command.h"
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -34,7 +35,7 @@ static bool check_args_number(command_t *command, client_t *client)
     if (command->argc != 1) {
         debug_warning(client->server->options->debug,
             "Invalid number of arguments for broadcast command\n");
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -57,7 +58,7 @@ void broadcast_command(client_t *client, command_t *command)
     if (!check_args_number(command, client))
         return;
     message = command->argv[0];
-    write(client->sockfd, "ok\n", 3);
+    send_to_client(client, "ok\n");
     broadcast_to_all_players(client->server->game, client->player, message);
     pbc_event(client->player, message);
     client->player->tick_cooldown = BROADCAST_COMMAND_COOLDOWN;

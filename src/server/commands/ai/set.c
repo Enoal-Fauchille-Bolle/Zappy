@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug_categories.h"
@@ -15,7 +16,6 @@
 #include "map/resources.h"
 #include "team/player/player.h"
 #include <stdbool.h>
-#include <unistd.h>
 
 /**
  * @brief Check if the command arguments are valid.
@@ -31,7 +31,7 @@
 static bool check_args(client_t *client, command_t *command)
 {
     if (command->argc < 1) {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         debug_cmd(client->server->options->debug,
             "Player %zu sent an invalid take command arguments\n",
             client->player->id);
@@ -56,7 +56,7 @@ static bool check_resource_validity(
     client_t *client, command_t *command, resource_t resource)
 {
     if (resource == RESOURCE_COUNT) {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         debug_cmd(client->server->options->debug,
             "Player %zu tried to take an invalid resource: %s\n",
             client->player->id, command->argv[0]);
@@ -75,14 +75,14 @@ void set_command(client_t *client, command_t *command)
     if (check_resource_validity(client, command, resource) == FAILURE)
         return;
     if (!set_resource(client->player, client->server->game->map, resource)) {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         debug_map(client->server->options->debug,
             "Player %zu failed to take resource: %s\n", client->player->id,
             resource_names[resource]);
         return;
     }
     client->player->tick_cooldown = SET_COMMAND_COOLDOWN;
-    write(client->sockfd, "ok\n", 3);
+    send_to_client(client, "ok\n");
     debug_map(client->server->options->debug,
         "Player %zu took '%s' at (%d, %d)\n", client->player->id,
         resource_names[resource], client->player->pos.x,

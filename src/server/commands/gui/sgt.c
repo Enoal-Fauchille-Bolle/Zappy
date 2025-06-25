@@ -7,10 +7,10 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include <stdbool.h>
-#include <stdio.h>
 
 /**
  * @brief Sends the current tick rate to the client
@@ -24,7 +24,7 @@
 void sgt_command(client_t *client, command_t *command)
 {
     (void)command;
-    dprintf(client->sockfd, "sgt %u\n", client->server->game->tick_rate);
+    send_to_client(client, "sgt %u\n", client->server->game->tick_rate);
     debug_game(client->server->options->debug,
         "Client %d: sgt command sent: %zu tick speed\n", client->index,
         client->server->game->tick_rate);

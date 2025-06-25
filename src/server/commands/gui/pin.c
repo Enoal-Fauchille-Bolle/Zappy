@@ -19,7 +19,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 /**
  * @brief Sends player information to the client.
@@ -33,7 +32,7 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    dprintf(client->sockfd, "pin #%zu %d %d %zu %zu %zu %zu %zu %zu %zu\n",
+    send_to_client(client, "pin #%zu %d %d %zu %zu %zu %zu %zu %zu %zu\n",
         player->id, player->pos.x, player->pos.y, player->inventory[FOOD],
         player->inventory[LINEMATE], player->inventory[DERAUMERE],
         player->inventory[SIBUR], player->inventory[MENDIANE],
@@ -64,7 +63,7 @@ static bool check_args_number(command_t *command, client_t *client)
     if (command->argc != 1) {
         debug_warning(client->server->options->debug,
             "Invalid number of arguments for pin command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -85,7 +84,7 @@ static bool check_player_id(size_t player_id, client_t *client)
     if (player_id == 0) {
         debug_warning(client->server->options->debug,
             "Invalid player ID for pin command: %zu\n", player_id);
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -106,7 +105,7 @@ static bool check_player_exists(player_t *player, client_t *client)
     if (player == NULL) {
         debug_warning(client->server->options->debug,
             "Player not found for pin command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;

@@ -7,6 +7,7 @@
 
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include "game/game.h"
@@ -78,7 +79,7 @@ static void set_player_in_incantation(player_t *player, level_t level)
 {
     player->in_incantation = true;
     player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
-    dprintf(player->client->sockfd, "Elevation underway\n");
+    send_to_client(player->client, "Elevation underway\n");
     debug_player(player->client->server->options->debug,
         "Player %zu is in an incantation at (%d, %d) for level %u -> %u\n",
         player->id, player->pos.x, player->pos.y, level, level + 1);

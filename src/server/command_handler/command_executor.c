@@ -10,6 +10,7 @@
 #include "command_handler/command.h"
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug.h"
 #include <stdbool.h>
@@ -74,9 +75,9 @@ void execute_command(client_t *client, command_t *command)
         debug_warning(client->server->options->debug,
             "Invalid command: '%s'\n", command->name);
         if (!client->is_gui) {
-            write(client->sockfd, "ko\n", 3);
+            send_to_client(client, "ko\n");
         } else {
-            write(client->sockfd, "suc\n", 4);
+            send_to_client(client, "suc\n");
         }
         return;
     }

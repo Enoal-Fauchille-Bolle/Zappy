@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include <stdbool.h>
@@ -18,7 +19,7 @@ void tna_command(client_t *client, command_t *command)
     debug_game(client->server->options->debug,
         "Client %d: tna command sent: ", client->index);
     for (int i = 0; client->server->options->teams[i] != NULL; i++) {
-        dprintf(client->sockfd, "tna %s\n", client->server->options->teams[i]);
+        send_to_client(client, "tna %s\n", client->server->options->teams[i]);
         printf("'%s'", client->server->options->teams[i]);
         if (client->server->options->teams[i + 1] != NULL) {
             printf(", ");
