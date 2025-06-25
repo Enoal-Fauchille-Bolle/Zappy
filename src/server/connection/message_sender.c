@@ -42,29 +42,78 @@ static bool check_writing(client_t *client)
 }
 
 /**
- * @brief Validates if a client is ready to receive messages
+ * @brief Sends a pre-formatted message directly to a client
  *
- * This function checks if the client is valid and ready for writing
- * operations.
+ * This function sends a pre-formatted message directly to the specified client
+ * if the client is valid and ready for writing.
  *
  * @param client Pointer to the client structure
- * @return FAILURE if client is valid and ready, SUCCESS otherwise
+ * @param message Pre-formatted message string to send
  */
-static bool validate_client_for_sending(client_t *client)
+void write_to_client(client_t *client, char *message)
 {
     if (client == NULL || client->sockfd < 0) {
         if (client != NULL && client->server != NULL) {
             debug_warning(client->server->options->debug,
                 "Attempted to send message to invalid client");
         }
-        return FAILURE;
+        return;
     }
     if (!check_writing(client)) {
         debug_warning(client->server->options->debug,
             "Client %d is not ready for writing", client->index);
-        return FAILURE;
+        return;
     }
-    return SUCCESS;
+    write(client->sockfd, message, strlen(message));
+}
+
+/**
+ * @brief Formats a message using variadic arguments
+ *
+ * This function takes a format string and variadic arguments and formats
+ * them into a buffer.
+ *
+ * @param buffer Buffer to store the formatted message
+ * @param buffer_size Size of the buffer
+ * @param format Format string for the message
+ * @param args Variadic arguments list
+ * @return Length of the formatted string, or -1 on error
+ */
+static int format_message(
+    char *buffer, size_t buffer_size, const char *format, va_list args)
+{
+    int len = vsnprintf(buffer, buffer_size, format, args);
+
+    if (len <= 0 || len >= (int)buffer_size) {
+        return -1;
+    }
+    buffer[len] = '\0';
+    return len;
+}
+
+/**
+ * @brief Allocates and copies a message string
+ *
+ * This function allocates memory for a message and copies the content
+ * from the source buffer.
+ *
+ * @param client Pointer to the client structure (for error reporting)
+ * @param buffer Source buffer containing the message
+ * @param len Length of the message
+ * @return Pointer to the allocated message, or NULL on failure
+ */
+static char *allocate_message(client_t *client, const char *buffer, int len)
+{
+    char *message = malloc(len + 1);
+
+    if (message == NULL) {
+        debug_warning(client->server->options->debug,
+            "Failed to allocate memory for message to client %d",
+            client->index);
+        return NULL;
+    }
+    strcpy(message, buffer);
+    return message;
 }
 
 /**
@@ -77,50 +126,27 @@ static bool validate_client_for_sending(client_t *client)
  * @param format Format string for the message
  * @param ... Additional arguments for formatting
  */
-void queue_message_to_client(client_t *client, const char *format, ...)
+void send_to_client(client_t *client, const char *format, ...)
 {
     va_list args;
     char buffer[4096];
     int len;
     char *message;
 
-    if (client == NULL || format == NULL) {
+    if (client == NULL || format == NULL)
         return;
-    }
     va_start(args, format);
-    len = vsnprintf(buffer, sizeof(buffer), format, args);
+    len = format_message(buffer, sizeof(buffer), format, args);
     va_end(args);
-    if (len <= 0 || len >= (int)sizeof(buffer)) {
+    if (len == -1) {
         debug_warning(client->server->options->debug,
             "Failed to format message for client %d", client->index);
         return;
     }
-    buffer[len] = '\0'; // Ensure null termination
-    message = malloc(len + 1);
-    if (message == NULL) {
-        debug_warning(client->server->options->debug,
-            "Failed to allocate memory for message to client %d", client->index);
+    message = allocate_message(client, buffer, len);
+    if (message == NULL)
         return;
-    }
-    strcpy(message, buffer);
     add_message_to_buffer(client, message);
-}
-
-/**
- * @brief Sends a pre-formatted message directly to a client
- *
- * This function sends a pre-formatted message directly to the specified client
- * if the client is valid and ready for writing.
- *
- * @param client Pointer to the client structure
- * @param message Pre-formatted message string to send
- */
-void send_to_client(client_t *client, char *message)
-{
-    if (!validate_client_for_sending(client) || message == NULL) {
-        return;
-    }
-    write(client->sockfd, message, strlen(message));
 }
 
 /**
@@ -151,7 +177,7 @@ void send_to_all_guis(server_t *server, const char *format, ...)
     buffer[len] = '\0';
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (server->clients[i] != NULL && server->clients[i]->is_gui) {
-            queue_message_to_client(server->clients[i], "%s", buffer);
+            send_to_client(server->clients[i], "%s", buffer);
         }
     }
 }

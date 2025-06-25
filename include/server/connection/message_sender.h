@@ -9,10 +9,10 @@
     #define MESSAGE_SENDER_H_
 
     #include "connection/client.h"
-#include "connection/server.h"
+    #include "connection/server.h"
 
-void queue_message_to_client(client_t *client, const char *format, ...);
-void send_to_client(client_t *client, char *message);
+void send_to_client(client_t *client, const char *format, ...);
 void send_to_all_guis(server_t *server, const char *format, ...);
+void write_to_client(client_t *client, char *message);
 
 #endif /* !MESSAGE_SENDER_H_ */
