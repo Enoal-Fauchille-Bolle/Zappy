@@ -12,6 +12,7 @@
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "connection/writing_buffer.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
@@ -26,6 +27,7 @@
 #include "vector.h"
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 /**
@@ -259,5 +261,6 @@ void game_tick(game_t *game, server_options_t *options)
         spawn_min_eggs(
             game->map, game->teams[i], options->clients_nb, options->debug);
     }
+    handle_clients_writing_buffer(game->server);
     game->game_tick++;
 }

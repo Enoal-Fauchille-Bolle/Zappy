@@ -9,6 +9,7 @@
 #include "command_handler/command_factory.h"
 #include "command_handler/gui_commands.h"
 #include "connection/server.h"
+#include "connection/writing_buffer.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
@@ -42,6 +43,7 @@ void destroy_client(client_t *client)
             client->command_buffer[i] = NULL;
         }
     }
+    clear_writing_buffer(client);
     if (client->player != NULL && client->server != NULL &&
         client->server->game != NULL) {
         destroy_player(client->player);
@@ -140,6 +142,9 @@ static void setup_client(
     client->player = NULL;
     for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
         client->command_buffer[i] = NULL;
+    }
+    for (int i = 0; i < MAX_WRITING_BUFFER_SIZE; i++) {
+        client->writing_buffer[i] = NULL;
     }
     client->is_gui = is_gui;
 }

@@ -78,6 +78,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)connection/client.c							\
 			 	$(SRCDIR_SERVER)connection/message_receiver.c				\
 			 	$(SRCDIR_SERVER)connection/message_sender.c					\
+			 	$(SRCDIR_SERVER)connection/writing_buffer.c					\
 			 	$(SRCDIR_SERVER)connection/team_join.c						\
 			 	$(SRCDIR_SERVER)connection/socket.c							\
 			 	$(SRCDIR_SERVER)connection/connection_handler.c				\
@@ -273,6 +274,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)connection/client.c								\
 			$(SRCDIR_SERVER)connection/message_receiver.c					\
 			$(SRCDIR_SERVER)connection/message_sender.c						\
+			$(SRCDIR_SERVER)connection/writing_buffer.c						\
 			$(SRCDIR_SERVER)connection/socket.c								\
 			$(SRCDIR_SERVER)connection/connection_handler.c					\
 			$(SRCDIR_SERVER)connection/signal_handler.c						\
