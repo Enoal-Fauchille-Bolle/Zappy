@@ -56,6 +56,8 @@ static void level_up_players(incantation_t *incantation)
 
     for (size_t i = 0; incantation->players[i] != NULL; i++) {
         player = incantation->players[i];
+        if (player == NULL)
+            continue;
         player->level = incantation->level + 1;
         dprintf(player->client->sockfd, "Current level: %u\n", player->level);
         plv_event(player);
