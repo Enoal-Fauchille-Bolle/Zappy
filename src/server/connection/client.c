@@ -7,6 +7,7 @@
 
 #include "connection/client.h"
 #include "command_handler/command_factory.h"
+#include "command_handler/gui_commands.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -57,6 +58,7 @@ static void send_close_message(server_t *server, int client_index)
 {
     if (!server->clients[client_index - 2]->is_gui) {
         write(server->fds[client_index].fd, "dead\n", 5);
+        pdi_event(server->clients[client_index - 2]->player);
         debug_conn(server->options->debug, "AI Client %d disconnected\n",
             client_index - 2);
     } else {
