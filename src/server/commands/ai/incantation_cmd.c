@@ -68,7 +68,7 @@ void incantation_command(client_t *client, command_t *command)
         client->server->game, client->player->pos, client->player->level);
     debug_game(client->server->options->debug,
         "Player %zu started an "
-        "incantation at (%d, %d) for level %u\n",
+        "incantation at (%d, %d) for level %u -> %u\n",
         client->player->id, client->player->pos.x, client->player->pos.y,
-        client->player->level);
+        client->player->level, client->player->level + 1);
 }
