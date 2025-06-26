@@ -13,7 +13,7 @@ import os
 # Add the parent directory to the path to allow relative imports
 if __name__ == "__main__":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from refactored.client import ZappyAi
+    from ai.client import ZappyAi
 else:
     from .client import ZappyAi
 
