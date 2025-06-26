@@ -23,6 +23,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * @brief Sends a failure response to the client
+ *
+ * This function sends a failure response to the client based on whether the
+ * client is a GUI client or not. If it is a GUI client, it sends "sbp\n", and
+ * for other clients, it sends "ko\n".
+ *
+ * @param client Pointer to the client structure
+ */
 static void send_command_failed(client_t *client)
 {
     if (client->is_gui) {
