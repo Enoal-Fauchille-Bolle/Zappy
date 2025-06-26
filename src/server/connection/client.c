@@ -6,7 +6,8 @@
 */
 
 #include "connection/client.h"
-#include "command_handler/command_factory.h"
+#include "command_handler/command.h"
+#include "command_handler/command_buffer.h"
 #include "command_handler/gui_commands.h"
 #include "connection/message_sender.h"
 #include "connection/server.h"
@@ -32,11 +33,10 @@
  */
 static void cleanup_command_buffer(client_t *client)
 {
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command_buffer[i] != NULL) {
-            destroy_command(client->command_buffer[i]);
-            client->command_buffer[i] = NULL;
-        }
+    if (client->command_buffer != NULL) {
+        clear_command_buffer(client);
+        vector_destroy(client->command_buffer);
+        client->command_buffer = NULL;
     }
 }
 
@@ -188,9 +188,7 @@ static void setup_client(
     client->index = client_index - 2;
     client->sockfd = server->fds[client_index].fd;
     client->player = NULL;
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command_buffer[i] = NULL;
-    }
+    client->command_buffer = vector_new(sizeof(command_t *));
     client->writing_buffer = vector_new(sizeof(char *));
     client->is_gui = is_gui;
 }
