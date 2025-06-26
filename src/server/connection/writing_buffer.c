@@ -89,7 +89,7 @@ static bool validate_buffer_parameters(client_t *client, char *message)
 static bool check_buffer_capacity(
     client_t *client, const vector_vtable_t *vtable, char *message)
 {
-    if (!client->is_gui &&
+    if (client && !client->is_gui &&
         vtable->size(client->writing_buffer) >= MAX_WRITING_BUFFER_SIZE) {
         debug_warning(client->server->options->debug,
             "Writing buffer is full for AI client %d\n", client->index);

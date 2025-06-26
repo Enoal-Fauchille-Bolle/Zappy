@@ -66,6 +66,8 @@ void execute_command(client_t *client, command_t *command)
 {
     command_registry_entry_t handler = {0};
 
+    if (!client)
+        return;
     if (!client->is_gui) {
         handler = get_command_registry_entry(ai_command_registry, command);
     } else {
