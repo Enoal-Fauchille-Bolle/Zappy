@@ -2,11 +2,11 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Scenne
+** Scene
 */
 
-#ifndef SCENNE_HPP_
-#define SCENNE_HPP_
+#ifndef SCENE_HPP_
+#define SCENE_HPP_
 
 #include <string>
 #include <map>
@@ -14,12 +14,12 @@
 #include <OGRE/Bites/OgreApplicationContext.h>
 #include <OGRE/Bites/OgreInput.h>
 
-class Scenne : public OgreBites::InputListener {
+class Scene : public OgreBites::InputListener {
     public:
-        Scenne();
-        ~Scenne();
+        Scene();
+        ~Scene();
 
-        void CreateScenne(std::string name);
+        void CreateScene(std::string name);
         void Initialize(OgreBites::ApplicationContext* appContext);
         void Update(float deltaTime);
         void Render();
@@ -73,4 +73,4 @@ class Scenne : public OgreBites::InputListener {
         void resetCursorPosition(); // Function to reset cursor to center position when moving camera
 };
 
-#endif /* !SCENNE_HPP_ */
+#endif /* !SCENE_HPP_ */

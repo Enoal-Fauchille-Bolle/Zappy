@@ -2,20 +2,20 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Scenne
+** Scene
 */
 
 
-#include "Scenne.hpp"
+#include "Scene.hpp"
 #include <iostream>
 
 /**
- * @brief Default constructor for the Scenne class
+ * @brief Default constructor for the Scene class
  * 
  * Initializes all member variables to their default values including
  * camera settings, mouse states, and keyboard input tracking arrays.
  */
-Scenne::Scenne() :
+Scene::Scene() :
         mSceneManager(nullptr),
         mCamera(nullptr),
         mRenderWindow(nullptr),
@@ -37,11 +37,11 @@ Scenne::Scenne() :
 }
 
 /**
- * @brief Destructor for the Scenne class
+ * @brief Destructor for the Scene class
  * 
  * Cleans up allocated resources and scene objects.
  */
-Scenne::~Scenne()
+Scene::~Scene()
 {
 }
 
@@ -50,7 +50,7 @@ Scenne::~Scenne()
  * 
  * @param name The name of the scene, defaults to "DefaultScene" if empty
  */
-void Scenne::CreateScenne(std::string name)
+void Scene::CreateScene(std::string name)
 {
     _name = name.empty() ? "DefaultScene" : name;
 }
@@ -63,7 +63,7 @@ void Scenne::CreateScenne(std::string name)
  * 
  * @param appContext The Ogre application context for rendering
  */
-void Scenne::Initialize(OgreBites::ApplicationContext* appContext)
+void Scene::Initialize(OgreBites::ApplicationContext* appContext)
 {
     mAppContext = appContext;
     mRenderWindow = appContext->getRenderWindow();
@@ -78,7 +78,7 @@ void Scenne::Initialize(OgreBites::ApplicationContext* appContext)
  * 
  * Creates the scene manager, sets ambient lighting and skybox.
  */
-void Scenne::setupScene()
+void Scene::setupScene()
 {
     mSceneManager = Ogre::Root::getSingleton().createSceneManager();
     mSceneManager->setAmbientLight(Ogre::ColourValue(0.2f, 0.2f, 0.2f));
@@ -91,7 +91,7 @@ void Scenne::setupScene()
  * Creates and configures the camera, attaches it to a scene node,
  * and sets up the viewport.
  */
-void Scenne::setupCamera()
+void Scene::setupCamera()
 {
     mCamera = mSceneManager->createCamera("MainCamera");
     mCamera->setNearClipDistance(5);
@@ -110,7 +110,7 @@ void Scenne::setupCamera()
  * 
  * Creates and configures directional lighting for proper scene illumination.
  */
-void Scenne::setupLighting()
+void Scene::setupLighting()
 {
     Ogre::Light* light = mSceneManager->createLight("MainLight");
     light->setType(Ogre::Light::LT_DIRECTIONAL);
@@ -128,7 +128,7 @@ void Scenne::setupLighting()
  * @param entityName The name of the entity to find
  * @return The scene node pointer, or nullptr if not found
  */
-Ogre::SceneNode* Scenne::getSceneNode(const std::string& entityName)
+Ogre::SceneNode* Scene::getSceneNode(const std::string& entityName)
 {
     auto it = _entityNodes.find(entityName);
     if (it != _entityNodes.end()) {
@@ -142,7 +142,7 @@ Ogre::SceneNode* Scenne::getSceneNode(const std::string& entityName)
  * 
  * @param position The new position vector for the camera
  */
-void Scenne::setCameraPosition(const Ogre::Vector3& position)
+void Scene::setCameraPosition(const Ogre::Vector3& position)
 {
     mCamera->getParentSceneNode()->setPosition(position);
 }
@@ -152,7 +152,7 @@ void Scenne::setCameraPosition(const Ogre::Vector3& position)
  * 
  * @param target The target position vector to look at
  */
-void Scenne::setCameraLookAt(const Ogre::Vector3& target)
+void Scene::setCameraLookAt(const Ogre::Vector3& target)
 {
     mCamera->getParentSceneNode()->lookAt(target, Ogre::Node::TS_WORLD);
 }
@@ -166,7 +166,7 @@ void Scenne::setCameraLookAt(const Ogre::Vector3& target)
  * 
  * @param deltaTime The time elapsed since the last update in seconds
  */
-void Scenne::Update(float deltaTime)
+void Scene::Update(float deltaTime)
 {
     Ogre::Vector3 cameraPos = mCamera->getParentSceneNode()->getPosition();
     Ogre::Quaternion orientation = mCamera->getParentSceneNode()->getOrientation();
@@ -197,7 +197,7 @@ void Scenne::Update(float deltaTime)
  * 
  * Currently a placeholder for custom rendering operations.
  */
-void Scenne::Render()
+void Scene::Render()
 {
 }
 
@@ -207,7 +207,7 @@ void Scenne::Render()
  * @param yawDegrees Rotation around the Y axis in degrees (horizontal)
  * @param pitchDegrees Rotation around the X axis in degrees (vertical)
  */
-void Scenne::rotateCamera(float yawDegrees, float pitchDegrees)
+void Scene::rotateCamera(float yawDegrees, float pitchDegrees)
 {
     Ogre::SceneNode* camNode = mCamera->getParentSceneNode();
     if (!camNode) return;
@@ -225,7 +225,7 @@ void Scenne::rotateCamera(float yawDegrees, float pitchDegrees)
  * @param evt The keyboard event containing key information
  * @return true to continue processing, false to cancel/exit
  */
-bool Scenne::keyPressed(const OgreBites::KeyboardEvent& evt)
+bool Scene::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if (evt.keysym.sym == OgreBites::SDLK_ESCAPE) {
         return false;
@@ -252,7 +252,7 @@ bool Scenne::keyPressed(const OgreBites::KeyboardEvent& evt)
  * @param evt The keyboard event containing key information
  * @return true to continue processing
  */
-bool Scenne::keyReleased(const OgreBites::KeyboardEvent& evt)
+bool Scene::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if (evt.keysym.sym == 'z') {
         mKeyPressed[0] = false;
@@ -276,7 +276,7 @@ bool Scenne::keyReleased(const OgreBites::KeyboardEvent& evt)
  * @param evt The mouse motion event containing position delta
  * @return true to continue processing
  */
-bool Scenne::mouseMoved(const OgreBites::MouseMotionEvent& evt)
+bool Scene::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
     if (mMiddleMouseDown) {
         int dx = evt.x - mLastMouseX;
@@ -317,7 +317,7 @@ bool Scenne::mouseMoved(const OgreBites::MouseMotionEvent& evt)
  * @param evt The mouse button event
  * @return true to continue processing
  */
-bool Scenne::mousePressed(const OgreBites::MouseButtonEvent& evt)
+bool Scene::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     if (evt.button == OgreBites::BUTTON_RIGHT) {
         mRightMouseDown = true;
@@ -339,7 +339,7 @@ bool Scenne::mousePressed(const OgreBites::MouseButtonEvent& evt)
  * @param evt The mouse button event
  * @return true to continue processing
  */
-bool Scenne::mouseReleased(const OgreBites::MouseButtonEvent& evt)
+bool Scene::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
     if (evt.button == OgreBites::BUTTON_RIGHT) {
         mRightMouseDown = false;
@@ -358,7 +358,7 @@ bool Scenne::mouseReleased(const OgreBites::MouseButtonEvent& evt)
  * @param evt The mouse wheel event containing scroll direction
  * @return true to continue processing
  */
-bool Scenne::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
+bool Scene::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
     Ogre::Real currentFOV = mCamera->getFOVy().valueDegrees();
     Ogre::Real zoomAmount = evt.y * 5.0f;
@@ -376,7 +376,7 @@ bool Scenne::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
  * 
  * @return Pointer to the Ogre scene manager
  */
-Ogre::SceneManager* Scenne::getSceneManager() const
+Ogre::SceneManager* Scene::getSceneManager() const
 {
     return mSceneManager;
 }
