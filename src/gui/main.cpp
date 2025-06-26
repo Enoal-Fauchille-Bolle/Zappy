@@ -46,8 +46,14 @@ int main(int argc, char **argv)
         SimpleGameManager gameManager;
         gameManager.initialize(&app.getScene());
 
+        auto lastTime = std::chrono::high_resolution_clock::now();
         bool running = true;
         while (running && !app.getRoot()->endRenderingQueued()) {
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+            lastTime = currentTime;
+
+            app.getScene().Update(deltaTime);
             gameManager.update();
             app.getRoot()->renderOneFrame();
         }
