@@ -8,7 +8,7 @@
 #ifndef SIMPLE_GAME_MANAGER_HPP_
 #define SIMPLE_GAME_MANAGER_HPP_
 
-#include "scenne/Scenne.hpp"
+#include "scene/Scene.hpp"
 #include "entity/Player.hpp"
 #include "entity/Egg.hpp"
 #include "entity/TileDisplay.hpp"
@@ -24,7 +24,7 @@ public:
     SimpleGameManager();
     ~SimpleGameManager();
 
-    void initialize(Scenne* scene);
+    void initialize(Scene* scene);
     void setMapSize(int width, int height);
 
     void createTile(int x, int y);
@@ -48,7 +48,7 @@ public:
     void cleanup();
 
 private:
-    Scenne* _scene;
+    Scene* _scene;
     CommandHandler* _commandHandler;
     int _mapWidth, _mapHeight;
 

@@ -27,16 +27,16 @@ ZappyApp::~ZappyApp()
 void ZappyApp::setup()
 {
     OgreBites::ApplicationContext::setup();
-    _scene.CreateScenne("ZappyWorld");
+    _scene.CreateScene("ZappyWorld");
     _scene.Initialize(this);
 }
 
 /**
  * @brief Get the scene object.
  *
- * @return Scenne& Reference to the scene.
+ * @return Scene& Reference to the scene.
  */
-Scenne& ZappyApp::getScene()
+Scene& ZappyApp::getScene()
 {
     return _scene;
 }

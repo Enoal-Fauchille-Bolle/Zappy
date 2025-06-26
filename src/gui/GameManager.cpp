@@ -44,7 +44,7 @@ SimpleGameManager::~SimpleGameManager()
  *
  * @param scene Pointer to the scene object that will be used for rendering.
  */
-void SimpleGameManager::initialize(Scenne* scene)
+void SimpleGameManager::initialize(Scene* scene)
 {
     _scene = scene;
 }
