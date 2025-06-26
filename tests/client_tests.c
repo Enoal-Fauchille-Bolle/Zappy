@@ -6,6 +6,7 @@
 */
 
 #include "command_handler/command.h"
+#include "command_handler/command_buffer.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
@@ -271,12 +272,6 @@ Test(client, create_client_valid, .disabled = true)
         cr_assert_not_null(client->player, "Client player should not be NULL");
     }
 
-    // Verify command buffer is initialized
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        cr_assert_null(
-            client->command_buffer[i], "Command slot %d should be NULL", i);
-    }
-
     // Store the client in the server's client array to be cleaned up by cleanup_test_server
     server->clients[client_index - 2] = client;
 
@@ -374,7 +369,7 @@ Test(client, destroy_client_with_commands, .disabled = true)
     client_t *client = create_client(server, team, client_index);
     cr_assert_not_null(client, "Client should not be NULL");
 
-    // Add some mock commands to buffer
+    // Add some mock commands to buffer using vector-based API
     for (int i = 0; i < 3; i++) {
         command_t *command = malloc(sizeof(command_t));
         if (command) {
@@ -382,7 +377,7 @@ Test(client, destroy_client_with_commands, .disabled = true)
             command->argc = 0;
             command->argv = NULL;
             command->tokens = NULL;
-            client->command_buffer[i] = command;
+            add_command_to_buffer(client, command);
         }
     }
 
