@@ -46,6 +46,7 @@ Resources::~Resources()
 void Resources::setResourceType(ResourceType type)
 {
     _type = type;
+    applyResourceColor();
 }
 
 /**
@@ -53,6 +54,9 @@ void Resources::setResourceType(ResourceType type)
  */
 void Resources::applyResourceColor()
 {
+    if (!getOgreEntity()) {
+        return;
+    }
     switch (_type) {
         case ResourceType::FOOD:
             this->setColor(Color(1.0f, 1.0f, 0.0f, 1.0f)); // Pure Yellow

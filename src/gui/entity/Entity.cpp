@@ -100,6 +100,7 @@ void Entity::setColor(const Color& color)
             Ogre::MaterialPtr clonedMaterial = originalMaterial->clone(materialName);
             clonedMaterial->setAmbient(color.r, color.g, color.b);
             clonedMaterial->setDiffuse(color.r, color.g, color.b, color.a);
+            clonedMaterial->setSpecular(color.r * 0.3f, color.g * 0.3f, color.b * 0.3f, color.a);
             clonedMaterial->setLightingEnabled(true);
             subEntity->setMaterial(clonedMaterial);
         } catch (const Ogre::Exception& e) {
