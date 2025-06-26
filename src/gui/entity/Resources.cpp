@@ -62,7 +62,7 @@ void Resources::applyResourceColor()
             this->setColor(Color(1.0f, 1.0f, 0.0f, 1.0f)); // Pure Yellow
             break;
         case ResourceType::LINEMATE:
-            this->setColor(Color(0.5f, 0.5f, 0.5f, 1.0f)); // Pure Gray
+            this->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f)); // Pure Gray
             break;
         case ResourceType::DERAUMERE:
             this->setColor(Color(0.0f, 1.0f, 0.0f, 1.0f)); // Pure Green
