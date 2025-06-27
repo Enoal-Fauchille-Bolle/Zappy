@@ -479,6 +479,17 @@ int SimpleGameManager::getTickRate() const
     return _tickRate;
 }
 
+
+/**
+ * @brief Add a team name to the game manager.
+ *
+ * @param teamName The name of the team to add.
+ */
+void SimpleGameManager::addTeam(const std::string& teamName)
+{
+    _teamNames.insert(teamName);
+}
+
 /**
  * @brief Clean up all game resources before shutdown
  *

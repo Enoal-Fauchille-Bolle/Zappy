@@ -15,6 +15,7 @@
 #include "entity/Resources.hpp"
 #include "Types.hpp"
 #include <vector>
+#include <unordered_set>
 #include <map>
 
 class CommandHandler;
@@ -29,7 +30,7 @@ public:
 
     void createTile(int x, int y);
 
-    void createPlayer(int id, const std::string& tesetResourcesamName, int x, int y, Orientation orientation);
+    void createPlayer(int id, const std::string& teamName, int x, int y, Orientation orientation);
     void updatePlayerPosition(int id, int x, int y, Orientation orientation);
     void removePlayer(int id);
 
@@ -44,6 +45,8 @@ public:
     void setTickRate(int rate);
     int getTickRate() const;
 
+    void addTeam(const std::string& teamName);
+
     void update();
     void readResponse(const std::string& response);
     std::pair<int, int> getMapSize() const;
@@ -57,6 +60,7 @@ private:
 
     int _tickRate;
 
+    std::unordered_set<std::string> _teamNames;
     PlayerMap _players;
     EggMap _eggs;
     std::vector<std::vector<TileDisplay*>> _tiles;
