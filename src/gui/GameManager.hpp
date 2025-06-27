@@ -41,6 +41,9 @@ public:
     void createResource(ResourceType type, int x, int y, int quantity);
     void removeResource(ResourceType type, int x, int y, int quantity);
 
+    void setTickRate(int rate);
+    int getTickRate() const;
+
     void update();
     void readResponse(const std::string& response);
     std::pair<int, int> getMapSize() const;
@@ -51,6 +54,8 @@ private:
     Scene* _scene;
     CommandHandler* _commandHandler;
     int _mapWidth, _mapHeight;
+
+    int _tickRate;
 
     PlayerMap _players;
     EggMap _eggs;

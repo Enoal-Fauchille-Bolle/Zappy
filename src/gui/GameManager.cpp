@@ -460,6 +460,26 @@ void SimpleGameManager::removeResource(ResourceType type, int x, int y, int quan
 }
 
 /**
+ * @brief Set the tick rate for the game manager.
+ *
+ * @param rate The new tick rate in milliseconds.
+ */
+void SimpleGameManager::setTickRate(int rate)
+{
+    _tickRate = rate;
+}
+
+/**
+ * @brief Get the current tick rate of the game manager.
+ *
+ * @return The tick rate in milliseconds.
+ */
+int SimpleGameManager::getTickRate() const
+{
+    return _tickRate;
+}
+
+/**
  * @brief Clean up all game resources before shutdown
  *
  * This method must be called before Ogre shutdown to prevent segfaults
