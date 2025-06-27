@@ -30,7 +30,7 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    send_to_client(client, "ppo %zu %d %d %d\n", player->id, player->pos.x,
+    send_to_client(client, "ppo #%zu %d %d %d\n", player->id, player->pos.x,
         player->pos.y, player->orientation + 1);
     debug_player(client->server->options->debug,
         "Client %d: ppo command sent for player ID %zu: position (%d, %d), "
@@ -118,7 +118,7 @@ void ppo_event(player_t *player)
         fprintf(stderr, "Invalid player or client pointer\n");
         return;
     }
-    send_to_all_guis(player->client->server, "ppo %zu %d %d %d\n", player->id,
+    send_to_all_guis(player->client->server, "ppo #%zu %d %d %d\n", player->id,
         player->pos.x, player->pos.y, player->orientation + 1);
 }
 
