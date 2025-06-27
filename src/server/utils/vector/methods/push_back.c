@@ -12,7 +12,7 @@
 
 void vector_push_back_impl(vector_t *self, const void *item)
 {
-    void *dest;
+    void *dest = NULL;
     size_t new_cap;
 
     assert(self && item);

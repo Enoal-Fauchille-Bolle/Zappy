@@ -6,8 +6,12 @@
 */
 
 #include "connection/client.h"
-#include "command_handler/command_factory.h"
+#include "command_handler/command.h"
+#include "command_handler/command_buffer.h"
+#include "command_handler/gui_commands.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
+#include "connection/writing_buffer.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
@@ -15,8 +19,64 @@
 #include "team/egg/egg.h"
 #include "team/player/player.h"
 #include "team/team.h"
+#include "vector.h"
 #include <stdlib.h>
 #include <unistd.h>
+
+/**
+ * @brief Cleans up the command buffer for a client
+ *
+ * This function iterates through the client's command buffer and destroys
+ * all pending commands, setting each buffer slot to NULL.
+ *
+ * @param client Pointer to the client structure
+ */
+static void cleanup_command_buffer(client_t *client)
+{
+    if (client->command_buffer != NULL) {
+        clear_command_buffer(client);
+        vector_destroy(client->command_buffer);
+        client->command_buffer = NULL;
+    }
+}
+
+/**
+ * @brief Cleans up the writing buffer for a client
+ *
+ * This function clears and destroys the client's writing buffer,
+ * freeing all associated memory.
+ *
+ * @param client Pointer to the client structure
+ */
+static void cleanup_writing_buffer(client_t *client)
+{
+    clear_writing_buffer(client);
+    if (client->writing_buffer != NULL) {
+        vector_destroy(client->writing_buffer);
+        client->writing_buffer = NULL;
+    }
+}
+
+/**
+ * @brief Cleans up the player object for a client
+ *
+ * This function safely destroys the client's player object, handling
+ * different scenarios based on whether the server and game are available.
+ *
+ * @param client Pointer to the client structure
+ */
+static void cleanup_player(client_t *client)
+{
+    if (client->player == NULL) {
+        return;
+    }
+    if (client->server != NULL && client->server->game != NULL) {
+        destroy_player(client->player);
+    } else {
+        free(client->player);
+    }
+    client->player = NULL;
+}
 
 /**
  * @brief Destroys a client structure and frees all associated memory
@@ -35,20 +95,9 @@ void destroy_client(client_t *client)
 {
     if (client == NULL)
         return;
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command_buffer[i] != NULL) {
-            destroy_command(client->command_buffer[i]);
-            client->command_buffer[i] = NULL;
-        }
-    }
-    if (client->player != NULL && client->server != NULL &&
-        client->server->game != NULL) {
-        destroy_player(client->player);
-        client->player = NULL;
-    } else if (client->player != NULL) {
-        free(client->player);
-        client->player = NULL;
-    }
+    cleanup_command_buffer(client);
+    cleanup_writing_buffer(client);
+    cleanup_player(client);
     free(client);
     client = NULL;
 }
@@ -56,12 +105,15 @@ void destroy_client(client_t *client)
 static void send_close_message(server_t *server, int client_index)
 {
     if (!server->clients[client_index - 2]->is_gui) {
-        write(server->fds[client_index].fd, "dead\n", 5);
+        send_to_client(server->clients[client_index - 2],
+            "dead\n");
+        pdi_event(server->clients[client_index - 2]->player);
         debug_conn(server->options->debug, "AI Client %d disconnected\n",
             client_index - 2);
     } else {
         if (server->game->game_state != GAME_END)
-            write(server->fds[client_index].fd, "seg\n", 4);
+            send_to_client(server->clients[client_index - 2],
+                "seg\n");
         debug_conn(server->options->debug, "GUI Client %d disconnected\n",
             client_index - 2);
     }
@@ -136,9 +188,8 @@ static void setup_client(
     client->index = client_index - 2;
     client->sockfd = server->fds[client_index].fd;
     client->player = NULL;
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command_buffer[i] = NULL;
-    }
+    client->command_buffer = vector_new(sizeof(command_t *));
+    client->writing_buffer = vector_new(sizeof(char *));
     client->is_gui = is_gui;
 }
 

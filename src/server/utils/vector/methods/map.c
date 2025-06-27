@@ -16,8 +16,8 @@
 static bool map_over(const vector_t *self, vector_t *result,
     map_function_t map_fn, void *context)
 {
-    void *input;
-    void *output;
+    void *input = NULL;
+    void *output = NULL;
 
     for (size_t i = 0; i < self->size; i++) {
         input = (char *)self->data + (i * self->element_size);
@@ -37,7 +37,7 @@ static bool map_over(const vector_t *self, vector_t *result,
 vector_t *vector_map_impl(const vector_t *self, map_function_t map_fn,
     size_t output_element_size, void *context)
 {
-    vector_t *result;
+    vector_t *result = NULL;
 
     assert(self && map_fn);
     result = vector_new(output_element_size);

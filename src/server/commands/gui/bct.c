@@ -7,7 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
-#include "connection/client_message.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -20,7 +20,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 /**
  * @brief Check if the position is valid for the bct command.
@@ -37,7 +36,7 @@ static bool check_pos_valid(pos_t pos, client_t *client)
     if (pos.x < 0 || pos.y < 0) {
         debug_warning(client->server->options->debug,
             "Invalid coordinates for bct command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -60,7 +59,7 @@ static bool check_tile_valid(tile_t *tile, client_t *client, pos_t pos)
         debug_warning(client->server->options->debug,
             "Tile not found for bct command at coordinates: %d %d\n", pos.x,
             pos.y);
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -106,7 +105,7 @@ static pos_t get_pos_from_arguments(command_t *command, game_t *game)
  */
 static void send_tile_info(client_t *client, tile_t *tile, pos_t pos)
 {
-    dprintf(client->sockfd, "bct %d %d %zu %zu %zu %zu %zu %zu %zu\n", pos.x,
+    send_to_client(client, "bct %d %d %zu %zu %zu %zu %zu %zu %zu\n", pos.x,
         pos.y, tile->resources[FOOD], tile->resources[LINEMATE],
         tile->resources[DERAUMERE], tile->resources[SIBUR],
         tile->resources[MENDIANE], tile->resources[PHIRAS],

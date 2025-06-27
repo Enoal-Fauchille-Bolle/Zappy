@@ -7,7 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
-#include "connection/client_message.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -16,9 +16,7 @@
 #include "team/player/player.h"
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 /**
  * @brief Sends player information to the client.
@@ -31,7 +29,7 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    dprintf(client->sockfd, "plv #%zu %d\n", player->id, player->level);
+    send_to_client(client, "plv #%zu %d\n", player->id, player->level);
     debug_player(client->server->options->debug,
         "Client %d: plv command sent for player ID %zu: level %d\n",
         client->index, player->id, player->level);
@@ -52,7 +50,7 @@ static bool check_args_number(command_t *command, client_t *client)
     if (command->argc != 1) {
         debug_warning(client->server->options->debug,
             "Invalid number of arguments for plv command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -73,7 +71,7 @@ static bool check_player_id(size_t player_id, client_t *client)
     if (player_id == 0) {
         debug_warning(client->server->options->debug,
             "Invalid player ID for plv command: %zu\n", player_id);
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -94,7 +92,7 @@ static bool check_player_exists(player_t *player, client_t *client)
     if (player == NULL) {
         debug_warning(client->server->options->debug,
             "Player not found for plv command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;

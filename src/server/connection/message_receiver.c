@@ -2,43 +2,93 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** Client Message Handler
+** Message Receiver
 */
 
 #include "command_handler/command.h"
 #include "command_handler/command_buffer.h"
+#include "command_handler/command_factory.h"
 #include "command_handler/command_parser.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "connection/socket.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
+#include "game/game_state.h"
 #include "team/player/player.h"
 #include "utils/string.h"
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
-void send_to_all_guis(server_t *server, const char *format, ...)
+/**
+ * @brief Sends a failure response to the client
+ *
+ * This function sends a failure response to the client based on whether the
+ * client is a GUI client or not. If it is a GUI client, it sends "sbp\n", and
+ * for other clients, it sends "ko\n".
+ *
+ * @param client Pointer to the client structure
+ */
+static void send_command_failed(client_t *client)
 {
-    va_list args;
-    char buffer[4096];
-    int len;
+    if (client->is_gui) {
+        send_to_client(client, "sbp\n");
+    } else {
+        send_to_client(client, "ko\n");
+    }
+}
 
-    va_start(args, format);
-    len = vsnprintf(buffer, sizeof(buffer), format, args);
-    va_end(args);
-    if (len <= 0) {
-        return;
-    }
-    for (int i = 2; i < MAX_CLIENTS + 2; i++) {
-        if (server->clients[i - 2] != NULL && server->clients[i - 2]->is_gui) {
-            write(server->clients[i - 2]->sockfd, buffer, len);
+/**
+ * @brief Checks if the command is valid
+ *
+ * If the command is NULL, sends a failure response to the client and returns
+ * FAILURE. Otherwise, returns SUCCESS.
+ *
+ * @param server Pointer to the server structure
+ * @param command Pointer to the command structure
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @return SUCCESS if command is valid, FAILURE otherwise
+ */
+static bool check_command(
+    server_t *server, command_t *command, int client_index)
+{
+    if (command == NULL) {
+        debug_warning(server->options->debug,
+            "Failed to parse command from client %d\n", client_index - 2);
+        if (server->clients[client_index - 2] != NULL) {
+            send_to_client(server->clients[client_index - 2], "ko\n");
         }
+        return FAILURE;
     }
+    return SUCCESS;
+}
+
+/**
+ * @brief Checks if the game state allows for command execution
+ *
+ * If the game state is GAME_END, sends a failure response to the client and
+ * destroys the command. Returns FAILURE if the game is over, otherwise returns
+ * SUCCESS.
+ *
+ * @param server Pointer to the server structure
+ * @param command Pointer to the command structure
+ * @param client_index Index of the client in the server's file descriptor
+ * array
+ * @return SUCCESS if game state allows command execution, FAILURE otherwise
+ */
+static bool check_game_state(
+    server_t *server, command_t *command, int client_index)
+{
+    if (server->game->game_state == GAME_END) {
+        send_command_failed(server->clients[client_index - 2]);
+        destroy_command(command);
+        return FAILURE;
+    }
+    return SUCCESS;
 }
 
 /**
@@ -59,12 +109,10 @@ static void handle_command(
 {
     command_t *command = parse_command_buffer(command_buffer);
 
-    if (command == NULL) {
-        debug_warning(server->options->debug,
-            "Failed to parse command from client %d\n", client_index - 2);
-        write(server->fds[client_index].fd, "ko\n", 3);
+    if (!check_command(server, command, client_index))
         return;
-    }
+    if (!check_game_state(server, command, client_index))
+        return;
     add_command_to_buffer(server->clients[client_index - 2], command);
     if (!server->clients[client_index - 2]->is_gui) {
         debug_cmd(server->options->debug,

@@ -26,7 +26,7 @@
  */
 char *check_inventory(player_t *player)
 {
-    char *inventory_str;
+    char *inventory_str = NULL;
 
     if (player == NULL) {
         fprintf(stderr, "Invalid player pointer\n");
@@ -54,7 +54,7 @@ char *check_inventory(player_t *player)
 static tile_t *validate_and_get_tile(
     player_t *player, map_t *map, resource_t resource)
 {
-    tile_t *tile;
+    tile_t *tile = NULL;
 
     if (!player || !map || resource < FOOD || resource >= RESOURCE_COUNT) {
         fprintf(stderr, "Invalid parameters for resource operation\n");
@@ -82,7 +82,7 @@ static tile_t *validate_and_get_tile(
  */
 bool take_resource(player_t *player, map_t *map, resource_t resource)
 {
-    tile_t *tile;
+    tile_t *tile = NULL;
 
     tile = validate_and_get_tile(player, map, resource);
     if (!tile) {
@@ -114,7 +114,7 @@ bool take_resource(player_t *player, map_t *map, resource_t resource)
  */
 bool set_resource(player_t *player, map_t *map, resource_t resource)
 {
-    tile_t *tile;
+    tile_t *tile = NULL;
 
     tile = validate_and_get_tile(player, map, resource);
     if (!tile) {

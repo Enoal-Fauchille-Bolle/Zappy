@@ -12,8 +12,8 @@
 
 vector_t *vector_slice_impl(const vector_t *self, size_t start, size_t end)
 {
-    void *element;
-    vector_t *result;
+    void *element = NULL;
+    vector_t *result = NULL;
     size_t slice_size;
 
     assert(self && start <= end && end <= self->size);

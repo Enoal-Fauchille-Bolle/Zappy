@@ -10,6 +10,7 @@
 #include "command_handler/command.h"
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug.h"
 #include <stdbool.h>
@@ -21,8 +22,8 @@ const command_registry_entry_t ai_command_registry[] = {
     {"right", right_command}, {"look", look_command},
     {"inventory", inventory_command}, {"connect_nbr", connect_nbr_command},
     {"fork", fork_command}, {"take", take_command}, {"set", set_command},
-    {"eject", eject_command}, {"incantation", incantation_command},
-    {NULL, NULL}};
+    {"eject", eject_command}, {"broadcast", broadcast_command},
+    {"incantation", incantation_command}, {NULL, NULL}};
 
 const command_registry_entry_t gui_command_registry[] = {{"msz", msz_command},
     {"ppo", ppo_command}, {"bct", bct_command}, {"mct", mct_command},
@@ -65,6 +66,8 @@ void execute_command(client_t *client, command_t *command)
 {
     command_registry_entry_t handler = {0};
 
+    if (!client)
+        return;
     if (!client->is_gui) {
         handler = get_command_registry_entry(ai_command_registry, command);
     } else {
@@ -74,9 +77,9 @@ void execute_command(client_t *client, command_t *command)
         debug_warning(client->server->options->debug,
             "Invalid command: '%s'\n", command->name);
         if (!client->is_gui) {
-            write(client->sockfd, "ko\n", 3);
+            send_to_client(client, "ko\n");
         } else {
-            write(client->sockfd, "suc\n", 4);
+            send_to_client(client, "suc\n");
         }
         return;
     }

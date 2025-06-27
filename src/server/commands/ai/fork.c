@@ -7,12 +7,12 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include "game/game_constants.h"
 #include "team/player/player.h"
 #include <stdbool.h>
-#include <unistd.h>
 
 /**
  * @brief Handles the "fork" command for a client.
@@ -29,7 +29,7 @@ void fork_command(client_t *client, command_t *command)
     (void)command;
     client->player->tick_cooldown = FORK_COMMAND_COOLDOWN;
     lay_egg(client->player, client->server->game->map);
-    write(client->sockfd, "ok\n", 3);
+    send_to_client(client, "ok\n");
     debug_map(client->server->options->debug,
         "Player %zu laid an egg at position (%d, %d)\n", client->player->id,
         client->player->pos.x, client->player->pos.y);

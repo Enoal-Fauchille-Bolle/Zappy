@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -15,7 +16,6 @@
 #include "game/incantation.h"
 #include "team/player/player.h"
 #include <stdbool.h>
-#include <unistd.h>
 
 /**
  * @brief Check if the player can start an incantation
@@ -30,14 +30,14 @@
 static bool can_start_incantation(client_t *client)
 {
     if (client->player->in_incantation) {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         debug_warning(client->server->options->debug,
             "Player %zu is already in an incantation\n", client->player->id);
         return FAILURE;
     }
     if (!check_incantation_requirements(client->server->game->map,
             client->player->pos, client->player->level)) {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         debug_warning(client->server->options->debug,
             "Player %zu at (%d, %d) failed incantation requirements for level "
             "%u\n",
@@ -64,11 +64,11 @@ void incantation_command(client_t *client, command_t *command)
     if (!can_start_incantation(client))
         return;
     client->player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
-    create_incantation(
-        client->server->game, client->player->pos, client->player->level);
     debug_game(client->server->options->debug,
         "Player %zu started an "
-        "incantation at (%d, %d) for level %u\n",
+        "incantation at (%d, %d) for level %u -> %u\n",
         client->player->id, client->player->pos.x, client->player->pos.y,
-        client->player->level);
+        client->player->level, client->player->level + 1);
+    create_incantation(
+        client->server->game, client->player->pos, client->player->level);
 }

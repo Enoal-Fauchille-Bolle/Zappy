@@ -5,84 +5,169 @@
 ** Command Buffer Management
 */
 
+#include "command_handler/command_buffer.h"
 #include "command_handler/command.h"
+#include "command_handler/command_factory.h"
 #include "connection/client.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
+#include "vector.h"
 #include <stdio.h>
-
-/**
- * @brief Shifts all commands in the buffer to the left starting from a given
- * index
- *
- * This function moves all commands one position to the left in the client's
- * command buffer, starting from the specified index. The last position is set
- * to NULL.
- *
- * @param client Pointer to the client structure containing the command buffer
- * @param start_index The index from which to start shifting commands left
- */
-static void shift_commands_left(client_t *client, int start_index)
-{
-    for (int i = start_index; i < MAX_COMMAND_BUFFER_SIZE - 1; i++) {
-        client->command_buffer[i] = client->command_buffer[i + 1];
-        client->command_buffer[i + 1] = NULL;
-    }
-}
 
 /**
  * @brief Removes the first command from the client's command buffer
  *
- * This function checks if the client pointer is valid, then iterates through
- * the command buffer to find and remove the first non-NULL command. After
- * removing the command, it shifts all remaining commands to the left to
- * maintain queue order.
+ * This function checks if the client pointer is valid, then removes the first
+ * command from the vector-based command buffer. Maintains FIFO queue order.
  *
  * @param client Pointer to the client structure
+ * @return command_t* Pointer to the removed command, or NULL if buffer is
+ * empty
  */
 command_t *pop_command_from_buffer(client_t *client)
 {
+    const vector_vtable_t *vtable;
     command_t *command = NULL;
+    command_t **command_ptr;
 
-    if (client == NULL) {
-        fprintf(stderr, "Invalid client pointer\n");
+    if (client == NULL || client->command_buffer == NULL) {
+        fprintf(stderr, "Invalid client pointer or command buffer\n");
         return NULL;
     }
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command_buffer[i] != NULL) {
-            command = client->command_buffer[i];
-            client->command_buffer[i] = NULL;
-            shift_commands_left(client, i);
-            return command;
-        }
+    vtable = vector_get_vtable(client->command_buffer);
+    if (vtable->size(client->command_buffer) == 0) {
+        return NULL;
     }
-    return NULL;
+    command_ptr = (command_t **)vtable->at(client->command_buffer, 0);
+    if (command_ptr == NULL) {
+        return NULL;
+    }
+    command = *command_ptr;
+    vtable->erase(client->command_buffer, 0);
+    return command;
+}
+
+/**
+ * @brief Validates client and command parameters for buffer operations
+ *
+ * This function checks if the client and command pointers are valid
+ * and handles cleanup if validation fails.
+ *
+ * @param client Pointer to the client structure
+ * @param command Pointer to the command structure
+ * @return true if parameters are valid, false otherwise
+ */
+static bool validate_command_buffer_parameters(
+    client_t *client, command_t *command)
+{
+    if (client == NULL || command == NULL) {
+        fprintf(stderr, "Invalid client or command pointer\n");
+        destroy_command(command);
+        return false;
+    }
+    if (client->command_buffer == NULL) {
+        fprintf(stderr, "Command buffer not initialized for client %d\n",
+            client->index);
+        destroy_command(command);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Checks if the command buffer has space for new commands
+ *
+ * This function checks if the client's command buffer can accept new commands.
+ * For AI clients, it enforces the MAX_COMMAND_BUFFER_SIZE limit.
+ * GUI clients have no limit.
+ *
+ * @param client Pointer to the client structure
+ * @param vtable Pointer to the vector vtable
+ * @return true if buffer has space, false otherwise
+ */
+static bool check_command_buffer_capacity(
+    client_t *client, const vector_vtable_t *vtable)
+{
+    if (!client->is_gui &&
+        vtable->size(client->command_buffer) >= MAX_COMMAND_BUFFER_SIZE) {
+        debug_warning(client->server->options->debug,
+            "Command buffer is full for AI client %d\n", client->index);
+        return false;
+    }
+    return true;
 }
 
 /**
  * @brief Adds a command to the client's command buffer
  *
  * This function checks if the client and command pointers are valid, then
- * attempts to add the command to the client's command buffer at the first
- * available position (FIFO queue - add to end). If the buffer is full, it
- * logs a warning message.
+ * adds the command to the client's vector-based command buffer. For AI
+ * clients, it enforces the MAX_COMMAND_BUFFER_SIZE limit. GUI clients have no
+ * limit.
  *
  * @param client Pointer to the client structure
  * @param command Pointer to the command structure to be added
  */
 void add_command_to_buffer(client_t *client, command_t *command)
 {
-    if (client == NULL || command == NULL) {
-        fprintf(stderr, "Invalid client or command pointer\n");
+    const vector_vtable_t *vtable;
+
+    if (!validate_command_buffer_parameters(client, command)) {
         return;
     }
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command_buffer[i] == NULL) {
-            client->command_buffer[i] = command;
-            return;
+    vtable = vector_get_vtable(client->command_buffer);
+    if (!check_command_buffer_capacity(client, vtable)) {
+        destroy_command(command);
+        return;
+    }
+    vtable->push_back(client->command_buffer, &command);
+}
+
+/**
+ * @brief Checks if the client's command buffer is empty
+ *
+ * This function checks if the vector-based command buffer contains any
+ * pending commands to be processed.
+ *
+ * @param client Pointer to the client structure
+ * @return true if the buffer is empty, false otherwise
+ */
+bool is_command_buffer_empty(client_t *client)
+{
+    const vector_vtable_t *vtable;
+
+    if (client == NULL || client->command_buffer == NULL) {
+        return true;
+    }
+    vtable = vector_get_vtable(client->command_buffer);
+    return vtable->size(client->command_buffer) == 0;
+}
+
+/**
+ * @brief Clears all commands from the client's command buffer
+ *
+ * This function destroys all commands in the vector-based command
+ * buffer and clears the vector.
+ *
+ * @param client Pointer to the client structure
+ */
+void clear_command_buffer(client_t *client)
+{
+    const vector_vtable_t *vtable;
+    command_t **command_ptr = NULL;
+    size_t size = 0;
+
+    if (client == NULL || client->command_buffer == NULL) {
+        return;
+    }
+    vtable = vector_get_vtable(client->command_buffer);
+    size = vtable->size(client->command_buffer);
+    for (size_t i = 0; i < size; i++) {
+        command_ptr = (command_t **)vtable->at(client->command_buffer, i);
+        if (command_ptr != NULL && *command_ptr != NULL) {
+            destroy_command(*command_ptr);
         }
     }
-    debug_warning(client->server->options->debug,
-        "Command buffer is full for client %d\n", client->index);
+    vtable->clear(client->command_buffer);
 }

@@ -13,7 +13,7 @@
 void vector_resize_impl(
     vector_t *self, size_t new_size, const void *default_value)
 {
-    void *dest;
+    void *dest = NULL;
 
     assert(self);
     if (new_size > self->capacity) {

@@ -5,8 +5,10 @@
 ** Update Incantation Tests
 */
 
+#include "command_handler/command.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "connection/writing_buffer.h"
 #include "constants.h"
 #include "game/game.h"
 #include "game/game_constants.h"
@@ -73,16 +75,21 @@ static client_t *create_test_client(server_t *server)
     client->is_gui = false;
     client->player = NULL;
     client->index = 0;
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command_buffer[i] = NULL;
-    }
+    client->command_buffer = vector_new(sizeof(command_t *));
+    client->writing_buffer = vector_new(sizeof(char *));
     return client;
 }
 
 static void destroy_test_client(client_t *client)
 {
-    if (client)
-        free(client);
+    if (!client)
+        return;
+    if (client->writing_buffer) {
+        clear_writing_buffer(client);
+        vector_destroy(client->writing_buffer);
+        client->writing_buffer = NULL;
+    }
+    free(client);
 }
 
 static team_t *create_test_team(const char *name, game_t *game)

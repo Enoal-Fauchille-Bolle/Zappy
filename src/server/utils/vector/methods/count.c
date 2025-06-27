@@ -13,7 +13,7 @@ size_t vector_count_impl(
     const vector_t *self, predicate_function_t predicate, void *context)
 {
     size_t count = 0;
-    void *element;
+    void *element = NULL;
 
     assert(self && predicate);
     for (size_t i = 0; i < self->size; i++) {

@@ -12,7 +12,7 @@
 
 void vector_reserve_impl(vector_t *self, size_t new_cap)
 {
-    void *new_data;
+    void *new_data = NULL;
 
     assert(self);
     if (new_cap <= self->capacity) {
@@ -20,8 +20,8 @@ void vector_reserve_impl(vector_t *self, size_t new_cap)
     }
     new_data = realloc(self->data, new_cap * self->element_size);
     if (!new_data) {
-        perror("vector_reserve");
-        exit(EXIT_ERROR_CODE);
+        perror("vector_reserve realloc failed");
+        return;
     }
     self->data = new_data;
     self->capacity = new_cap;

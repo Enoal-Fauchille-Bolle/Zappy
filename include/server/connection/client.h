@@ -8,8 +8,7 @@
 #ifndef CLIENT_H_
     #define CLIENT_H_
 
-    #include "command_handler/command.h"
-    #include "constants.h"
+    #include "vector.h"
     #include <stdbool.h>
 
 typedef struct server_s server_t;
@@ -21,7 +20,8 @@ typedef struct client_s {
     int index;
     int sockfd;
     player_t *player;   // If the client is a player (AI)
-    command_t *command_buffer[MAX_COMMAND_BUFFER_SIZE]; // Queue for commands
+    vector_t *command_buffer; // Queue for commands
+    vector_t *writing_buffer; // Writing message buffer
     bool is_gui;    // True if the client is a GUI client
 } client_t;
 

@@ -15,7 +15,7 @@
 
 static char *init_name(const char *name)
 {
-    char *team_name;
+    char *team_name = NULL;
 
     if (name == NULL) {
         fprintf(stderr, "Team name cannot be NULL\n");

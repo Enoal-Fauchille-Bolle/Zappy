@@ -118,16 +118,15 @@ static void destroy_teams(server_options_t *options)
 static bool validate_team(server_options_t *options, char *team_name)
 {
     if (strlen(team_name) == 0) {
-        dprintf(fileno(stderr), "Error: Team name cannot be empty.\n");
+        fprintf(stderr, "Error: Team name cannot be empty.\n");
         return FAILURE;
     }
     if (strcmp(team_name, "GRAPHIC") == 0) {
-        dprintf(fileno(stderr), "Error: Team name cannot be 'GRAPHIC'\n");
+        fprintf(stderr, "Error: Team name cannot be 'GRAPHIC'\n");
         return FAILURE;
     }
     if (do_team_already_exists(options, team_name)) {
-        dprintf(
-            fileno(stderr), "Error: Team '%s' already exists.\n", team_name);
+        fprintf(stderr, "Error: Team '%s' already exists.\n", team_name);
         return FAILURE;
     }
     return SUCCESS;

@@ -104,7 +104,7 @@ static struct sockaddr_in init_sockaddr_in(int port)
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
-    server_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     return server_addr;
 }
 

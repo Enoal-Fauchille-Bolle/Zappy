@@ -7,13 +7,13 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include "game/game_constants.h"
 #include "map/orientation_names.h"
 #include "team/player/player.h"
 #include <stdbool.h>
-#include <unistd.h>
 
 /**
  * @brief Handles the right command to turn the player right.
@@ -29,7 +29,7 @@ void right_command(client_t *client, command_t *command)
     (void)command;
     turn_player_right(client->player);
     client->player->tick_cooldown = RIGHT_COMMAND_COOLDOWN;
-    write(client->sockfd, "ok\n", 3);
+    send_to_client(client, "ok\n");
     debug_map(client->server->options->debug, "Player %zu turned right\n",
         client->player->id);
     debug_map(client->server->options->debug, "Player %zu orientation: %s\n",

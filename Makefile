@@ -76,12 +76,13 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 			 	$(SRCDIR_SERVER)options_parser/options/display_eggs.c		\
 			 	$(SRCDIR_SERVER)connection/server.c							\
 			 	$(SRCDIR_SERVER)connection/client.c							\
-			 	$(SRCDIR_SERVER)connection/client_message.c					\
+			 	$(SRCDIR_SERVER)connection/message_receiver.c				\
+			 	$(SRCDIR_SERVER)connection/message_sender.c					\
+			 	$(SRCDIR_SERVER)connection/writing_buffer.c					\
 			 	$(SRCDIR_SERVER)connection/team_join.c						\
 			 	$(SRCDIR_SERVER)connection/socket.c							\
 			 	$(SRCDIR_SERVER)connection/connection_handler.c				\
 			 	$(SRCDIR_SERVER)connection/signal_handler.c					\
-			 	$(SRCDIR_SERVER)connection/time.c							\
 			 	$(SRCDIR_SERVER)map/map.c									\
 			 	$(SRCDIR_SERVER)map/coordinates.c							\
 			 	$(SRCDIR_SERVER)map/player_management.c						\
@@ -95,6 +96,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)team/player/look.c							\
 				$(SRCDIR_SERVER)team/player/inventory.c						\
 				$(SRCDIR_SERVER)team/player/ejection.c						\
+				$(SRCDIR_SERVER)team/player/broadcast.c						\
 				$(SRCDIR_SERVER)game/incantation/check_incantation.c		\
 				$(SRCDIR_SERVER)game/incantation/incantation_allocation.c	\
 				$(SRCDIR_SERVER)game/incantation/update_incantation.c		\
@@ -124,6 +126,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/ai/fork.c							\
 				$(SRCDIR_SERVER)commands/ai/take.c							\
 				$(SRCDIR_SERVER)commands/ai/set.c							\
+				$(SRCDIR_SERVER)commands/ai/broadcast_cmd.c					\
 				$(SRCDIR_SERVER)commands/ai/eject.c							\
 				$(SRCDIR_SERVER)commands/ai/incantation_cmd.c				\
 				$(SRCDIR_SERVER)commands/gui/msz.c							\
@@ -144,6 +147,7 @@ SRC_SERVER =	$(SRCDIR_SERVER)main.c										\
 				$(SRCDIR_SERVER)commands/gui/sst.c							\
 				$(SRCDIR_SERVER)commands/gui/edi.c							\
 				$(SRCDIR_SERVER)commands/gui/pex.c							\
+				$(SRCDIR_SERVER)commands/gui/pbc.c							\
 				$(SRCDIR_SERVER)commands/gui/pic.c							\
 				$(SRCDIR_SERVER)commands/gui/pie.c							\
 				$(SRCDIR_SERVER)commands/gui/seg.c							\
@@ -306,6 +310,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)team/player/look.c								\
 			$(SRCDIR_SERVER)team/player/inventory.c							\
 			$(SRCDIR_SERVER)team/player/ejection.c							\
+			$(SRCDIR_SERVER)team/player/broadcast.c							\
 			$(SRCDIR_SERVER)game/incantation/check_incantation.c			\
 			$(SRCDIR_SERVER)game/incantation/incantation_allocation.c		\
 			$(SRCDIR_SERVER)game/incantation/update_incantation.c			\
@@ -317,9 +322,10 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)constants.c										\
 			$(SRCDIR_SERVER)connection/server.c								\
 			$(SRCDIR_SERVER)connection/client.c								\
-			$(SRCDIR_SERVER)connection/client_message.c						\
+			$(SRCDIR_SERVER)connection/message_receiver.c					\
+			$(SRCDIR_SERVER)connection/message_sender.c						\
+			$(SRCDIR_SERVER)connection/writing_buffer.c						\
 			$(SRCDIR_SERVER)connection/socket.c								\
-			$(SRCDIR_SERVER)connection/time.c								\
 			$(SRCDIR_SERVER)connection/connection_handler.c					\
 			$(SRCDIR_SERVER)connection/signal_handler.c						\
 			$(SRCDIR_SERVER)connection/team_join.c							\
@@ -349,6 +355,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/ai/fork.c								\
 			$(SRCDIR_SERVER)commands/ai/take.c								\
 			$(SRCDIR_SERVER)commands/ai/set.c								\
+			$(SRCDIR_SERVER)commands/ai/broadcast_cmd.c						\
 			$(SRCDIR_SERVER)commands/ai/eject.c								\
 			$(SRCDIR_SERVER)commands/ai/incantation_cmd.c					\
 			$(SRCDIR_SERVER)commands/gui/msz.c								\
@@ -369,6 +376,7 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			$(SRCDIR_SERVER)commands/gui/sst.c								\
 			$(SRCDIR_SERVER)commands/gui/edi.c								\
 			$(SRCDIR_SERVER)commands/gui/pex.c								\
+			$(SRCDIR_SERVER)commands/gui/pbc.c								\
 			$(SRCDIR_SERVER)commands/gui/pic.c								\
 			$(SRCDIR_SERVER)commands/gui/pie.c								\
 			$(SRCDIR_SERVER)commands/gui/seg.c								\
@@ -396,7 +404,6 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}debug_tests.c											\
 			${TESTS}string_tests.c											\
 			${TESTS}client_tests.c											\
-			${TESTS}time_tests.c											\
 			${TESTS}options_parser/integration_tests.c						\
 			${TESTS}options_parser/parser_tests.c							\
 			${TESTS}options_parser/processor_tests.c						\

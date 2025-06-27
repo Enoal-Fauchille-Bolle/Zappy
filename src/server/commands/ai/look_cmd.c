@@ -7,14 +7,13 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug_categories.h"
 #include "game/game_constants.h"
 #include "team/player/player.h"
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 /**
  * @brief Handles the look command to get the player's vision.
@@ -31,13 +30,13 @@ void look_command(client_t *client, command_t *command)
 
     (void)command;
     if (vision == NULL) {
-        write(client->sockfd, "ko\n", 3);
+        send_to_client(client, "ko\n");
         debug_cmd(client->server->options->debug,
             "Player %zu failed to look due to an error\n", client->player->id);
         return;
     }
     client->player->tick_cooldown = LOOK_COMMAND_COOLDOWN;
-    dprintf(client->sockfd, "%s\n", vision);
+    send_to_client(client, "%s\n", vision);
     debug_map(client->server->options->debug,
         "Player %zu looked around and saw: %s\n", client->player->id, vision);
     free(vision);

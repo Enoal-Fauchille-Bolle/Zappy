@@ -6,17 +6,29 @@
 */
 
 #include "command_handler/command.h"
+#include "command_handler/command_buffer.h"
 #include "command_handler/command_executor.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "connection/writing_buffer.h"
 #include "constants.h"
+#include "game/game.h"
 #include "game/game_constants.h"
+#include "game/game_state.h"
+#include "map/coordinates.h"
+#include "map/map.h"
+#include "map/resources.h"
 #include "options_parser/options.h"
 #include "team/player/player.h"
+#include "vector.h"
+#include <bits/types/struct_timeval.h>
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 // Flag to track if test command was executed
@@ -24,6 +36,7 @@ static bool test_command_executed = false;
 
 // Forward declarations
 static void cleanup_test_client(client_t *client);
+void handle_clients_writing_buffer(server_t *server);
 
 /**
  * @brief Mock test command for testing (replaces dummy)
@@ -180,10 +193,11 @@ static client_t *create_test_client(void)
 
     client->index = 0;
     client->sockfd = -1;      // We'll use -1 to avoid actual socket operations
+    client->command_buffer = vector_new(sizeof(command_t *));
+    client->writing_buffer = vector_new(sizeof(char *));
+    client->is_gui = false;
 
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        client->command_buffer[i] = NULL;
-    }
+    clear_command_buffer(client);
 
     return client;
 }
@@ -255,11 +269,15 @@ static void cleanup_test_client(client_t *client)
         free(client->server);
     }
 
-    for (int i = 0; i < MAX_COMMAND_BUFFER_SIZE; i++) {
-        if (client->command_buffer[i] != NULL) {
-            cleanup_test_command(client->command_buffer[i]);
-            client->command_buffer[i] = NULL;
-        }
+    // Clear and destroy the buffers
+    if (client->command_buffer) {
+        clear_command_buffer(client);
+        vector_destroy(client->command_buffer);
+    }
+
+    if (client->writing_buffer) {
+        clear_writing_buffer(client);
+        vector_destroy(client->writing_buffer);
     }
 
     free(client);
@@ -280,18 +298,50 @@ static int create_test_pipe(int *write_fd)
 }
 
 /**
- * @brief Helper function to read from pipe
+ * @brief Helper function to read from pipe with timeout
  */
 static char *read_from_pipe(int read_fd)
 {
     char buffer[256];
-    ssize_t bytes_read = read(read_fd, buffer, sizeof(buffer) - 1);
+    ssize_t bytes_read;
+    fd_set readfds;
+    struct timeval timeout;
 
+    // Set up timeout for reading
+    FD_ZERO(&readfds);
+    FD_SET(read_fd, &readfds);
+    timeout.tv_sec = 1;  // 1 second timeout
+    timeout.tv_usec = 0;
+
+    // Wait for data to be available
+    int result = select(read_fd + 1, &readfds, NULL, NULL, &timeout);
+    if (result <= 0) {
+        return NULL; // Timeout or error
+    }
+
+    bytes_read = read(read_fd, buffer, sizeof(buffer) - 1);
     if (bytes_read <= 0)
         return NULL;
 
     buffer[bytes_read] = '\0';
     return strdup(buffer);
+}
+
+/**
+ * @brief Helper function to flush writing buffer for a client
+ */
+static void flush_client_writing_buffer(client_t *client)
+{
+    // We need to manually process the writing buffer since we're not running
+    // the main server loop. Create a temporary server structure and call the
+    // writing buffer handler.
+    server_t temp_server;
+    temp_server.clients[0] = client;
+    for (int i = 1; i < MAX_CLIENTS; i++) {
+        temp_server.clients[i] = NULL;
+    }
+    
+    handle_clients_writing_buffer(&temp_server);
 }
 
 Test(command_executor, execute_command_invalid_command)
@@ -311,6 +361,9 @@ Test(command_executor, execute_command_invalid_command)
     client->sockfd = write_fd;
 
     execute_command(client, command);
+
+    // Flush the writing buffer to send the response to the pipe
+    flush_client_writing_buffer(client);
 
     close(write_fd);
 
@@ -419,6 +472,9 @@ Test(command_executor, execute_command_invalid)
     client->sockfd = write_fd;
 
     execute_command(client, command);
+
+    // Flush the writing buffer to send the response to the pipe
+    flush_client_writing_buffer(client);
 
     close(write_fd);
 
@@ -541,6 +597,9 @@ Test(command_executor, execute_command_empty_command_name)
 
     execute_command(client, command);
 
+    // Flush the writing buffer to send the response to the pipe
+    flush_client_writing_buffer(client);
+
     close(write_fd);
 
     // Read response
@@ -576,6 +635,9 @@ Test(command_executor, execute_command_with_debug_enabled)
     client->sockfd = write_fd;
 
     execute_command(client, command);
+
+    // Flush the writing buffer to send the response to the pipe
+    flush_client_writing_buffer(client);
 
     close(write_fd);
 

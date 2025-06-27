@@ -7,7 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
-#include "connection/client_message.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
@@ -18,7 +18,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 /**
  * @brief Sends player information to the client.
@@ -31,7 +30,7 @@
  */
 static void send_player_info(client_t *client, player_t *player)
 {
-    dprintf(client->sockfd, "ppo %zu %d %d %d\n", player->id, player->pos.x,
+    send_to_client(client, "ppo #%zu %d %d %d\n", player->id, player->pos.x,
         player->pos.y, player->orientation + 1);
     debug_player(client->server->options->debug,
         "Client %d: ppo command sent for player ID %zu: position (%d, %d), "
@@ -56,7 +55,7 @@ static bool check_args_number(command_t *command, client_t *client)
     if (command->argc != 1) {
         debug_warning(client->server->options->debug,
             "Invalid number of arguments for ppo command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -77,7 +76,7 @@ static bool check_player_id(size_t player_id, client_t *client)
     if (player_id == 0) {
         debug_warning(client->server->options->debug,
             "Invalid player ID for ppo command: %zu\n", player_id);
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -98,7 +97,7 @@ static bool check_player_exists(player_t *player, client_t *client)
     if (player == NULL) {
         debug_warning(client->server->options->debug,
             "Player not found for ppo command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -119,7 +118,7 @@ void ppo_event(player_t *player)
         fprintf(stderr, "Invalid player or client pointer\n");
         return;
     }
-    send_to_all_guis(player->client->server, "ppo %zu %d %d %d\n", player->id,
+    send_to_all_guis(player->client->server, "ppo #%zu %d %d %d\n", player->id,
         player->pos.x, player->pos.y, player->orientation + 1);
 }
 

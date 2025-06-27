@@ -12,10 +12,12 @@
 #include "command_handler/gui_commands.h"
 #include "connection/client.h"
 #include "connection/server.h"
+#include "connection/writing_buffer.h"
 #include "constants.h"
 #include "debug_categories.h"
 #include "game/game.h"
 #include "game/game_constants.h"
+#include "game/game_state.h"
 #include "game/incantation.h"
 #include "map/resources.h"
 #include "options_parser/options.h"
@@ -25,6 +27,8 @@
 #include "vector.h"
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 /**
@@ -101,7 +105,8 @@ static void update_players_team_ticks(team_t *team)
             continue;
         }
         update_player_tick_cooldown(player);
-        if (handle_player_starvation(player)) {
+        if (player->client->server->game->game_state == GAME_RUNNING &&
+            handle_player_starvation(player)) {
             continue;
         }
         i++;
@@ -125,36 +130,56 @@ static void update_players_ticks(game_t *game)
 }
 
 /**
+ * @brief Execute a single command for a player
+ *
+ * This function pops a command from the player's command buffer, executes it,
+ * and destroys the command. It also handles debug logging for the executed
+ * command.
+ *
+ * @param player Pointer to the player structure to execute command for
+ * @return true if a command was executed, false if no command was available
+ */
+static bool execute_player_command(player_t *player)
+{
+    command_t *command = NULL;
+    char *command_name = NULL;
+
+    command = pop_command_from_buffer(player->client);
+    if (command == NULL)
+        return false;
+    command_name = command->name ? strdup(command->name) : NULL;
+    debug_cmd(player->client->server->options->debug,
+        "Player %zu: '%s' command executed\n", player->id,
+        command_name ? command_name : "unknown");
+    player->doing_action = true;
+    execute_command(player->client, command);
+    destroy_command(command);
+    if (command_name) {
+        free(command_name);
+        command_name = NULL;
+    }
+    return true;
+}
+
+/**
  * @brief Read and execute command buffer for a single player
  *
  * This function checks if the player is ready to act (i.e., their tick
- * cooldown is 0) and if the client and server pointers are valid. It then pops
- * a command from the player's command buffer, executes it, and destroys the
- * command.
+ * cooldown is 0) and if the client and server pointers are valid. It then
+ * executes commands from the player's command buffer while the player can act.
  *
  * @param player Pointer to the player structure to read commands from
  */
 static void read_player_command_buffer(player_t *player)
 {
-    command_t *command = NULL;
-
-    if (player->tick_cooldown > 0)
-        return;
-    if (player->client == NULL || player->client->server == NULL ||
-        player->client->server->options == NULL) {
-        fprintf(stderr, "Invalid player or client pointer\n");
-        return;
-    }
-    command = pop_command_from_buffer(player->client);
-    if (command == NULL)
-        return;
-    debug_cmd(player->client->server->options->debug,
-        "Player %zu: '%s' command executed\n", player->id, command->name);
-    player->doing_action = true;
-    execute_command(player->client, command);
-    destroy_command(command);
-    if (player->tick_cooldown == 0) {
-        read_player_command_buffer(player);
+    while (player->tick_cooldown == 0) {
+        if (player->client == NULL || player->client->server == NULL ||
+            player->client->server->options == NULL) {
+            fprintf(stderr, "Invalid player or client pointer\n");
+            return;
+        }
+        if (!execute_player_command(player))
+            return;
     }
 }
 
@@ -257,5 +282,6 @@ void game_tick(game_t *game, server_options_t *options)
         spawn_min_eggs(
             game->map, game->teams[i], options->clients_nb, options->debug);
     }
+    handle_clients_writing_buffer(game->server);
     game->game_tick++;
 }

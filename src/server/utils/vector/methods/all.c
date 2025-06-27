@@ -12,7 +12,7 @@
 bool vector_all_impl(
     const vector_t *self, predicate_function_t predicate, void *context)
 {
-    void *element;
+    void *element = NULL;
 
     assert(self && predicate);
     for (size_t i = 0; i < self->size; i++) {

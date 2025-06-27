@@ -21,6 +21,7 @@ void fork_command(client_t *client, command_t *command);
 void take_command(client_t *client, command_t *command);
 void set_command(client_t *client, command_t *command);
 void eject_command(client_t *client, command_t *command);
+void broadcast_command(client_t *client, command_t *command);
 void incantation_command(client_t *client, command_t *command);
 
 #endif /* !AI_COMMANDS_H_ */

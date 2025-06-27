@@ -12,7 +12,7 @@
 
 void vector_assign_impl(vector_t *self, size_t count, const void *value)
 {
-    void *dest;
+    void *dest = NULL;
 
     assert(self && value);
     if (count > self->capacity) {

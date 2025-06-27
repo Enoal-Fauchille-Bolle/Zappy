@@ -7,6 +7,7 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "debug.h"
 #include "debug_categories.h"
@@ -16,8 +17,6 @@
 #include "map/tile.h"
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
-#include <unistd.h>
 
 /**
  * @brief Send tile information to the client.
@@ -31,7 +30,7 @@
  */
 static void send_tile_info(client_t *client, tile_t *tile, pos_t pos)
 {
-    dprintf(client->sockfd, "bct %d %d %zu %zu %zu %zu %zu %zu %zu\n", pos.x,
+    send_to_client(client, "bct %d %d %zu %zu %zu %zu %zu %zu %zu\n", pos.x,
         pos.y, tile->resources[FOOD], tile->resources[LINEMATE],
         tile->resources[DERAUMERE], tile->resources[SIBUR],
         tile->resources[MENDIANE], tile->resources[PHIRAS],

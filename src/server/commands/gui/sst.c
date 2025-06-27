@@ -7,15 +7,14 @@
 
 #include "command_handler/command.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
 #include "game/game.h"
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 /**
  * @brief Checks if the tick speed is within the valid range.
@@ -32,7 +31,7 @@ static bool check_tick_speed(tick_rate_t tick_speed, client_t *client)
     if (tick_speed < MIN_FREQUENCY || tick_speed > MAX_FREQUENCY) {
         debug_warning(client->server->options->debug,
             "Invalid tick speed for sst command: %u\n", tick_speed);
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -53,7 +52,7 @@ static bool check_args_number(command_t *command, client_t *client)
     if (command->argc != 1) {
         debug_warning(client->server->options->debug,
             "Invalid number of arguments for sst command\n");
-        write(client->sockfd, "sbp\n", 4);
+        send_to_client(client, "sbp\n");
         return FAILURE;
     }
     return SUCCESS;
@@ -79,7 +78,7 @@ void sst_command(client_t *client, command_t *command)
     if (!check_tick_speed(tick_speed, client))
         return;
     client->server->game->tick_rate = tick_speed;
-    dprintf(client->sockfd, "sst %u\n", client->server->game->tick_rate);
+    send_to_client(client, "sst %u\n", client->server->game->tick_rate);
     debug_game(client->server->options->debug,
         "Client %d: sst command sent: %zu tick speed\n", client->index,
         client->server->game->tick_rate);
