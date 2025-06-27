@@ -53,7 +53,7 @@ int main(int argc, char **argv)
             float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
             lastTime = currentTime;
 
-            app.getScene().Update(deltaTime);
+            app.getScene().Update(deltaTime, gameManager.getTickRate());
             gameManager.update();
             app.getRoot()->renderOneFrame();
         }

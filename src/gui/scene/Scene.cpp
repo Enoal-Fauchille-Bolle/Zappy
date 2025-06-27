@@ -8,6 +8,7 @@
 
 #include "Scene.hpp"
 #include <iostream>
+#include "../network/NetworkManager.hpp"
 
 /**
  * @brief Default constructor for the Scene class
@@ -31,7 +32,7 @@ Scene::Scene() :
         mCursorGrabbed(false),
         mCameraSpeed(100.0f)
 {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
         mKeyPressed[i] = false;
     }
 }
@@ -165,8 +166,9 @@ void Scene::setCameraLookAt(const Ogre::Vector3& target)
  * to the camera's current orientation.
  * 
  * @param deltaTime The time elapsed since the last update in seconds
+ * @param tickRate The game tick rate, used for network commands
  */
-void Scene::Update(float deltaTime)
+void Scene::Update(float deltaTime, int tickRate)
 {
     Ogre::Vector3 cameraPos = mCamera->getParentSceneNode()->getPosition();
     Ogre::Quaternion orientation = mCamera->getParentSceneNode()->getOrientation();
@@ -181,13 +183,20 @@ void Scene::Update(float deltaTime)
     float speed = mCameraSpeed * deltaTime;
 
     if (mKeyPressed[0])
-        cameraPos += forward * speed;
-    if (mKeyPressed[2])
         cameraPos -= forward * speed;
+    if (mKeyPressed[2])
+        cameraPos += forward * speed;
     if (mKeyPressed[1])
         cameraPos -= right * speed;
     if (mKeyPressed[3])
         cameraPos += right * speed;
+
+    if (mKeyPressed[4] == true) {
+        NetworkManager::send("sst " + std::to_string(tickRate + 5));
+    }
+    if (mKeyPressed[5] == true) {
+        NetworkManager::send("sst " + std::to_string(tickRate - 5));
+    }
 
     mCamera->getParentSceneNode()->setPosition(cameraPos);
 }
@@ -227,18 +236,29 @@ void Scene::rotateCamera(float yawDegrees, float pitchDegrees)
  */
 bool Scene::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
-    if (evt.keysym.sym == OgreBites::SDLK_ESCAPE) {
-        return false;
-    }
-
-    if (evt.keysym.sym == 'z') {
-        mKeyPressed[0] = true;
-    } else if (evt.keysym.sym == 'q') {
-        mKeyPressed[1] = true;
-    } else if (evt.keysym.sym == 's') {
-        mKeyPressed[2] = true;
-    } else if (evt.keysym.sym == 'd') {
-        mKeyPressed[3] = true;
+    switch (evt.keysym.sym) {
+        case OgreBites::SDLK_ESCAPE:
+            return false;
+        case 'z':
+            mKeyPressed[0] = true;
+            break;
+        case 'q':
+            mKeyPressed[1] = true;
+            break;
+        case 's':
+            mKeyPressed[2] = true;
+            break;
+        case 'd':
+            mKeyPressed[3] = true;
+            break;
+        case OgreBites::SDLK_UP:
+            mKeyPressed[4] = true;
+            break;
+        case OgreBites::SDLK_DOWN:
+            mKeyPressed[5] = true;
+            break;
+        default:
+            break;
     }
 
     return true;
@@ -254,14 +274,27 @@ bool Scene::keyPressed(const OgreBites::KeyboardEvent& evt)
  */
 bool Scene::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
-    if (evt.keysym.sym == 'z') {
-        mKeyPressed[0] = false;
-    } else if (evt.keysym.sym == 'q') {
-        mKeyPressed[1] = false;
-    } else if (evt.keysym.sym == 's') {
-        mKeyPressed[2] = false;
-    } else if (evt.keysym.sym == 'd') {
-        mKeyPressed[3] = false;
+    switch (evt.keysym.sym) {
+        case 'z':
+            mKeyPressed[0] = false;
+            break;
+        case 'q':
+            mKeyPressed[1] = false;
+            break;
+        case 's':
+            mKeyPressed[2] = false;
+            break;
+        case 'd':
+            mKeyPressed[3] = false;
+            break;
+        case OgreBites::SDLK_UP:
+            mKeyPressed[4] = false;
+            break;
+        case OgreBites::SDLK_DOWN:
+            mKeyPressed[5] = false;
+            break;
+        default:
+            break;
     }
 
     return true;

@@ -21,7 +21,7 @@ class Scene : public OgreBites::InputListener {
 
         void CreateScene(std::string name);
         void Initialize(OgreBites::ApplicationContext* appContext);
-        void Update(float deltaTime);
+        void Update(float deltaTime, int tickRate = 100);
         void Render();
 
         Ogre::SceneNode* getSceneNode(const std::string &entityName);
@@ -65,8 +65,8 @@ class Scene : public OgreBites::InputListener {
         float mCameraSpeed;
         
         // Keyboard state tracking
-        bool mKeyPressed[4]; // [Z, Q, S, D]
-        
+        bool mKeyPressed[6]; // [Z, Q, S, D, UP, DOWN]
+
         void setupScene();
         void setupCamera();
         void setupLighting();
