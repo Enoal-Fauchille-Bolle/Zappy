@@ -27,7 +27,7 @@ void EggNewCommand::execute(const std::string& args, SimpleGameManager& gameMana
         std::string cleanParentIdStr = (!parentIdStr.empty() && parentIdStr.front() == '#') ? parentIdStr.substr(1) : parentIdStr;
         id = std::stoi(cleanIdStr);
         parentId = std::stoi(cleanParentIdStr);
-        if (id <= 0) {
+        if (id < 0) {
             std::cerr << "Error: Invalid egg ID (must be positive): " << id << std::endl;
             return;
         }
