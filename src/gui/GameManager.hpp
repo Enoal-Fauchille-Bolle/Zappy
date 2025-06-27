@@ -52,6 +52,7 @@ public:
     std::pair<int, int> getMapSize() const;
 
     void cleanup();
+    // void setTickRate(float tickRate); // ticks per second
 
 private:
     Scene* _scene;
@@ -64,11 +65,12 @@ private:
     PlayerMap _players;
     EggMap _eggs;
     std::vector<std::vector<TileDisplay*>> _tiles;
+    // float _tickRate = 10.0f; // default, can be set
 
     void createGrid();
     TileDisplay* getTile(int x, int y);
     bool isValidPosition(int x, int y) const;
-    void positionPlayerOnTile(Player* player, int x, int y);
+    void positionPlayerOnTile(Player* player, int x, int y, bool animate = true);
     void positionResourceOnTile(Resources* resource, int x, int y, int index);
 };
 

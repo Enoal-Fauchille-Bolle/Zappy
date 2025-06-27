@@ -7,6 +7,7 @@
 
 #include "Player.hpp"
 #include "../Types.hpp"
+#include <cmath>
 
 std::map<int, std::string> Player::playerMeshes = {
     {1, "ogrehead.mesh"},
@@ -30,7 +31,15 @@ Player::Player(int id, const std::string &teamName)
       _playerId(id),
       _teamName(teamName),
       _level(1),
-      _orientation(Orientation::NORTH)
+      _orientation(Orientation::NORTH),
+      _currentPos(0, Constants::PLAYER_HEIGHT, 0),
+      _targetPos(0, Constants::PLAYER_HEIGHT, 0),
+      _isMoving(false),
+      _moveSpeed(90.0f),
+      _currentYaw(0.0f),
+      _targetYaw(0.0f),
+      _isRotating(false),
+      _rotateSpeed(1000.0f) // Degrees per second
 {
 }
 
@@ -54,46 +63,86 @@ void Player::setLevel(int level)
 }
 
 /**
+ * @brief Rotate the player to face a specific yaw angle.
+ *
+ * @param targetYaw The target yaw angle in degrees.
+ */
+void Player::rotateTo(float targetYaw)
+{
+    // Normalize angles to [0, 360)
+    _targetYaw = fmodf(targetYaw + 360.0f, 360.0f);
+    _isRotating = true;
+}
+
+/**
  * @brief Set the orientation of the player and update visuals.
  *
  * @param orientation The new orientation.
  */
-void Player::setOrientation(Orientation orientation)
+void Player::setOrientation(Orientation orientation, bool animate)
 {
+    if (_orientation == orientation)
+        return;
     _orientation = orientation;
-    updateVisualOrientation();
-}
-
-/**
- * @brief Update the visual orientation of the player.
- */
-void Player::updateVisualOrientation()
-{
+    float newYaw = 0.0f;
     switch (_orientation) {
-        case Orientation::NORTH:
-            setRotation(0, 180, 0);
-            break;
-        case Orientation::EAST:
-            setRotation(0, 90, 0);
-            break;
-        case Orientation::SOUTH:
-            setRotation(0, 0, 0);
-            break;
-        case Orientation::WEST:
-            setRotation(0, 270, 0);
-            break;
+        case Orientation::NORTH: newYaw = 180.0f; break;
+        case Orientation::EAST:  newYaw = 90.0f; break;
+        case Orientation::SOUTH: newYaw = 0.0f; break;
+        case Orientation::WEST:  newYaw = 270.0f; break;
+    }
+    if (animate) {
+        rotateTo(newYaw);
+    } else {
+        _currentYaw = newYaw;
+        _targetYaw = newYaw;
+        _isRotating = false;
+        setRotation(0, newYaw, 0);
     }
 }
 
 /**
- * @brief Set the quantity of an inventory item.
+ * @brief Update the player entity.
  *
- * @param item The item name.
- * @param quantity The quantity to set.
+ * @param deltaTime The time elapsed since the last update.
  */
-void Player::setInventoryItem(const std::string &item, int quantity)
+void Player::update(float deltaTime)
 {
-    _inventory[item] = quantity;
+    if (_isMoving) {
+        float dx = _targetPos.x - _currentPos.x;
+        float dy = _targetPos.y - _currentPos.y;
+        float dz = _targetPos.z - _currentPos.z;
+        float dist = std::sqrt(dx*dx + dy*dy + dz*dz);
+        if (dist < 0.01f) {
+            _currentPos = _targetPos;
+            Entity::setPosition(_targetPos);
+            _isMoving = false;
+            return;
+        }
+        float step = _moveSpeed * deltaTime;
+        float t = (dist < step) ? 1.0f : (step / dist);
+        _currentPos.x += dx * t;
+        _currentPos.y += dy * t;
+        _currentPos.z += dz * t;
+        Entity::setPosition(_currentPos);
+    }
+
+    // Animate rotation
+    if (_isRotating) {
+        float diff = _targetYaw - _currentYaw;
+        // Shortest path
+        if (diff > 180.0f) diff -= 360.0f;
+        if (diff < -180.0f) diff += 360.0f;
+        float step = _rotateSpeed * deltaTime;
+        if (fabs(diff) < 1.0f) {
+            _currentYaw = _targetYaw;
+            _isRotating = false;
+        } else {
+            _currentYaw += (diff > 0 ? 1 : -1) * std::fmin(fabs(diff), step);
+            _currentYaw = fmodf(_currentYaw + 360.0f, 360.0f);
+        }
+        setRotation(0, _currentYaw, 0);
+    }
 }
 
 /**
@@ -114,6 +163,17 @@ int Player::getLevel() const
 Orientation Player::getOrientation() const
 {
     return _orientation;
+}
+
+/**
+ * @brief Set the quantity of an inventory item.
+ *
+ * @param item The item name.
+ * @param quantity The quantity to set.
+ */
+void Player::setInventoryItem(const std::string &item, int quantity)
+{
+    _inventory[item] = quantity;
 }
 
 /**
@@ -161,3 +221,26 @@ void Player::evolve()
         replaceMesh(this->playerMeshes[_level]);
     }
 }
+
+void Player::setPosition(const Position& pos)
+{
+    _currentPos = pos;
+    Entity::setPosition(pos);
+}
+
+void Player::slideTo(const Position& target)
+{
+    _targetPos = target;
+    _isMoving = true;
+}
+
+void Player::updateVisualOrientation()
+{
+    // No-op: handled by rotation animation
+}
+
+// void Player::setMoveAndRotateSpeed(float moveSpeed, float rotateSpeed)
+// {
+//     _moveSpeed = moveSpeed;
+//     _rotateSpeed = rotateSpeed;
+// }

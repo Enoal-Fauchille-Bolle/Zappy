@@ -22,6 +22,7 @@ SimpleGameManager::SimpleGameManager() :
         _commandHandler(new CommandHandler()),
         _mapWidth(0),
         _mapHeight(0)
+        // _tickRate(1.0f) // Default tick rate
 {
 }
 
@@ -90,11 +91,14 @@ void SimpleGameManager::createPlayer(int id, const std::string& teamName, int x,
     Player* player = new Player(id, teamName);
     player->attachToScene(_scene->getSceneManager());
     player->initialize();
-    player->setOrientation(orientation);
     player->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE,
                      Constants::PLAYER_SCALE);
+    // Set initial position directly (no slide)
+    Position tilePos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
+    player->setPosition(Position(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z));
+    player->setOrientation(orientation, false);
+    // player->setMoveAndRotateSpeed(2.0f * _tickRate, 90.0f * _tickRate);
     _players[id] = player;
-    positionPlayerOnTile(player, x, y);
     getTile(x, y)->getContentManager()->addPlayer(player);
 }
 
@@ -123,6 +127,23 @@ void SimpleGameManager::updatePlayerPosition(int id, int x, int y,
 
     Player* player = it->second;
 
+    // Find previous position (current tile)
+    int prevX = -1, prevY = -1;
+    for (int ty = 0; ty < _mapHeight; ++ty) {
+        for (int tx = 0; tx < _mapWidth; ++tx) {
+            auto* tile = _tiles[ty][tx];
+            if (tile) {
+                const auto& players = tile->getContentManager()->getPlayers();
+                if (std::find(players.begin(), players.end(), player) != players.end()) {
+                    prevX = tx;
+                    prevY = ty;
+                    break;
+                }
+            }
+        }
+        if (prevX != -1) break;
+    }
+
     for (auto& row : _tiles) {
         for (auto& tile : row) {
             if (tile)
@@ -130,7 +151,16 @@ void SimpleGameManager::updatePlayerPosition(int id, int x, int y,
         }
     }
 
-    positionPlayerOnTile(player, x, y);
+    // Detect wrap
+    bool animate = true;
+    if (prevX != -1 && prevY != -1) {
+        if ((prevX == 0 && x == _mapWidth - 1) || (prevX == _mapWidth - 1 && x == 0) ||
+            (prevY == 0 && y == _mapHeight - 1) || (prevY == _mapHeight - 1 && y == 0)) {
+            animate = false;
+        }
+    }
+
+    positionPlayerOnTile(player, x, y, animate);
     getTile(x, y)->getContentManager()->addPlayer(player);
     player->setOrientation(orientation);
 }
@@ -300,6 +330,12 @@ void SimpleGameManager::createResource(ResourceType type, int x, int y, int quan
  */
 void SimpleGameManager::update()
 {
+    // Animate all players
+    float deltaTime = 1.0f / 60.0f; // Assume 60 FPS for now
+    for (auto& pair : _players) {
+        if (pair.second)
+            pair.second->update(deltaTime);
+    }
     std::string response = NetworkManager::receive(false);
     readResponse(response);
 }
@@ -393,11 +429,14 @@ bool SimpleGameManager::isValidPosition(int x, int y) const
  * @param x X coordinate of the target tile.
  * @param y Y coordinate of the target tile.
  */
-void SimpleGameManager::positionPlayerOnTile(Player* player, int x, int y)
+void SimpleGameManager::positionPlayerOnTile(Player* player, int x, int y, bool animate)
 {
     Position tilePos =
         Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
-    player->setPosition(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z);
+    if (animate)
+        player->slideTo(Position(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z));
+    else
+        player->setPosition(Position(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z));
 }
 
 /**
@@ -541,3 +580,20 @@ void SimpleGameManager::cleanup()
         _commandHandler = nullptr;
     }
 }
+
+/**
+ * @brief Set the tick rate for the game manager.
+ *
+ * @param tickRate The desired tick rate in ticks per second.
+ */
+// void SimpleGameManager::setTickRate(float tickRate)
+// {
+//     _tickRate = tickRate;
+//     // Example: base speeds (tweak as needed)
+//     float baseMoveSpeed = 2.0f * tickRate;    // tiles per second
+//     float baseRotateSpeed = 90.0f * tickRate; // degrees per second
+//     for (auto& pair : _players) {
+//         if (pair.second)
+//             pair.second->setMoveAndRotateSpeed(baseMoveSpeed, baseRotateSpeed);
+//     }
+// }
