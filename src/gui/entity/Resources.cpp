@@ -59,7 +59,7 @@ void Resources::applyResourceColor()
     }
     switch (_type) {
         case ResourceType::FOOD:
-            this->setColor(Color(1.0f, 1.0f, 0.0f, 1.0f)); // Pure Yellow
+            this->setColor(Color(1.0f, 0.5f, 0.0f, 1.0f)); // Pure Orange
             break;
         case ResourceType::LINEMATE:
             this->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f)); // Pure Gray
