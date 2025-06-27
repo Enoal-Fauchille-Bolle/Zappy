@@ -163,7 +163,6 @@ COMMANDS_GUI = $(COMMAND_GUI)commands/
 SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(SRCDIR_GUI)Parsing.cpp	\
 		$(SRCDIR_GUI)ZappyApp.cpp	\
-		$(SRCDIR_GUI)overlay/Overlay.cpp	\
 		$(SRCDIR_GUI)scene/Scene.cpp \
 		$(SRCDIR_GUI)GameManager.cpp \
 		$(SRCDIR_GUI)entity/Egg.cpp \
@@ -212,7 +211,7 @@ $(SRCDIR_GUI)%.o: $(SRCDIR_GUI)%.cpp
 
 # OGRE specific flags
 OGRE_INCLUDE = -I/usr/local/include/OGRE -I/usr/local/include/OGRE/Bites 	\
--I/usr/local/include/OGRE/RTShaderSystem -I
+-I/usr/local/include/OGRE/RTShaderSystem
 OGRE_LIBS = -L/usr/local/lib -lOgreMain -lOgreBites -lOgreRTShaderSystem
 
 # Compilation Flags
