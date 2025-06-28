@@ -108,11 +108,8 @@ static bool check_player_exists(player_t *player, client_t *client)
  */
 void plv_event(player_t *player)
 {
-    if (player == NULL || player->client == NULL) {
-        debug_warning(player->client->server->options->debug,
-            "Player or client is NULL in plv_event\n");
+    if (player == NULL || player->client == NULL)
         return;
-    }
     send_to_all_guis(
         player->client->server, "plv #%zu %d\n", player->id, player->level);
 }
