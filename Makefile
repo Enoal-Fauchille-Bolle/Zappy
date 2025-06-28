@@ -387,6 +387,27 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}commands/ai/connect_nbr_tests.c							\
 			${TESTS}commands/ai/fork_tests.c								\
 			${TESTS}commands/ai/incantation_cmd_tests.c						\
+			${TESTS}commands/gui/edi_tests.c								\
+			${TESTS}commands/gui/bct_tests.c								\
+			${TESTS}commands/gui/ebo_tests.c								\
+			${TESTS}commands/gui/msz_tests.c								\
+			${TESTS}commands/gui/pdi_tests.c								\
+			${TESTS}commands/gui/mct_tests.c								\
+			${TESTS}commands/gui/pbc_tests.c								\
+			${TESTS}commands/gui/pdr_tests.c								\
+			${TESTS}commands/gui/pex_tests.c								\
+			${TESTS}commands/gui/pfk_tests.c								\
+			${TESTS}commands/gui/pgt_tests.c								\
+			${TESTS}commands/gui/pic_tests.c								\
+			${TESTS}commands/gui/pie_tests.c								\
+			${TESTS}commands/gui/pin_tests.c								\
+			${TESTS}commands/gui/plv_tests.c								\
+			${TESTS}commands/gui/ppo_tests.c								\
+			${TESTS}commands/gui/seg_tests.c								\
+			${TESTS}commands/gui/sgt_tests.c								\
+			${TESTS}commands/gui/sst_tests.c								\
+			${TESTS}commands/gui/tna_tests.c								\
+			${TESTS}commands/gui/pnw_tests.c								\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
