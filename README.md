@@ -26,6 +26,13 @@
 
 Zappy is a complex multiplayer network game inspired by Douglas Adams' "The Hitchhiker's Guide to the Galaxy". Players control Trantorian inhabitants on the spherical world of Trantor, where teams compete to elevate their members through mystical rituals involving resource collection and cooperation.
 
+**Documentation:**
+
+- [Protocol Documentation](docs/protocol.md)
+- [Game Rules](docs/game_rules.md)
+- [Project Subject](docs/B-YEP-400_zappy.pdf)
+- [Project Protocol Subject](docs/B-YEP-400_zappy_GUI_protocol.pdf)
+
 The project consists of three main components:
 
 - **Server** (C): Manages the game world, resources, and player interactions
