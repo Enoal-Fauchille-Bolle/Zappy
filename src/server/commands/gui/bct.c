@@ -83,6 +83,9 @@ static pos_t get_pos_from_arguments(command_t *command, game_t *game)
     if (command->argc != 2) {
         return pos;
     }
+    if (!game || !game->map) {
+        return pos;
+    }
     pos.x = strtoull(command->argv[0], NULL, 10);
     pos.y = strtoull(command->argv[1], NULL, 10);
     if (pos.x >= (int)game->map->width || pos.y >= (int)game->map->height) {

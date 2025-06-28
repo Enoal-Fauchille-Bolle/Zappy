@@ -7,6 +7,7 @@
 
 #include "connection/connection_handler.h"
 #include "connection/client.h"
+#include "connection/message_sender.h"
 #include "connection/server.h"
 #include "connection/signal_handler.h"
 #include "constants.h"
@@ -73,7 +74,7 @@ static void init_new_connection(struct pollfd *fd, int client_sockfd)
 {
     fd->fd = client_sockfd;
     fd->events = POLLIN | POLLOUT | POLLHUP;
-    write(client_sockfd, "WELCOME\n", 8);
+    write_to_client(NULL, "WELCOME\n", client_sockfd);
 }
 
 static void refuse_connection(server_t *server, int client_sockfd)
@@ -81,7 +82,7 @@ static void refuse_connection(server_t *server, int client_sockfd)
     debug_conn(server->options->debug,
         "Connection refused - server at capacity (%d/%d clients)\n",
         MAX_CLIENTS, MAX_CLIENTS);
-    write(client_sockfd, "ko\n", 3);
+    write_to_client(NULL, "ko\n", client_sockfd);
     close(client_sockfd);
 }
 

@@ -19,20 +19,20 @@
 #include <unistd.h>
 
 /**
- * @brief Checks if a client is ready for writing
+ * @brief Checks if a socket fd is ready for writing
  *
- * This function checks if the specified client is ready to write data by
- * polling the socket file descriptor. It returns SUCCESS if the client is
+ * This function checks if the specified socket fd is ready to write data by
+ * polling the socket file descriptor. It returns SUCCESS if the fd is
  * ready, or FAILURE if not.
  *
- * @param client Pointer to the client structure
- * @return SUCCESS if the client is ready for writing, FAILURE otherwise
+ * @param sockfd The socket file descriptor to check
+ * @return SUCCESS if the fd is ready for writing, FAILURE otherwise
  */
-static bool check_writing(client_t *client)
+static bool check_writing(int sockfd)
 {
     struct pollfd pfd;
 
-    pfd.fd = client->sockfd;
+    pfd.fd = sockfd;
     pfd.events = POLLOUT;
     pfd.revents = 0;
     if (poll(&pfd, 1, 0) <= 0 || !(pfd.revents & POLLOUT)) {
@@ -50,16 +50,22 @@ static bool check_writing(client_t *client)
  * @param client Pointer to the client structure
  * @param message Pre-formatted message string to send
  */
-void write_to_client(client_t *client, char *message)
+void write_to_client(client_t *client, char *message, int fallback_sockfd)
 {
-    if (client == NULL || client->sockfd < 0) {
-        if (client != NULL && client->server != NULL) {
+    if (client == NULL && fallback_sockfd >= 0 &&
+        check_writing(fallback_sockfd)) {
+        write(fallback_sockfd, message, strlen(message));
+        return;
+    }
+    if (!client || client->sockfd < 0) {
+        puts("Client is NULL or has invalid sockfd");
+        if (client->server != NULL) {
             debug_warning(client->server->options->debug,
                 "Attempted to send message to invalid client");
         }
         return;
     }
-    if (!check_writing(client)) {
+    if (!check_writing(client->sockfd)) {
         debug_warning(client->server->options->debug,
             "Client %d is not ready for writing", client->index);
         return;

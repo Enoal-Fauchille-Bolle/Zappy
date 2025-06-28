@@ -100,7 +100,9 @@ static void update_players_team_ticks(team_t *team)
 
     while (i < vtable->size(team->players)) {
         player = *(player_t **)vtable->at(team->players, i);
-        if (player == NULL) {
+        if (player == NULL || player->client == NULL ||
+            player->client->server == NULL ||
+            player->client->server->game == NULL) {
             i++;
             continue;
         }
@@ -246,9 +248,12 @@ static void read_guis_command_buffer(server_t *server)
  */
 static void update_incantations(game_t *game)
 {
-    const vector_vtable_t *vtable = vector_get_vtable(game->incantations);
+    const vector_vtable_t *vtable;
     incantation_t *incantation = NULL;
 
+    if (game == NULL || game->incantations == NULL)
+        return;
+    vtable = vector_get_vtable(game->incantations);
     for (size_t i = vtable->size(game->incantations); i > 0; i--) {
         incantation = *(incantation_t **)vtable->at(game->incantations, i - 1);
         if (incantation == NULL) {

@@ -13,6 +13,6 @@
 
 void send_to_client(client_t *client, const char *format, ...);
 void send_to_all_guis(server_t *server, const char *format, ...);
-void write_to_client(client_t *client, char *message);
+void write_to_client(client_t *client, char *message, int fallback_sockfd);
 
 #endif /* !MESSAGE_SENDER_H_ */

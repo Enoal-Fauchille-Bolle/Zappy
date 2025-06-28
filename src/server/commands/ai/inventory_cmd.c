@@ -16,6 +16,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+static void send_error(client_t *client)
+{
+    send_to_client(client, "ko\n");
+    if (client == NULL || client->server == NULL || client->player == NULL)
+        return;
+    debug_cmd(client->server->options->debug,
+        "Player %zu failed to check inventory due to an error\n",
+        client->player->id);
+}
+
 /**
  * @brief Handles the inventory command to check the player's inventory.
  *
@@ -28,14 +38,18 @@
  */
 void inventory_command(client_t *client, command_t *command)
 {
-    char *inventory_str = check_inventory(client->player);
+    char *inventory_str = NULL;
 
     (void)command;
+    if (client == NULL)
+        return;
+    if (client->player == NULL) {
+        send_error(client);
+        return;
+    }
+    inventory_str = check_inventory(client->player);
     if (inventory_str == NULL) {
-        send_to_client(client, "ko\n");
-        debug_cmd(client->server->options->debug,
-            "Player %zu failed to check inventory due to an error\n",
-            client->player->id);
+        send_error(client);
         return;
     }
     client->player->tick_cooldown = INVENTORY_COMMAND_COOLDOWN;

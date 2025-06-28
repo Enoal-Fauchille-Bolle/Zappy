@@ -29,7 +29,7 @@
  */
 static bool can_start_incantation(client_t *client)
 {
-    if (client->player->in_incantation) {
+    if (!client->player || client->player->in_incantation) {
         send_to_client(client, "ko\n");
         debug_warning(client->server->options->debug,
             "Player %zu is already in an incantation\n", client->player->id);
@@ -61,6 +61,12 @@ static bool can_start_incantation(client_t *client)
 void incantation_command(client_t *client, command_t *command)
 {
     (void)command;
+    if (client == NULL)
+        return;
+    if (client->player == NULL || client->server == NULL) {
+        send_to_client(client, "ko\n");
+        return;
+    }
     if (!can_start_incantation(client))
         return;
     client->player->tick_cooldown = INCANTATION_COMMAND_COOLDOWN;
