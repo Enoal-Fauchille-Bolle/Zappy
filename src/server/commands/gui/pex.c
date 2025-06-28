@@ -22,7 +22,8 @@
  */
 void pex_event(player_t *player)
 {
-    if (player == NULL || player->client == NULL || player->client->server == NULL)
+    if (player == NULL || player->client == NULL ||
+        player->client->server == NULL)
         return;
     send_to_all_guis(player->client->server, "pex #%zu\n", player->id);
 }
