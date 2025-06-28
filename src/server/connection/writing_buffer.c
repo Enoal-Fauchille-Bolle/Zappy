@@ -163,7 +163,7 @@ static void handle_client_writing_buffer(client_t *client)
     while (!is_writing_buffer_empty(client)) {
         message = pop_message_from_buffer(client);
         if (message != NULL) {
-            write_to_client(client, message);
+            write_to_client(client, message, client->sockfd);
             free(message);
         } else {
             break;
