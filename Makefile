@@ -365,9 +365,24 @@ TESTS_SRC =	$(SRCDIR_SERVER)map/map.c										\
 			${TESTS}options_parser/teams_option_tests.c						\
 			${TESTS}options_parser/help_option_tests.c						\
 			${TESTS}options_parser/debug_option_tests.c						\
+			${TESTS}options_parser/display_eggs_option_tests.c				\
 			${TESTS}check_incantation_tests.c								\
 			${TESTS}incantation_allocation_tests.c							\
-			${TESTS}update_incantation_tests.c							\
+			${TESTS}update_incantation_tests.c								\
+			${TESTS}broadcast_tests.c										\
+			${TESTS}tick_tests.c											\
+			${TESTS}commands/ai/forward_tests.c								\
+			${TESTS}commands/ai/left_tests.c								\
+			${TESTS}commands/ai/right_tests.c								\
+			${TESTS}commands/ai/inventory_cmd_tests.c						\
+			${TESTS}commands/ai/look_cmd_tests.c							\
+			${TESTS}commands/ai/take_tests.c								\
+			${TESTS}commands/ai/set_tests.c									\
+			${TESTS}commands/ai/eject_tests.c								\
+			${TESTS}commands/ai/broadcast_cmd_tests.c						\
+			${TESTS}commands/ai/connect_nbr_tests.c							\
+			${TESTS}commands/ai/fork_tests.c								\
+			${TESTS}commands/ai/incantation_cmd_tests.c						\
 
 # Test Compilation Flags
 UNIT_FLAGS = $(CFLAGS_SERVER) -L$(LIB_SERVER)	\
