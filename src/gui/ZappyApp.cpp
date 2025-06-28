@@ -6,29 +6,40 @@
 */
 
 #include "ZappyApp.hpp"
+#include <iostream>
 
 /**
  * @brief Construct a new ZappyApp object.
  */
-ZappyApp::ZappyApp() : OgreBites::ApplicationContext("Zappy GUI")
-{
-}
+ZappyApp::ZappyApp() : OgreBites::ApplicationContext("Zappy GUI") {}
 
 /**
  * @brief Destroy the ZappyApp object.
  */
-ZappyApp::~ZappyApp()
-{
-}
+ZappyApp::~ZappyApp() {}
 
 /**
  * @brief Set up the Zappy application and scene.
  */
-void ZappyApp::setup()
-{
-    OgreBites::ApplicationContext::setup();
-    _scene.CreateScene("ZappyWorld");
-    _scene.Initialize(this);
+void ZappyApp::setup() {
+  OgreBites::ApplicationContext::setup();
+  Ogre::Root *root = getRoot();
+  if (!root) {
+    std::cerr << "Error: Ogre Root is null" << std::endl;
+    return;
+  }
+  Ogre::RenderSystem *rs = root->getRenderSystem();
+  if (!rs) {
+    std::cerr << "Error: No render system available" << std::endl;
+    return;
+  }
+  Ogre::RenderWindow *window = getRenderWindow();
+  if (!window) {
+    std::cerr << "Error: No render window available" << std::endl;
+    return;
+  }
+  std::cout << "Creating and initializing scene..." << std::endl;
+  _scene.Initialize(this);
 }
 
 /**
@@ -36,7 +47,4 @@ void ZappyApp::setup()
  *
  * @return Scene& Reference to the scene.
  */
-Scene& ZappyApp::getScene()
-{
-    return _scene;
-}
+Scene &ZappyApp::getScene() { return _scene; }
