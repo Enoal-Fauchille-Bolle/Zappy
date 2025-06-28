@@ -13,6 +13,7 @@
 #include "connection/message_sender.h"
 #include "connection/server.h"
 #include "connection/socket.h"
+#include "connection/team_join.h"
 #include "constants.h"
 #include "debug.h"
 #include "debug_categories.h"
