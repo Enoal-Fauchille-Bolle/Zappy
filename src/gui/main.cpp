@@ -20,6 +20,7 @@
 #include "ZappyApp.hpp"
 #include "GameManager.hpp"
 #include "network/NetworkManager.hpp"
+#include "OGRE/OgreConfigFile.h"
 
 /**
  * @brief Main entry point for the Zappy GUI application.

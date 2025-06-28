@@ -7,6 +7,11 @@
 
 
 #include "Scene.hpp"
+#include <OGRE/Overlay/OgreOverlaySystem.h>
+#include <OGRE/Overlay/OgreOverlay.h>
+#include <OGRE/Overlay/OgreOverlayManager.h>
+#include <OGRE/Overlay/OgreOverlayContainer.h>
+#include <OGRE/Overlay/OgreTextAreaOverlayElement.h>
 #include <iostream>
 #include "../network/NetworkManager.hpp"
 
@@ -71,6 +76,7 @@ void Scene::Initialize(OgreBites::ApplicationContext* appContext)
     setupScene();
     setupCamera();
     setupLighting();
+    setupOverlay();
     appContext->addInputListener(this);
 }
 
@@ -84,6 +90,39 @@ void Scene::setupScene()
     mSceneManager = Ogre::Root::getSingleton().createSceneManager();
     mSceneManager->setAmbientLight(Ogre::ColourValue(0.2f, 0.2f, 0.2f));
     mSceneManager->setSkyBox(true, "Examples/SpaceSkyBox", 100);
+}
+
+void Scene::setupOverlay()
+{
+    Ogre::OverlaySystem* overlaySystem = mAppContext->getOverlaySystem();
+    if (overlaySystem) {
+        mSceneManager->addRenderQueueListener(overlaySystem);
+    }
+
+    Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+    Ogre::OverlayContainer* panel = static_cast<Ogre::OverlayContainer*>(
+        overlayManager.createOverlayElement("Panel", "MyPanel"));
+    panel->setMetricsMode(Ogre::GMM_PIXELS);
+    panel->setPosition(10, 10);
+    panel->setDimensions(300, 120);
+    panel->setMaterialName("BaseWhite");
+
+    Ogre::TextAreaOverlayElement* textArea = static_cast<Ogre::TextAreaOverlayElement*>(
+        overlayManager.createOverlayElement("TextArea", "MyText"));
+    textArea->setMetricsMode(Ogre::GMM_PIXELS);
+    textArea->setPosition(20, 40);
+    textArea->setDimensions(260, 80);
+    textArea->setCaption("Hello Ogre Overlay!");
+    textArea->setCharHeight(24);
+    textArea->setFontName("SdkTrays/Value"); // Font must be defined in resources
+    textArea->setColour(Ogre::ColourValue::Black);
+
+    Ogre::Overlay* overlay = overlayManager.create("MyOverlay");
+    overlay->add2D(panel);
+    panel->addChild(textArea);
+
+    overlay->show();
 }
 
 /**

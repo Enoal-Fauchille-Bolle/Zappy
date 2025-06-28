@@ -70,6 +70,7 @@ class Scene : public OgreBites::InputListener {
         void setupScene();
         void setupCamera();
         void setupLighting();
+        void setupOverlay(); // Function to setup ImGui overlay (if needed)
         void resetCursorPosition(); // Function to reset cursor to center position when moving camera
 };
 
