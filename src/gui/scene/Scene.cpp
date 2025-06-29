@@ -125,7 +125,6 @@ void Scene::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   // Update the tick rate display and resource counts
   mOverlay.updateTickRate();
   mOverlay.updateTeamText();
-
   mOverlay.updateResourceCounts();
 }
 
@@ -245,7 +244,6 @@ void Scene::Update(float deltaTime, int tickRate) {
     mGameManager->setTickRate(tickRate);
     mOverlay.updateTickRate();
     mOverlay.updateResourceCounts();
-    mOverlay.updateTeams();
     mOverlay.updateTeamText();
   }
 }

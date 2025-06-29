@@ -34,7 +34,6 @@ public:
   void setStatusText(const std::string &text);
   void show();
   void hide();
-  void updateTeams();
 
 private:
   Ogre::Overlay *mOverlay;

@@ -41,7 +41,7 @@ void Overlay::setGameManager(SimpleGameManager *gameManager) {
   if (mGameManager) {
     updateTickRate();
     updateResourceCounts();
-    updateTeams();
+    updateTeamText();
   }
 }
 
@@ -90,7 +90,7 @@ void Overlay::initialize(Ogre::SceneManager *sceneManager,
 
       mPanel->setMetricsMode(Ogre::GMM_PIXELS);
       mPanel->setPosition(10, 10);
-      mPanel->setDimensions(300, 400);
+      mPanel->setDimensions(300, 330);
 
       std::cout << "Setting material for panel..." << std::endl;
       Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
@@ -266,7 +266,7 @@ void Overlay::updateTeamText() {
 
   std::unordered_set<std::string> teams = mGameManager->getTeams();
   PlayerMap players = mGameManager->getPlayers();
-
+  mPanel->setDimensions(300, 330 + teams.size() * 16);
   std::stringstream ss;
   ss << "Teams:\n";
   for (const auto &team : teams) {
@@ -297,25 +297,4 @@ void Overlay::hide() {
   if (mOverlay) {
     mOverlay->hide();
   }
-}
-
-void Overlay::updateTeams() {
-  if (!mGameManager || !mTeamsText)
-    return;
-
-  // Get team names from the GameManager
-  std::string teams = "Teams: ";
-  const auto &teamSet = mGameManager->getTeamNames();
-  if (teamSet.empty()) {
-    teams += "---";
-  } else {
-    bool first = true;
-    for (const auto &team : teamSet) {
-      if (!first)
-        teams += ", ";
-      teams += team;
-      first = false;
-    }
-  }
-  mTeamsText->setCaption(teams);
 }
