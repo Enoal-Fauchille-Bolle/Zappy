@@ -213,11 +213,12 @@ OBJ_GUI = $(SRC_GUI:.cpp=.o)
 # OGRE specific flags
 OGRE_INCLUDE = -I/usr/local/include/OGRE -I/usr/local/include/OGRE/Bites 	\
 -I/usr/local/include/OGRE/RTShaderSystem
-OGRE_LIBS = -L/usr/local/lib -lOgreMain -lOgreBites -lOgreRTShaderSystem -lOgreOverlay
+OGRE_LIBS = -L/usr/local/lib -lOgreMain -lOgreBites -lOgreRTShaderSystem \
+-lOgreOverlay
 
 # Compilation Flags
-CFLAGS_GUI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -I$(SRCDIR_GUI)imgui -I$(SRCDIR_GUI)imgui/backends -g \
-			-std=c++17 $(OGRE_INCLUDE)
+CFLAGS_GUI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -I$(SRCDIR_GUI)imgui
+\-I$(SRCDIR_GUI)imgui/backends -g -std=c++17 $(OGRE_INCLUDE)
 
 # Pre Compilation
 CC_GUI := g++
