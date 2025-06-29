@@ -1,177 +1,168 @@
 ##
 ## EPITECH PROJECT, 2025
-## zappy
+## Zappy_mirror
 ## File description:
 ## utils
 ##
 
-import threading
 import time
-import socket
-# import queue
-# import os
-from loop import Loop
+from enum import Enum
 
-class ContinuousMonitor(threading.Thread):
-    """Thread dedicated to continuously monitoring ticks and receiving messages"""
-    def __init__(self, ai_instance: Loop):
-        threading.Thread.__init__(self)
-        self.daemon = True  # Thread will exit when main program exits
-        self.ai_instance = ai_instance
-        self.connexion = ai_instance.connexion
-        self.running = True
-        self.tick_counter = 0
-        self.last_food_tick = 0
-        self.socket_lock = threading.Lock() if not hasattr(self.connexion, 'socket_lock') else self.connexion.socket_lock
-        self.start_time = time.time()
-        self.ticks_per_second = 72 #value to change handly for the moment
+class Direction(Enum):
+    """"""
+    CENTER = 0
+    NORTH = 1
+    NORTH_WEST = 2
+    WEST = 3
+    SOUTH_WEST = 4
+    SOUTH = 5
+    SOUTH_EAST = 6
+    EAST = 7
+    NORTH_EAST = 8
+    UNKNOWN = 9
 
-    def run(self):
-        """Main thread execution loop"""
-        # print("Continuous monitor started")
-        while self.running:
-            try:
-                if not self.connexion.connected:
-                    # print("\n!!! CONNECTION LOST - TERMINATING AI !!!\n")
-                    import os
-                    os._exit(0)
-                current_time = time.time()
-                elapsed_seconds = current_time - self.start_time
-                new_tick = int(elapsed_seconds * self.ticks_per_second)
-                if new_tick > self.tick_counter:
-                    old_tick = self.tick_counter
-                    self.tick_counter = new_tick
-                    self.ai_instance.tick_counter = new_tick
-                    new_food_period = new_tick // 126
-                    old_food_period = old_tick // 126
-                    if new_food_period > old_food_period:
-                        self.consume_food()
-                self.check_for_messages()
-                time_per_tick = 1.0 / self.ticks_per_second
-                sleep_time = min(time_per_tick / 2, 0.05)
-                time.sleep(sleep_time)
-            except Exception as e:
-                # print(f"Error in monitor thread: {e}")
-                time.sleep(0.1)
-        # print("Continuous monitor stopped")
+class Timer:
+    """Simple timer for mesuring execution time"""
 
-    def consume_food(self):
-        """Consume food every 126 ticks"""
-        try:
-            food_count = 0
-            if hasattr(self.ai_instance, 'inventory'):
-                food_count = self.ai_instance.inventory.get('food', 0)
-            if food_count > 0:
-                if hasattr(self.ai_instance, 'inventory_lock'):
-                    with self.ai_instance.inventory_lock:
-                        self.ai_instance.inventory['food'] = max(0, self.ai_instance.inventory['food'] - 1)
-                else:
-                    self.ai_instance.inventory['food'] = max(0, self.ai_instance.inventory['food'] - 1)
-                new_count = self.ai_instance.inventory.get('food', 0)
-                print(f"FOOD CONSUMED! Tick {self.tick_counter}. Previous: {food_count}, New: {new_count}", flush=True)
+    def __init__(self) -> None:
+        self.start_time: float = time.time()
+        self.lap_time: float = self.start_time
+
+    def lap(self, reset: bool = True) -> float:
+        """Get time since last lap"""
+        current_time: float = time.time()
+        elasped: float = current_time - self.lap_time
+        if reset:
+            self.lap_time = current_time
+        return elasped
+
+    def total(self) -> float:
+        """Get time since timer creation"""
+        return time.time() - self.start_time
+
+class GameConstants:
+    """Constants from the Zappy specification"""
+
+    AI_HUNGER_CD: int = 126
+    DEFAULT_FREQUENCY:int = 100
+
+    RESOURCES: list[str] = [
+        "food",
+        "linemate",
+        "deraumere",
+        "sibur",
+        "mendiane",
+        "phiras",
+        "thystame"
+    ]
+
+    ELEVATION_REQUIREMENTS: dict[int, dict[str, int]] = {
+        1: {"players": 1, "linemate": 1, "deraumere": 0, "sibur" : 0, "mendiane": 0, "phiras": 0, "thystame": 0},
+        2: {"players": 2, "linemate": 1, "deraumere": 1, "sibur" : 1, "mendiane": 0, "phiras": 0, "thystame": 0},
+        3: {"players": 2, "linemate": 2, "deraumere": 0, "sibur" : 1, "mendiane": 0, "phiras": 2, "thystame": 0},
+        4: {"players": 4, "linemate": 1, "deraumere": 1, "sibur" : 2, "mendiane": 0, "phiras": 1, "thystame": 0},
+        5: {"players": 4, "linemate": 1, "deraumere": 2, "sibur" : 1, "mendiane": 3, "phiras": 0, "thystame": 0},
+        6: {"players": 6, "linemate": 1, "deraumere": 2, "sibur" : 3, "mendiane": 0, "phiras": 1, "thystame": 0},
+        7: {"players": 6, "linemate": 2, "deraumere": 2, "sibur" : 2, "mendiane": 2, "phiras": 2, "thystame": 1},
+    }
+
+    COMMAND_TIMES: dict[str, int] = {
+        "Forward": 7,
+        "Right": 7,
+        "Left": 7,
+        "Look": 7,
+        "Inventory": 1,
+        "Broadcast": 7,
+        "Connect_nbr": 0,
+        "Fork": 42,
+        "Eject": 7,
+        "Take": 7,
+        "Set": 7,
+        "Incantation": 300
+    }
+
+    class Orientation(Enum):
+        NORTH = 0
+        EAST = 1
+        SOUTH = 2
+        WEST = 3
+        UNKNOWN = 4
+
+class MessageParser:
+    """Utility class for parsing server messages"""
+
+    @staticmethod
+    def parse_vision(vision_string: str) -> list[list[str]]:
+        """Parse vision string into structured data"""
+        if not vision_string.startswith('[ player'):
+            raise Exception("Unexpected message after Look command")
+
+        vision_data: list[list[str]] = []
+        tiles: list[str] = vision_string.strip("[] ").split(",")
+        for tile_content in tiles:
+            tile_content = tile_content.strip()
+            if tile_content:
+                item: list[str] = tile_content.split()
+                vision_data.append(item)
             else:
-                print(f"No food to consume at tick {self.tick_counter}. Player may starve!")
-        except Exception as e:
-            print(f"Error consuming food: {e}")
+                vision_data.append([])
+        return vision_data
 
-    def decrypt_message(self, encrypted_message: str, name: str):
-                    """
-                    Decrypt a message that was encrypted with the encrypt_message method.
-                    Uses the reverse of the encryption algorithm.
-                    """
-                    if not name:
-                        return encrypted_message
-                    shift = sum(ord(c) for c in name) % 26
-                    decrypted: list[str] = []
-                    for char in encrypted_message:
-                        if char.isalpha():
-                            ascii_offset = ord('a') if char.islower() else ord('A')
-                            decrypted_char = chr((ord(char) - ascii_offset - shift) % 26 + ascii_offset)
-                            decrypted.append(decrypted_char)
-                        else:
-                            decrypted.append(char)
+    @staticmethod
+    def parse_inventory(inventory_string: str) -> dict[str, int]:
+        """Parse inventory string into structured data"""
+        if not inventory_string.startswith("[ food"):
+            raise Exception("Unexpected message after Inventory command")
+        inventory: dict[str, int] = {}
+        items: list[str] = inventory_string.strip("[] ").split(",")
 
-                    return ''.join(decrypted)
+        for resource in items:
+            name, count = resource.strip().split(" ", 1)
+            inventory[name.strip()] = int(count.strip())
 
-    def check_for_messages(self):
-        """Check for incoming messages without blocking"""
-        if not self.connexion.connected:
-            return
-        if hasattr(self.connexion, 'waiting_for_response') and self.connexion.waiting_for_response:
-            return
-        if not self.socket_lock.acquire(blocking=False):
-            return
-        try:
-            socket_copy = self.connexion.socket
-            if not socket_copy:
-                return
-            try:
-                was_blocking = socket_copy.getblocking()
-                socket_copy.setblocking(False)
-                try:
-                    data = socket_copy.recv(1024)
-                    if data:
-                        decoded_data = data.decode('ascii', errors='replace')
-                        # print(f"Monitor received raw data: {decoded_data}")
-                        decoded_data = self.decrypt_message(decoded_data, self.connexion.name)
-                        # print(f"Monitor decrypted data: {decoded_data}")
-                        self.process_received_data(decoded_data)
-                except (socket.error, BlockingIOError) as e:
-                    if "Resource temporarily unavailable" not in str(e) and "Errno 11" not in str(e):
-                        print(f"Socket recv error: {e}")
-                except Exception as e:
-                    print(f"Error receiving data: {e}")
-                finally:
-                    if was_blocking:
-                        socket_copy.setblocking(True)
-            except Exception as e:
-                print(f"Socket access error: {e}")
-        finally:
-            self.socket_lock.release()
+        return inventory
 
-    def process_received_data(self, data: str):
-        """Process incoming data from the server"""
-        if "dead" in data:
-            # print("DEATH DETECTED BY MONITOR: 'dead' found in received data")
-            self.handle_death()
-            return
-        self.connexion.buffer += data
-        lines = self.connexion.buffer.split('\n')
-        self.connexion.buffer = lines[-1]
-        for line in lines[:-1]:
-            if line.strip():
-                self.process_message(line.strip())
+    @staticmethod
+    def parse_broadcast(message: str) -> tuple[int, str]:
+        """Parse broadcast message into direction and message"""
+        if not message.startswith("message"):
+            raise Exception("Unexpected string")
+        parts: list[str] = message.split(',')
+        direction = int(parts[0].split()[1])
+        text = parts[1].strip().strip("\"")
+        return (direction, text)
 
-    def process_message(self, message: str):
-        """Process a complete message"""
-        # print(f"Monitor processing message: {message}")
-        if message == "dead":
-            # print("DEATH DETECTED BY MONITOR: direct 'dead' message")
-            self.handle_death()
-            return
-        if message.startswith("message"):
-            parts = message.split(' ', 2)
-            if len(parts) >= 3:
-                direction = parts[1]
-                content = parts[2]
-                self.handle_broadcast(direction, content)
+class AIUtils:
+    """Utility function for AI behavior"""
 
-    def handle_death(self):
-        """Handle death detection"""
-        print("PLAYER IS DEAD - SHUTTING DOWN")
-        self.running = False
-        if hasattr(self.ai_instance, 'running'):
-            self.ai_instance.running = False
-        if hasattr(self.ai_instance, 'is_dead'):
-            self.ai_instance.is_dead = True
-        try:
-            if self.connexion and self.connexion.socket:
-                self.connexion.socket.shutdown(socket.SHUT_RDWR)
-                self.connexion.socket.close()
-                self.connexion.connected = False
-                print("Socket closed due to death")
-        except Exception as e:
-            print(f"Error closing socket: {e}")
-        print("Terminating process due to player death")
-        import os, signal
-        os.kill(os.getpid(), signal.SIGTERM)
+    @staticmethod
+    def calculate_distance(pos1: tuple[int, int], pos2: tuple[int, int],
+                           world_width: int, world_height: int) -> int:
+        """
+        Calcualte shortest distance between two positions
+        (considering wrapping)
+        """
+        print("calculate_distance not yet implemented")
+        return 0
+
+    @staticmethod
+    def time_remaining(food_count: int,
+                       frequency: int = GameConstants.DEFAULT_FREQUENCY)-> float:
+        """Calculate remaining survival time based on food count"""
+        return (food_count * GameConstants.AI_HUNGER_CD) / frequency
+
+    @staticmethod
+    def is_elevation_possible(level: int, inventory: dict[str, int],
+                              nearby_players: int) -> bool:
+        """Check if elevation is possible with current resources"""
+        if level not in GameConstants.ELEVATION_REQUIREMENTS:
+            return False
+
+        requirements = GameConstants.ELEVATION_REQUIREMENTS[level]
+
+        if nearby_players < requirements["players"]:
+            return False
+        for resource, needed in requirements.items():
+            if resource != "players" and inventory[resource] < needed:
+                return False
+        return True

@@ -7,15 +7,15 @@
 
 import sys
 import argparse
-import asyncio
 import os
+import time
 
 # Add the parent directory to the path to allow relative imports
 if __name__ == "__main__":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from refactored.client import ZappyAi
+    from ai import ProcessManager
 else:
-    from .client import ZappyAi
+    from .generator import ProcessManager
 
 def validate_port(value: str) -> int:
     """Validate that the port number is within valid range (1024-65535)"""
@@ -44,24 +44,32 @@ def parse_argument() -> argparse.Namespace:
                         help="Show this help message and exit")
     return parser.parse_args()
 
-async def main(argc: int, argv: list[str]) -> int:
+def main() -> int:
+    process_manager = None
+
     try:
         args = parse_argument()
+        process_manager = ProcessManager()
 
-        ai = ZappyAi(args.hostname, args.port, args.name)
-        await ai.run()
+        process_manager.spawn_ai_process(
+            args.hostname, args.port, args.name
+        )
 
-        return 0
+        print("AI processes started. Press Ctrl+C to shutdown...")
+        while True:
+            time.sleep(0.1)
+
     except KeyboardInterrupt:
+        print("\nReceived KeyboardInterrupt, shutting down...")
+        if process_manager:
+            process_manager.shutdown_all()
         return 0
     except Exception as e:
         print(f"Error: {e}")
+        if process_manager:
+            process_manager.shutdown_all()
         return 84
 
 if __name__ == "__main__":
-    try:
-        exit_code: int = asyncio.run(main(len(sys.argv), sys.argv))
-    except KeyboardInterrupt:
-        print("\nAi shutting down")
-        sys.exit(0)
+    exit_code: int = main()
     sys.exit(exit_code)
