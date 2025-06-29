@@ -141,21 +141,65 @@ More details can be found in the [Subject](docs/B-YEP-400_zappy.pdf).
 - GCC compiler for C code
 - G++ compiler for C++
 - Standard C and C++ libraries
-- SFML library (recommended for GUI)
-- Make utility
+- OGRE library
+- Make & CMake utility
+- Git
 
 ### How to Install OGRE Library
 
 The graphical client uses the OGRE (Object-Oriented Graphics Rendering Engine) library. To install OGRE on Ubuntu/Debian-based systems:
 
 ```bash
+# Install dependencies
 sudo apt-get update
-sudo apt-get install libogre-1.12-dev
+sudo apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    libx11-dev \
+    libxaw7-dev \
+    libxrandr-dev \
+    libxt-dev \
+    libxxf86vm-dev \
+    libfreetype6-dev \
+    libfreeimage-dev \
+    libzzip-dev \
+    libois-dev \
+    libboost-all-dev \
+    libpugixml-dev \
+    libsdl2-dev
+
+# Go to home directory
+cd ~
+
+# Clone the repo
+git clone https://github.com/OGRECave/ogre.git
+
+# Go to the cloned repo
+cd ogre
+
+# Select the version v14.3.4
+git checkout v14.3.4
+
+# Create the build directory
+mkdir build && cd build
+
+# Compilation
+cmake .. -DOGRE_BUILD_SAMPLES2=ON -DOGRE_BUILD_TESTS=OFF
+make -j$(nproc)
+
+# Installation
+sudo make install
+
+# Fix library linking
+echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/ogre.conf
+sudo ldconfig
 ```
 
+_Tested on Ubuntu 24.04_
 For other distributions or more details, see the [OGRE official installation guide](https://ogrecave.github.io/ogre/api/latest/building-ogre.html).
-
-don't forget to instal wayland.
 
 ### Compilation
 
