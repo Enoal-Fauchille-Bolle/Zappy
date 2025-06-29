@@ -13,6 +13,7 @@
 #include <OGRE/Overlay/OgreOverlayManager.h>
 #include <OGRE/Overlay/OgreOverlaySystem.h>
 #include <OGRE/Overlay/OgreTextAreaOverlayElement.h>
+#include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
 #include <iostream>
 
 /**
@@ -89,6 +90,11 @@ void Scene::setupScene() {
       std::cerr << "Failed to create scene manager" << std::endl;
       return;
     }
+    Ogre::RTShader::ShaderGenerator *shaderGen =
+        Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+    if (shaderGen)
+      shaderGen->addSceneManager(mSceneManager);
+
     mSceneManager->setAmbientLight(Ogre::ColourValue(0.2f, 0.2f, 0.2f));
     if (mSceneManager) {
       try {
@@ -113,10 +119,14 @@ void Scene::setupOverlay() {
 }
 
 void Scene::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+  // Mark parameter as used to avoid warnings
   (void)evt;
+
+  // Update the tick rate display and resource counts
   mOverlay.updateTickRate();
   mOverlay.updateTeamText();
 
+  mOverlay.updateResourceCounts();
 }
 
 /**
@@ -234,6 +244,8 @@ void Scene::Update(float deltaTime, int tickRate) {
   if (mGameManager) {
     mGameManager->setTickRate(tickRate);
     mOverlay.updateTickRate();
+    mOverlay.updateResourceCounts();
+    mOverlay.updateTeams();
     mOverlay.updateTeamText();
   }
 }

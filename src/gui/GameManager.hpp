@@ -53,9 +53,25 @@ public:
 
   void update();
   void readResponse(const std::string &response);
-  std::pair<int, int> getMapSize() const;
+
+  int getResourceCount(ResourceType type) const;
+  std::pair<int, int> getMapSize() const { return {_mapWidth, _mapHeight}; }
+  TileDisplay *getTileAtPosition(int x, int y) const;
+  int getFoodCount() const;
+  int getLinemateCount() const;
+  int getDeraumereCount() const;
+  int getSiburCount() const;
+  int getMendianeCount() const;
+  int getPhirasCount() const;
+  int getThystameCount() const;
 
   void cleanup();
+
+  int getMapWidth() const { return _mapWidth; }
+  int getMapHeight() const { return _mapHeight; }
+  const std::unordered_set<std::string> &getTeamNames() const {
+    return _teamNames;
+  }
 
 private:
   Scene *_scene;
