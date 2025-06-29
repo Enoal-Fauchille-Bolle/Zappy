@@ -28,6 +28,7 @@ public:
                   Ogre::OverlaySystem *overlaySystem);
   void setGameManager(SimpleGameManager *gameManager);
   void updateTickRate();
+  void updateTeamText();
   void setStatusText(const std::string &text);
   void show();
   void hide();
@@ -37,6 +38,7 @@ private:
   Ogre::OverlayContainer *mPanel;
   Ogre::TextAreaOverlayElement *mStatusText;
   Ogre::TextAreaOverlayElement *mTickRateText;
+  Ogre::TextAreaOverlayElement *mTeamText;
   SimpleGameManager *mGameManager;
   static const float UPDATE_INTERVAL;
 };

@@ -440,6 +440,16 @@ void SimpleGameManager::positionPlayerOnTile(Player* player, int x, int y, bool 
 }
 
 /**
+ * @brief Get the map of players currently in the game.
+ *
+ * @return A map containing player IDs and their corresponding Player objects.
+ */
+PlayerMap SimpleGameManager::getPlayers() const
+{
+    return _players;
+}
+
+/**
  * @brief Position a resource on the specified tile with randomized offset.
  *
  * @param resource Pointer to the resource to position.
@@ -527,6 +537,16 @@ int SimpleGameManager::getTickRate() const
 void SimpleGameManager::addTeam(const std::string& teamName)
 {
     _teamNames.insert(teamName);
+}
+
+/**
+ * @brief Get the set of team names currently registered in the game manager.
+ *
+ * @return A set containing the names of all teams.
+ */
+std::unordered_set<std::string> SimpleGameManager::getTeams() const
+{
+    return _teamNames;
 }
 
 /**

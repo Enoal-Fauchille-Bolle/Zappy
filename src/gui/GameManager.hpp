@@ -35,6 +35,7 @@ public:
                     Orientation orientation);
   void updatePlayerPosition(int id, int x, int y, Orientation orientation);
   void removePlayer(int id);
+  PlayerMap getPlayers() const;
 
   void createEgg(int id, int parentId, int x, int y);
   void eggToPlayer(int eggId);
@@ -48,6 +49,7 @@ public:
   int getTickRate() const;
 
   void addTeam(const std::string &teamName);
+  std::unordered_set<std::string> getTeams() const;
 
   void update();
   void readResponse(const std::string &response);

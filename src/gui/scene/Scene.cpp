@@ -115,6 +115,7 @@ void Scene::setupOverlay() {
 void Scene::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   (void)evt;
   mOverlay.updateTickRate();
+  mOverlay.updateTeamText();
 
 }
 
@@ -233,6 +234,7 @@ void Scene::Update(float deltaTime, int tickRate) {
   if (mGameManager) {
     mGameManager->setTickRate(tickRate);
     mOverlay.updateTickRate();
+    mOverlay.updateTeamText();
   }
 }
 

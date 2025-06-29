@@ -71,7 +71,7 @@ void Overlay::initialize(Ogre::SceneManager *sceneManager,
 
       mPanel->setMetricsMode(Ogre::GMM_PIXELS);
       mPanel->setPosition(10, 10);
-      mPanel->setDimensions(300, 150);
+      mPanel->setDimensions(300, 120);
 
       std::cout << "Setting material for panel..." << std::endl;
       Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
@@ -97,7 +97,7 @@ void Overlay::initialize(Ogre::SceneManager *sceneManager,
         mStatusText->setCaption("Zappy Game Status");
         mStatusText->setCharHeight(16);
         mStatusText->setFontName("SdkTrays/Value");
-        mStatusText->setColour(Ogre::ColourValue::White);
+        mStatusText->setColour(Ogre::ColourValue::Black);
         mPanel->addChild(mStatusText);
         mTickRateText = static_cast<Ogre::TextAreaOverlayElement *>(
             overlayManager->createOverlayElement("TextArea", "TickRateText"));
@@ -109,6 +109,16 @@ void Overlay::initialize(Ogre::SceneManager *sceneManager,
         mTickRateText->setFontName("SdkTrays/Value");
         mTickRateText->setColour(Ogre::ColourValue::Green);
         mPanel->addChild(mTickRateText);
+        mTeamText = static_cast<Ogre::TextAreaOverlayElement *>(
+            overlayManager->createOverlayElement("TextArea", "TeamText"));
+        mTeamText->setMetricsMode(Ogre::GMM_PIXELS);
+        mTeamText->setPosition(20, 100);
+        mTeamText->setDimensions(260, 40);
+        mTeamText->setCaption("Team: ---");
+        mTeamText->setCharHeight(16);
+        mTeamText->setFontName("SdkTrays/Value");
+        mTeamText->setColour(Ogre::ColourValue::Black);
+        mPanel->addChild(mTeamText);
       } catch (const Ogre::Exception &e) {
         std::cerr << "Failed to create text areas: " << e.what() << std::endl;
       }
@@ -146,11 +156,34 @@ void Overlay::updateTickRate() {
         Ogre::ColourValue(0.0f, 1.0f, 0.0f)); // Green (normal)
   } else if (tickRate < 100) {
     mTickRateText->setColour(
-        Ogre::ColourValue(1.0f, 1.0f, 0.0f)); // Yellow (fast)
+        Ogre::ColourValue(1.0f, 0.5f, 0.0f)); // Orange (fast)
   } else {
     mTickRateText->setColour(
         Ogre::ColourValue(1.0f, 0.0f, 0.0f)); // Red (very fast)
   }
+}
+
+void Overlay::updateTeamText() {
+  if (!mGameManager) {
+    return;
+  }
+
+  std::unordered_set<std::string> teams = mGameManager->getTeams();
+  PlayerMap players = mGameManager->getPlayers();
+
+  std::stringstream ss;
+  ss << "Teams:\n";
+  for (const auto& team : teams) {
+    mPanel->setDimensions(300, 120 + teams.size() * 16);
+    int playerCount = 0;
+    for (const auto& playerPair : players) {
+      if (playerPair.second->getTeamName() == team) {
+        playerCount++;
+      }
+    }
+    ss << team << " - player alive: " << playerCount << "\n";
+  }
+  mTeamText->setCaption(ss.str());
 }
 
 void Overlay::setStatusText(const std::string &text) {
