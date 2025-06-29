@@ -6,6 +6,7 @@
 */
 
 #include "Scene.hpp"
+#include "../GameManager.hpp"
 #include "../network/NetworkManager.hpp"
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlayContainer.h>
@@ -22,10 +23,12 @@
  */
 Scene::Scene()
     : mSceneManager(nullptr), mCamera(nullptr), mRenderWindow(nullptr),
-      mAppContext(nullptr), mRightMouseDown(false), mMiddleMouseDown(false),
-      mLastMouseX(0), mLastMouseY(0), mInitialMouseX(0), mInitialMouseY(0),
-      mCenterX(0), mCenterY(0), mCursorGrabbed(false), mCameraSpeed(100.0f) {
-  for (int i = 0; i < 6; i++) {
+      mAppContext(nullptr), mGameManager(nullptr), mRightMouseDown(false),
+      mMiddleMouseDown(false), mLastMouseX(0), mLastMouseY(0),
+      mInitialMouseX(0), mInitialMouseY(0), mCenterX(0), mCenterY(0),
+      mCursorGrabbed(false), mCameraSpeed(100.0f) {
+  // Initialize key pressed array
+  for (int i = 0; i < 6; ++i) {
     mKeyPressed[i] = false;
   }
 }
@@ -55,8 +58,6 @@ void Scene::CreateScene(std::string name) {
  * @param appContext The Ogre application context for rendering
  */
 void Scene::Initialize(OgreBites::ApplicationContext *appContext) {
-  std::cout << "Scene::Initialize - Start" << std::endl;
-
   mAppContext = appContext;
   mRenderWindow = appContext->getRenderWindow();
   try {
@@ -100,90 +101,21 @@ void Scene::setupScene() {
   }
 }
 
+void Scene::setGameManager(SimpleGameManager *gameManager) {
+  std::cout << "Setting GameManager: " << (gameManager ? "valid" : "null")
+            << std::endl;
+  mGameManager = gameManager;
+  mOverlay.setGameManager(gameManager);
+}
+
 void Scene::setupOverlay() {
-  try {
-    Ogre::OverlaySystem *overlaySystem = mAppContext->getOverlaySystem();
-    if (!overlaySystem) {
-      std::cerr << "Error: Overlay system is null" << std::endl;
-      return;
-    }
-    if (mSceneManager) {
-      mSceneManager->addRenderQueueListener(overlaySystem);
-    } else {
-      std::cerr << "Error: Scene manager is null, cannot add overlay system"
-                << std::endl;
-      return;
-    }
-    std::cout << "Getting overlay manager..." << std::endl;
-    Ogre::OverlayManager *overlayManager =
-        Ogre::OverlayManager::getSingletonPtr();
-    if (!overlayManager) {
-      std::cerr << "Error: Failed to get overlay manager" << std::endl;
-      return;
-    }
-    std::cout << "Creating overlay container..." << std::endl;
-    try {
-      Ogre::Overlay *overlay = overlayManager->create("DebugOverlay");
-      if (!overlay) {
-        std::cerr << "Error: Failed to create overlay" << std::endl;
-        return;
-      }
-      overlay->setZOrder(500);
-      std::cout << "Creating panel..." << std::endl;
-      Ogre::OverlayContainer *panel = static_cast<Ogre::OverlayContainer *>(
-          overlayManager->createOverlayElement("Panel", "SimplePanel"));
+  mOverlay.initialize(mSceneManager, mAppContext->getOverlaySystem());
+}
 
-      if (!panel) {
-        std::cerr << "Error: Failed to create panel" << std::endl;
-        return;
-      }
-      panel->setMetricsMode(Ogre::GMM_PIXELS);
-      panel->setPosition(10, 10);
-      panel->setDimensions(300, 120);
+void Scene::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+  (void)evt;
+  mOverlay.updateTickRate();
 
-      std::cout << "Setting material for panel..." << std::endl;
-      Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
-          "SimpleOverlayMaterial",
-          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      if (material) {
-        material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
-        panel->setMaterialName(material->getName());
-      } else {
-        panel->setMaterialName("BaseWhite");
-        panel->setColour(Ogre::ColourValue(0.3f, 0.3f, 0.3f, 0.7f));
-      }
-      try {
-        std::cout << "Creating text area..." << std::endl;
-
-        Ogre::TextAreaOverlayElement *textArea =
-            static_cast<Ogre::TextAreaOverlayElement *>(
-                overlayManager->createOverlayElement("TextArea", "StatusText"));
-        textArea->setMetricsMode(Ogre::GMM_PIXELS);
-        textArea->setPosition(20, 20);
-        textArea->setDimensions(260, 80);
-        textArea->setCaption("Zappy Game Status");
-        textArea->setCharHeight(16);
-        textArea->setFontName("SdkTrays/Value");
-        textArea->setColour(Ogre::ColourValue::Black);
-        panel->addChild(textArea);
-        std::cout << "Text area created successfully" << std::endl;
-      } catch (const Ogre::Exception &e) {
-        std::cerr << "Failed to create text area: " << e.what() << std::endl;
-      }
-      overlay->add2D(panel);
-      std::cout << "Showing overlay..." << std::endl;
-      overlay->show();
-    } catch (const Ogre::Exception &e) {
-      std::cerr << "Ogre Exception during overlay creation: " << e.what()
-                << std::endl;
-    } catch (const std::exception &e) {
-      std::cerr << "Standard Exception during overlay creation: " << e.what()
-                << std::endl;
-    }
-    std::cout << "Overlay setup complete" << std::endl;
-  } catch (const std::exception &e) {
-    std::cerr << "Exception in setupOverlay: " << e.what() << std::endl;
-  }
 }
 
 /**
@@ -298,6 +230,10 @@ void Scene::Update(float deltaTime, int tickRate) {
   }
 
   mCamera->getParentSceneNode()->setPosition(cameraPos);
+  if (mGameManager) {
+    mGameManager->setTickRate(tickRate);
+    mOverlay.updateTickRate();
+  }
 }
 
 /**

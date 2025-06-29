@@ -205,6 +205,7 @@ SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(COMMANDS_GUI)ServerSetTimeCommand.cpp	\
 		$(COMMANDS_GUI)ServerUnknownCommand.cpp	\
 		$(COMMANDS_GUI)TeamNamesCommand.cpp	\
+		$(SRCDIR_GUI)overlay/Overlay.cpp	\
 
 # GUI Objects
 OBJ_GUI = $(SRC_GUI:.cpp=.o)
