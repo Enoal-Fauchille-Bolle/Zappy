@@ -8,6 +8,19 @@
 import time
 from enum import Enum
 
+class Direction(Enum):
+    """"""
+    CENTER = 0
+    NORTH = 1
+    NORTH_WEST = 2
+    WEST = 3
+    SOUTH_WEST = 4
+    SOUTH = 5
+    SOUTH_EAST = 6
+    EAST = 7
+    NORTH_EAST = 8
+    UNKNOWN = 9
+
 class Timer:
     """Simple timer for mesuring execution time"""
 
