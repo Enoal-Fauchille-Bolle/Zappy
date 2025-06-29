@@ -6,10 +6,10 @@
 */
 
 #include "GameManager.hpp"
-#include "network/NetworkManager.hpp"
 #include "command/CommandHandler.hpp"
-#include <iostream>
+#include "network/NetworkManager.hpp"
 #include <cstdlib>
+#include <iostream>
 #include <random>
 
 /**
@@ -17,26 +17,22 @@
  *
  * Initializes the game manager with null scene and zero map dimensions.
  */
-SimpleGameManager::SimpleGameManager() :
-        _scene(nullptr),
-        _commandHandler(new CommandHandler()),
-        _mapWidth(0),
-        _mapHeight(0)
-{
-}
+SimpleGameManager::SimpleGameManager()
+    : _scene(nullptr), _commandHandler(new CommandHandler()), _mapWidth(0),
+      _mapHeight(0)
+// _tickRate(1.0f) // Default tick rate
+{}
 
 /**
  * @brief Destructor for SimpleGameManager.
  *
  * Note: cleanup() should be called before this destructor to avoid segfaults
  */
-SimpleGameManager::~SimpleGameManager()
-{
-    if (!_players.empty() || !_eggs.empty() || !_tiles.empty()) {
-        std::cerr
-            << "Warning: Resources not properly cleaned up before destructor"
-            << std::endl;
-    }
+SimpleGameManager::~SimpleGameManager() {
+  if (!_players.empty() || !_eggs.empty() || !_tiles.empty()) {
+    std::cerr << "Warning: Resources not properly cleaned up before destructor"
+              << std::endl;
+  }
 }
 
 /**
@@ -44,10 +40,7 @@ SimpleGameManager::~SimpleGameManager()
  *
  * @param scene Pointer to the scene object that will be used for rendering.
  */
-void SimpleGameManager::initialize(Scenne* scene)
-{
-    _scene = scene;
-}
+void SimpleGameManager::initialize(Scene *scene) { _scene = scene; }
 
 /**
  * @brief Set the map size and initialize the tile grid.
@@ -55,15 +48,13 @@ void SimpleGameManager::initialize(Scenne* scene)
  * @param width The width of the map in tiles.
  * @param height The height of the map in tiles.
  */
-void SimpleGameManager::setMapSize(int width, int height)
-{
-    _mapWidth = width;
-    _mapHeight = height;
-    _tiles.resize(height);
-    for (auto& row : _tiles) {
-        row.resize(width, nullptr);
-    }
-    createGrid();
+void SimpleGameManager::setMapSize(int width, int height) {
+  _mapWidth = width;
+  _mapHeight = height;
+  _tiles.resize(_mapHeight);
+  for (auto &row : _tiles)
+    row.resize(_mapWidth, nullptr);
+  createGrid();
 }
 
 /**
@@ -75,27 +66,29 @@ void SimpleGameManager::setMapSize(int width, int height)
  * @param y Y coordinate on the map.
  * @param orientation Initial orientation of the player.
  */
-void SimpleGameManager::createPlayer(int id, const std::string& teamName, int x,
-                                     int y, Orientation orientation)
-{
-    if (_players.find(id) != _players.end()) {
-        std::cerr << "Player " << id << " already exists" << std::endl;
-        return;
-    }
-    if (!isValidPosition(x, y)) {
-        std::cerr << "Invalid position for player " << id << ": (" << x << ", "
-                  << y << ")" << std::endl;
-        return;
-    }
-    Player* player = new Player(id, teamName);
-    player->attachToScene(_scene->getSceneManager());
-    player->initialize();
-    player->setOrientation(orientation);
-    player->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE,
-                     Constants::PLAYER_SCALE);
-    _players[id] = player;
-    positionPlayerOnTile(player, x, y);
-    getTile(x, y)->getContentManager()->addPlayer(player);
+void SimpleGameManager::createPlayer(int id, const std::string &teamName, int x,
+                                     int y, Orientation orientation) {
+  if (_players.find(id) != _players.end()) {
+    std::cerr << "Player " << id << " already exists" << std::endl;
+    return;
+  }
+  if (!isValidPosition(x, y)) {
+    std::cerr << "Invalid position for player " << id << ": (" << x << ", " << y
+              << ")" << std::endl;
+    return;
+  }
+  Player *player = new Player(id, teamName);
+  player->attachToScene(_scene->getSceneManager());
+  player->initialize();
+  player->setScale(Constants::PLAYER_SCALE, Constants::PLAYER_SCALE,
+                   Constants::PLAYER_SCALE);
+  // Set initial position directly (no slide)
+  Position tilePos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
+  player->setPosition(Position(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z));
+  player->setOrientation(orientation, false);
+  // player->setMoveAndRotateSpeed(2.0f * _tickRate, 90.0f * _tickRate);
+  _players[id] = player;
+  getTile(x, y)->getContentManager()->addPlayer(player);
 }
 
 /**
@@ -107,32 +100,60 @@ void SimpleGameManager::createPlayer(int id, const std::string& teamName, int x,
  * @param orientation New orientation of the player.
  */
 void SimpleGameManager::updatePlayerPosition(int id, int x, int y,
-                                             Orientation orientation)
-{
-    auto it = _players.find(id);
-    if (it == _players.end()) {
-        std::cerr << "Player " << id << " not found" << std::endl;
-        return;
-    }
+                                             Orientation orientation) {
+  auto it = _players.find(id);
+  if (it == _players.end()) {
+    std::cerr << "Player " << id << " not found" << std::endl;
+    return;
+  }
 
-    if (!isValidPosition(x, y)) {
-        std::cerr << "Invalid position for player " << id << ": (" << x << ", "
-                  << y << ")" << std::endl;
-        return;
-    }
+  if (!isValidPosition(x, y)) {
+    std::cerr << "Invalid position for player " << id << ": (" << x << ", " << y
+              << ")" << std::endl;
+    return;
+  }
 
-    Player* player = it->second;
+  Player *player = it->second;
 
-    for (auto& row : _tiles) {
-        for (auto& tile : row) {
-            if (tile)
-                tile->getContentManager()->removePlayer(player);
+  int prevX = -1, prevY = -1;
+  for (int ty = 0; ty < _mapHeight; ++ty) {
+    for (int tx = 0; tx < _mapWidth; ++tx) {
+      auto *tile = _tiles[ty][tx];
+      if (tile) {
+        const auto &players = tile->getContentManager()->getPlayers();
+        if (std::find(players.begin(), players.end(), player) !=
+            players.end()) {
+          prevX = tx;
+          prevY = ty;
+          break;
         }
+      }
     }
+    if (prevX != -1)
+      break;
+  }
 
-    positionPlayerOnTile(player, x, y);
-    getTile(x, y)->getContentManager()->addPlayer(player);
-    player->setOrientation(orientation);
+  for (auto &row : _tiles) {
+    for (auto &tile : row) {
+      if (tile)
+        tile->getContentManager()->removePlayer(player);
+    }
+  }
+
+  // Detect wrap
+  bool animate = true;
+  if (prevX != -1 && prevY != -1) {
+    if ((prevX == 0 && x == _mapWidth - 1) ||
+        (prevX == _mapWidth - 1 && x == 0) ||
+        (prevY == 0 && y == _mapHeight - 1) ||
+        (prevY == _mapHeight - 1 && y == 0)) {
+      animate = false;
+    }
+  }
+
+  positionPlayerOnTile(player, x, y, animate);
+  getTile(x, y)->getContentManager()->addPlayer(player);
+  player->setOrientation(orientation);
 }
 
 /**
@@ -140,23 +161,22 @@ void SimpleGameManager::updatePlayerPosition(int id, int x, int y,
  *
  * @param id Identifier of the player to remove.
  */
-void SimpleGameManager::removePlayer(int id)
-{
-    auto it = _players.find(id);
-    if (it == _players.end())
-        return;
+void SimpleGameManager::removePlayer(int id) {
+  auto it = _players.find(id);
+  if (it == _players.end())
+    return;
 
-    Player* player = it->second;
+  Player *player = it->second;
 
-    for (auto& row : _tiles) {
-        for (auto& tile : row) {
-            if (tile)
-                tile->getContentManager()->removePlayer(player);
-        }
+  for (auto &row : _tiles) {
+    for (auto &tile : row) {
+      if (tile)
+        tile->getContentManager()->removePlayer(player);
     }
+  }
 
-    delete player;
-    _players.erase(it);
+  delete player;
+  _players.erase(it);
 }
 
 /**
@@ -167,31 +187,29 @@ void SimpleGameManager::removePlayer(int id)
  * @param x X coordinate on the map.
  * @param y Y coordinate on the map.
  */
-void SimpleGameManager::createEgg(int id, int parentId, int x, int y)
-{
-    if (_eggs.find(id) != _eggs.end()) {
-        std::cerr << "Egg " << id << " already exists" << std::endl;
-        return;
-    }
+void SimpleGameManager::createEgg(int id, int parentId, int x, int y) {
+  if (_eggs.find(id) != _eggs.end()) {
+    std::cerr << "Egg " << id << " already exists" << std::endl;
+    return;
+  }
 
-    if (!isValidPosition(x, y)) {
-        std::cerr << "Invalid position for egg " << id << ": (" << x << ", "
-                  << y << ")" << std::endl;
-        return;
-    }
+  if (!isValidPosition(x, y)) {
+    std::cerr << "Invalid position for egg " << id << ": (" << x << ", " << y
+              << ")" << std::endl;
+    return;
+  }
 
-    Egg* egg = new Egg(id, parentId);
-    egg->attachToScene(_scene->getSceneManager());
-    egg->initialize();
-    egg->setScale(Constants::EGG_SCALE, Constants::EGG_SCALE,
-                  Constants::EGG_SCALE);
+  Egg *egg = new Egg(id, parentId);
+  egg->attachToScene(_scene->getSceneManager());
+  egg->initialize();
+  egg->setScale(Constants::EGG_SCALE, Constants::EGG_SCALE,
+                Constants::EGG_SCALE);
 
-    Position tilePos =
-        Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
-    egg->setPosition(tilePos.x, Constants::EGG_HEIGHT, tilePos.z);
+  Position tilePos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
+  egg->setPosition(tilePos.x, Constants::EGG_HEIGHT, tilePos.z);
 
-    _eggs[id] = egg;
-    getTile(x, y)->getContentManager()->addEgg(egg);
+  _eggs[id] = egg;
+  getTile(x, y)->getContentManager()->addEgg(egg);
 }
 
 /**
@@ -199,13 +217,12 @@ void SimpleGameManager::createEgg(int id, int parentId, int x, int y)
  *
  * @param eggId Identifier of the egg to convert.
  */
-void SimpleGameManager::eggToPlayer(int eggId)
-{
-    auto it = _eggs.find(eggId);
-    if (it == _eggs.end()) {
-        std::cerr << "Egg " << eggId << " not found" << std::endl;
-        return;
-    }
+void SimpleGameManager::eggToPlayer(int eggId) {
+  auto it = _eggs.find(eggId);
+  if (it == _eggs.end()) {
+    std::cerr << "Egg " << eggId << " not found" << std::endl;
+    return;
+  }
 }
 
 /**
@@ -213,23 +230,22 @@ void SimpleGameManager::eggToPlayer(int eggId)
  *
  * @param id Identifier of the egg to remove.
  */
-void SimpleGameManager::removeEgg(int id)
-{
-    auto it = _eggs.find(id);
-    if (it == _eggs.end())
-        return;
+void SimpleGameManager::removeEgg(int id) {
+  auto it = _eggs.find(id);
+  if (it == _eggs.end())
+    return;
 
-    Egg* egg = it->second;
+  Egg *egg = it->second;
 
-    for (auto& row : _tiles) {
-        for (auto& tile : row) {
-            if (tile)
-                tile->getContentManager()->removeEgg(egg);
-        }
+  for (auto &row : _tiles) {
+    for (auto &tile : row) {
+      if (tile)
+        tile->getContentManager()->removeEgg(egg);
     }
+  }
 
-    delete egg;
-    _eggs.erase(it);
+  delete egg;
+  _eggs.erase(it);
 }
 
 /** * @brief update resources of the specified type from the given position.
@@ -240,22 +256,23 @@ void SimpleGameManager::removeEgg(int id)
  * @param quantity Number of resources have on tile.
  */
 
-void SimpleGameManager::updateResource(ResourceType type, int x, int y, int quantity)
-{
-    TileDisplay* tile = getTile(x, y);
-    if (!tile) {
-        std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
-        return;
-    }
+void SimpleGameManager::updateResource(ResourceType type, int x, int y,
+                                       int quantity) {
+  TileDisplay *tile = getTile(x, y);
+  if (!tile) {
+    std::cerr << "No tile afound at (" << x << ", " << y << ")" << std::endl;
+    return;
+  }
 
-    int currentResourceCount = tile->getContentManager()->getResourceQuantity(type);
+  int currentResourceCount =
+      tile->getContentManager()->getResourceQuantity(type);
 
-    if (currentResourceCount < quantity) {
-        createResource(type, x, y, quantity - currentResourceCount);
-    } else if (currentResourceCount > quantity) {
-        removeResource(type, x, y, currentResourceCount - quantity);
-    }
-    tile->getContentManager()->setResourceQuantity(type, quantity);
+  if (currentResourceCount < quantity) {
+    createResource(type, x, y, quantity - currentResourceCount);
+  } else if (currentResourceCount > quantity) {
+    removeResource(type, x, y, currentResourceCount - quantity);
+  }
+  tile->getContentManager()->setResourceQuantity(type, quantity);
 }
 
 /**
@@ -266,42 +283,50 @@ void SimpleGameManager::updateResource(ResourceType type, int x, int y, int quan
  * @param y Y coordinate on the map.
  * @param quantity Number of resources to create.
  */
-void SimpleGameManager::createResource(ResourceType type, int x, int y, int quantity) {
+void SimpleGameManager::createResource(ResourceType type, int x, int y,
+                                       int quantity) {
 
-    TileDisplay* tile = getTile(x, y);
-    if (!tile) {
-        std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
-        return;
+  TileDisplay *tile = getTile(x, y);
+  if (!tile) {
+    std::cerr << "No tile aafound at (" << x << ", " << y << ")" << std::endl;
+    return;
+  }
+
+  int index = tile->getContentManager()->getResources().size();
+
+  for (int i = 0; i < quantity; ++i) {
+    if (type == ResourceType::FOOD) {
+      Resources *resource = new Resources(
+          Utils::generateResourceId(type, x, y, index), "fish.mesh", type);
+      resource->attachToScene(_scene->getSceneManager());
+      resource->initialize();
+      resource->setScale(0.5f, 0.5f, 0.5f);
+      positionResourceOnTile(resource, x, y, index);
+      tile->getContentManager()->addResource(resource);
+    } else {
+      Resources *resource = new Resources(
+          Utils::generateResourceId(type, x, y, index), "knot.mesh", type);
+      resource->attachToScene(_scene->getSceneManager());
+      resource->initialize();
+      positionResourceOnTile(resource, x, y, index);
+      tile->getContentManager()->addResource(resource);
     }
-
-    int index = tile->getContentManager()->getResources().size();
-
-    for (int i = 0; i < quantity; ++i) {
-        if (type == ResourceType::FOOD) {
-            Resources* resource = new Resources(Utils::generateResourceId(type, x, y, index), "fish.mesh", type);
-            resource->attachToScene(_scene->getSceneManager());
-            resource->initialize();
-            resource->setScale(0.5f, 0.5f, 0.5f);
-            positionResourceOnTile(resource, x, y, index);
-            tile->getContentManager()->addResource(resource);
-        } else {
-            Resources* resource = new Resources(Utils::generateResourceId(type, x, y, index), "knot.mesh", type);
-            resource->attachToScene(_scene->getSceneManager());
-            resource->initialize();
-            positionResourceOnTile(resource, x, y, index);
-            tile->getContentManager()->addResource(resource);
-        }
-        index++;
-    }
+    index++;
+  }
 }
 
 /**
  * @brief Update the game state and handle time-based events.
  */
-void SimpleGameManager::update()
-{
-    std::string response = NetworkManager::receive(false);
-    readResponse(response);
+void SimpleGameManager::update() {
+  // Animate all players
+  float deltaTime = 1.0f / 60.0f; // Assume 60 FPS for now
+  for (auto &pair : _players) {
+    if (pair.second)
+      pair.second->update(deltaTime);
+  }
+  std::string response = NetworkManager::receive(false);
+  readResponse(response);
 }
 
 /**
@@ -309,38 +334,29 @@ void SimpleGameManager::update()
  *
  * @param response The response string from the server.
  */
-void SimpleGameManager::readResponse(const std::string& response)
-{
-    if (response.length() < 3) {
-        return;
-    }
-    std::string args{};
-    std::string command = response.substr(0, 3);
-    if (response.length() > 4)
-        args = response.substr(4);
-    _commandHandler->handleCommand(command, args, *this);
-}
-
-/*
- * @brief Get the current map size.
- *
- * @return A pair containing the width and height of the map.
- */
-std::pair<int, int> SimpleGameManager::getMapSize() const
-{
-    return std::make_pair(_mapWidth, _mapHeight);
+void SimpleGameManager::readResponse(const std::string &response) {
+  if (response.length() < 3) {
+    return;
+  }
+  std::string args{};
+  std::string command = response.substr(0, 3);
+  if (response.length() > 4)
+    args = response.substr(4);
+  _commandHandler->handleCommand(command, args, *this);
 }
 
 /**
  * @brief Create the complete grid of tiles for the map.
  */
-void SimpleGameManager::createGrid()
-{
-    for (int y = 0; y < _mapHeight; y++) {
-        for (int x = 0; x < _mapWidth; x++) {
-            createTile(x, y);
-        }
+void SimpleGameManager::createGrid() {
+  std::cout << "Creating grid of tiles for map size: " << _mapWidth << "x"
+            << _mapHeight << std::endl;
+  for (int y = 0; y < _mapHeight; y++) {
+    for (int x = 0; x < _mapWidth; x++) {
+      std::cout << "Creating tile at (" << x << ", " << y << ")" << std::endl;
+      createTile(x, y);
     }
+  }
 }
 
 /**
@@ -349,15 +365,15 @@ void SimpleGameManager::createGrid()
  * @param x X coordinate of the tile.
  * @param y Y coordinate of the tile.
  */
-void SimpleGameManager::createTile(int x, int y)
-{
-    TileDisplay* tile = new TileDisplay(x, y);
-    tile->setMapSize(_mapWidth, _mapHeight);
-    tile->attachToScene(_scene->getSceneManager());
-    tile->initialize();
-    Position pos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
-    tile->setPosition(pos);
-    _tiles[y][x] = tile;
+void SimpleGameManager::createTile(int x, int y) {
+  TileDisplay *tile = new TileDisplay(x, y);
+  tile->setMapSize(_mapWidth, _mapHeight);
+  tile->attachToScene(_scene->getSceneManager());
+  tile->initialize();
+  Position pos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
+  tile->setPosition(pos);
+  _tiles[y][x] = tile;
+  std::cout << "Tile created at (" << x << ", " << y << ")" << std::endl;
 }
 
 /**
@@ -367,11 +383,10 @@ void SimpleGameManager::createTile(int x, int y)
  * @param y Y coordinate of the tile.
  * @return Pointer to the tile, or nullptr if coordinates are invalid.
  */
-TileDisplay* SimpleGameManager::getTile(int x, int y)
-{
-    if (!isValidPosition(x, y))
-        return nullptr;
-    return _tiles[y][x];
+TileDisplay *SimpleGameManager::getTile(int x, int y) {
+  if (!isValidPosition(x, y))
+    return nullptr;
+  return _tiles[y][x];
 }
 
 /**
@@ -381,9 +396,8 @@ TileDisplay* SimpleGameManager::getTile(int x, int y)
  * @param y Y coordinate to check.
  * @return True if the position is valid, false otherwise.
  */
-bool SimpleGameManager::isValidPosition(int x, int y) const
-{
-    return x >= 0 && x < _mapWidth && y >= 0 && y < _mapHeight;
+bool SimpleGameManager::isValidPosition(int x, int y) const {
+  return x >= 0 && x < _mapWidth && y >= 0 && y < _mapHeight;
 }
 
 /**
@@ -393,11 +407,24 @@ bool SimpleGameManager::isValidPosition(int x, int y) const
  * @param x X coordinate of the target tile.
  * @param y Y coordinate of the target tile.
  */
-void SimpleGameManager::positionPlayerOnTile(Player* player, int x, int y)
+void SimpleGameManager::positionPlayerOnTile(Player *player, int x, int y,
+                                             bool animate) {
+  Position tilePos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
+  if (animate)
+    player->slideTo(Position(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z));
+  else
+    player->setPosition(
+        Position(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z));
+}
+
+/**
+ * @brief Get the map of players currently in the game.
+ *
+ * @return A map containing player IDs and their corresponding Player objects.
+ */
+PlayerMap SimpleGameManager::getPlayers() const
 {
-    Position tilePos =
-        Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
-    player->setPosition(tilePos.x, Constants::PLAYER_HEIGHT, tilePos.z);
+    return _players;
 }
 
 /**
@@ -408,18 +435,16 @@ void SimpleGameManager::positionPlayerOnTile(Player* player, int x, int y)
  * @param y Y coordinate of the target tile.
  * @param index Index for calculating unique position offset.
  */
-void SimpleGameManager::positionResourceOnTile(Resources* resource, int x,
-                                               int y, int index)
-{
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> dist(-0.25f, 0.25f);
-    Position tilePos =
-        Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
-    float randomX = dist(gen);
-    float randomZ = dist(gen);
-    Position offset = Utils::calculateResourceOffset(index, randomX, randomZ);
-    resource->setPosition(tilePos.x + offset.x, offset.y, tilePos.z + offset.z);
+void SimpleGameManager::positionResourceOnTile(Resources *resource, int x,
+                                               int y, int index) {
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  static std::uniform_real_distribution<float> dist(-0.25f, 0.25f);
+  Position tilePos = Utils::calculateTilePosition(x, y, _mapWidth, _mapHeight);
+  float randomX = dist(gen);
+  float randomZ = dist(gen);
+  Position offset = Utils::calculateResourceOffset(index, randomX, randomZ);
+  resource->setPosition(tilePos.x + offset.x, offset.y, tilePos.z + offset.z);
 }
 
 /**
@@ -430,31 +455,147 @@ void SimpleGameManager::positionResourceOnTile(Resources* resource, int x,
  * @param y Y coordinate of the tile.
  * @param quantity Number of resources to remove.
  */
-void SimpleGameManager::removeResource(ResourceType type, int x, int y, int quantity)
+void SimpleGameManager::removeResource(ResourceType type, int x, int y,
+                                       int quantity) {
+  TileDisplay *tile = getTile(x, y);
+  if (!tile) {
+    std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
+    return;
+  }
+
+  std::vector<Resources *> resourcesToRemove;
+  const auto &resources = tile->getContentManager()->getResources();
+
+  for (const auto &res : resources) {
+    if (res->getResourceType() == type) {
+      resourcesToRemove.push_back(res);
+      if (resourcesToRemove.size() >= static_cast<size_t>(quantity)) {
+        break;
+      }
+    }
+  }
+
+  int removedCount = 0;
+  for (auto *resource : resourcesToRemove) {
+    if (removedCount >= quantity)
+      break;
+    tile->getContentManager()->removeResource(resource);
+    delete resource;
+    removedCount++;
+  }
+}
+
+/**
+ * @brief Set the tick rate for the game manager.
+ *
+ * @param rate The new tick rate in milliseconds.
+ */
+void SimpleGameManager::setTickRate(int rate) { _tickRate = rate; }
+
+/**
+ * @brief Get the current tick rate of the game manager.
+ *
+ * @return The tick rate in milliseconds.
+ */
+int SimpleGameManager::getTickRate() const { return _tickRate; }
+
+/**
+ * @brief Add a team name to the game manager.
+ *
+ * @param teamName The name of the team to add.
+ */
+void SimpleGameManager::addTeam(const std::string &teamName) {
+  _teamNames.insert(teamName);
+}
+
+/**
+ * @brief Get the set of team names currently registered in the game manager.
+ *
+ * @return A set containing the names of all teams.
+ */
+std::unordered_set<std::string> SimpleGameManager::getTeams() const
 {
-    TileDisplay* tile = getTile(x, y);
-    if (!tile) {
-        std::cerr << "No tile found at (" << x << ", " << y << ")" << std::endl;
-        return;
-    }
+    return _teamNames;
+}
 
-    std::vector<Resources*> resourcesToRemove;
-    const auto& resources = tile->getContentManager()->getResources();
+/**
+ * @brief Clean up all game resources before shutdown
+ *
+ * This method must be called before Ogre shutdown to prevent segfaults
+ */
+void SimpleGameManager::cleanup() {
+  _players.clear();
+  _eggs.clear();
+  _tiles.clear();
+  if (_commandHandler) {
+    delete _commandHandler;
+    _commandHandler = nullptr;
+  }
+}
 
-    for (const auto& res : resources) {
-        if (res->getResourceType() == type) {
-            resourcesToRemove.push_back(res);
-            if (resourcesToRemove.size() >= static_cast<size_t>(quantity)) {
-                break;
-            }
+/**
+ * @brief Get the total count of resources of a specific type on the map.
+ *
+ * @param type The resource type to count
+ * @return Total count of the specified resource type
+ */
+int SimpleGameManager::getResourceCount(ResourceType type) const {
+  int count = 0;
+  for (int y = 0; y < _mapHeight; y++) {
+    for (int x = 0; x < _mapWidth; x++) {
+      if (y < (int)_tiles.size() && x < (int)_tiles[y].size() && _tiles[y][x]) {
+        const auto &resources =
+            _tiles[y][x]->getContentManager()->getResources();
+        for (const auto &resource : resources) {
+          if (resource->getResourceType() == type) {
+            count++;
+          }
         }
+      }
     }
+  }
 
-    int removedCount = 0;
-    for (auto* resource : resourcesToRemove) {
-        if (removedCount >= quantity) break;
-        tile->getContentManager()->removeResource(resource);
-        delete resource;
-        removedCount++;
-    }
+  return count;
+}
+
+
+/**
+ * @brief Get a tile at the specified position.
+ *
+ * @param x X coordinate of the tile.
+ * @param y Y coordinate of the tile.
+ * @return Pointer to the tile, or nullptr if coordinates are invalid.
+ */
+TileDisplay *SimpleGameManager::getTileAtPosition(int x, int y) const {
+  if (isValidPosition(x, y))
+    return _tiles[y][x];
+  return nullptr;
+}
+
+int SimpleGameManager::getFoodCount() const {
+  return getResourceCount(ResourceType::FOOD);
+}
+
+int SimpleGameManager::getLinemateCount() const {
+  return getResourceCount(ResourceType::LINEMATE);
+}
+
+int SimpleGameManager::getDeraumereCount() const {
+  return getResourceCount(ResourceType::DERAUMERE);
+}
+
+int SimpleGameManager::getSiburCount() const {
+  return getResourceCount(ResourceType::SIBUR);
+}
+
+int SimpleGameManager::getMendianeCount() const {
+  return getResourceCount(ResourceType::MENDIANE);
+}
+
+int SimpleGameManager::getPhirasCount() const {
+  return getResourceCount(ResourceType::PHIRAS);
+}
+
+int SimpleGameManager::getThystameCount() const {
+  return getResourceCount(ResourceType::THYSTAME);
 }

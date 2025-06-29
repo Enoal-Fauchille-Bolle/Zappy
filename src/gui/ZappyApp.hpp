@@ -10,7 +10,7 @@
 
 #include <OGRE/Ogre.h>
 #include <OGRE/Bites/OgreApplicationContext.h>
-#include "scenne/Scenne.hpp"
+#include "scene/Scene.hpp"
 
 class ZappyApp : public OgreBites::ApplicationContext {
     public:
@@ -18,10 +18,10 @@ class ZappyApp : public OgreBites::ApplicationContext {
         ~ZappyApp();
 
         void setup() override;
-        Scenne& getScene();
+        Scene& getScene();
 
     private:
-        Scenne _scene;
+        Scene _scene;
 };
 
 #endif /* !ZAPPYAPP_HPP_ */

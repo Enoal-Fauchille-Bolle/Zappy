@@ -192,11 +192,13 @@ POSIX	=	$(NET_GUI)POSIX_wrapper/
 COMMAND_GUI = $(SRCDIR_GUI)command/
 COMMANDS_GUI = $(COMMAND_GUI)commands/
 
+IMGUI_DIR = $(SRCDIR_GUI)imgui/
+
 # Sources
 SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(SRCDIR_GUI)Parsing.cpp	\
 		$(SRCDIR_GUI)ZappyApp.cpp	\
-		$(SRCDIR_GUI)scenne/Scenne.cpp \
+		$(SRCDIR_GUI)scene/Scene.cpp \
 		$(SRCDIR_GUI)GameManager.cpp \
 		$(SRCDIR_GUI)entity/Egg.cpp \
 		$(SRCDIR_GUI)entity/Entity.cpp \
@@ -236,27 +238,30 @@ SRC_GUI = $(SRCDIR_GUI)main.cpp	\
 		$(COMMANDS_GUI)ServerSetTimeCommand.cpp	\
 		$(COMMANDS_GUI)ServerUnknownCommand.cpp	\
 		$(COMMANDS_GUI)TeamNamesCommand.cpp	\
+		$(SRCDIR_GUI)overlay/Overlay.cpp	\
 
-# Objects
+# GUI Objects
 OBJ_GUI = $(SRC_GUI:.cpp=.o)
-$(SRCDIR_GUI)%.o: $(SRCDIR_GUI)%.cpp
-	$(CC_GUI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_GUI)
 
 # OGRE specific flags
 OGRE_INCLUDE = -I/usr/local/include/OGRE -I/usr/local/include/OGRE/Bites 	\
 -I/usr/local/include/OGRE/RTShaderSystem
-OGRE_LIBS = -L/usr/local/lib -lOgreMain -lOgreBites -lOgreRTShaderSystem
+OGRE_LIBS = -L/usr/local/lib -lOgreMain -lOgreBites -lOgreRTShaderSystem \
+-lOgreOverlay
 
 # Compilation Flags
-CFLAGS_GUI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -g \
-			-std=c++17 $(OGRE_INCLUDE)
+CFLAGS_GUI += $(ERROR) -I$(INCLUDES) -I$(SRC_INCLUDE) -I$(SRCDIR_GUI)imgui	\
+	-I$(SRCDIR_GUI)imgui/backends -g -std=c++17 $(OGRE_INCLUDE)
 
 # Pre Compilation
 CC_GUI := g++
 
-# Rule
-zappy_gui: $(OBJ_GUI)
-	$(CC_GUI) -o $(NAME_GUI) $(OBJ_GUI) $(CFLAGS_GUI) $(OGRE_LIBS)
+# GUI executable
+$(NAME_GUI): $(OBJ_GUI)
+	$(CC_GUI) -o $(NAME_GUI) $(OBJ_GUI) $(OGRE_LIBS)
+
+$(OBJ_GUI): %.o: %.cpp
+	$(CC_GUI) -c $< -o $@ -MMD -MF $(@:.o=.d) -MT $@ $(CFLAGS_GUI)
 
 ##################################### AI #####################################
 

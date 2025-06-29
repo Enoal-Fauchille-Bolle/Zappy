@@ -46,6 +46,7 @@ Resources::~Resources()
 void Resources::setResourceType(ResourceType type)
 {
     _type = type;
+    applyResourceColor();
 }
 
 /**
@@ -53,27 +54,30 @@ void Resources::setResourceType(ResourceType type)
  */
 void Resources::applyResourceColor()
 {
+    if (!getOgreEntity()) {
+        return;
+    }
     switch (_type) {
         case ResourceType::FOOD:
-            this->setColor(Color(1.0f, 0.5f, 0.0f, 1.0f));
+            this->setColor(Color(1.0f, 0.5f, 0.0f, 1.0f)); // Pure Orange
             break;
         case ResourceType::LINEMATE:
-            this->setColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
+            this->setColor(Color(0.3f, 0.3f, 0.3f, 1.0f)); // Pure Gray
             break;
         case ResourceType::DERAUMERE:
-            this->setColor(Color(1.0f, 0.2f, 0.2f, 1.0f));
+            this->setColor(Color(0.0f, 1.0f, 0.0f, 1.0f)); // Pure Green
             break;
         case ResourceType::SIBUR:
-            this->setColor(Color(0.2f, 0.8f, 0.2f, 1.0f));
+            this->setColor(Color(1.0f, 0.0f, 0.0f, 1.0f)); // Pure Red
             break;
         case ResourceType::MENDIANE:
-            this->setColor(Color(0.2f, 0.2f, 0.8f, 1.0f));
+            this->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f)); // Pure White
             break;
         case ResourceType::PHIRAS:
-            this->setColor(Color(1.0f, 1.0f, 0.2f, 1.0f));
+            this->setColor(Color(0.0f, 0.0f, 1.0f, 1.0f)); // Pure Blue
             break;
         case ResourceType::THYSTAME:
-            this->setColor(Color(1.0f, 0.2f, 1.0f, 1.0f));
+            this->setColor(Color(1.0f, 0.0f, 1.0f, 1.0f)); // Pure Magenta
             break;
     }
 }
