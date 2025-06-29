@@ -5,8 +5,8 @@
 ## vision
 ##
 
-from typing import Optional, TypeAlias
-from .utils import GameConstants, MessageParser
+from typing import Optional, TypeAlias, Any
+from ai import GameConstants, MessageParser
 
 Tile: TypeAlias = list[str]
 
@@ -181,7 +181,7 @@ class PlayerVision:
             return self.vision_data[tile_index]
         raise IndexError("Index out of range")
 
-    def get_vision_summary(self):
+    def get_vision_summary(self) -> dict[str, Any]:
         """Get a summary of the current vision"""
         resource_counts = self.resource_counts
         return {

@@ -258,7 +258,7 @@ zappy_gui: $(OBJ_GUI)
 NAME_AI = zappy_ai
 
 # Folder name
-SRCDIR_AI = ${SRCDIR}ai/refactored/
+SRCDIR_AI = ${SRCDIR}ai/
 
 # Headers folder
 INCLUDES_AI = ${INCLUDES}ai/

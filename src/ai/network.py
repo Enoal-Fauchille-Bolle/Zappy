@@ -7,7 +7,8 @@
 
 import asyncio
 from typing import Optional
-from asyncio import StreamReader, StreamWriter
+from sys import stderr
+from asyncio import StreamReader, StreamWriter, Queue, Task
 
 class NetworkManager:
     """
@@ -21,7 +22,12 @@ class NetworkManager:
         self.reader: Optional[StreamReader] = None
         self.writer: Optional[StreamWriter] = None
         self._connected: bool = False
-        self._receive_buffer: str = ""
+
+        self._incoming: Queue[str] = asyncio.Queue(10)
+        self._outgoing: Queue[str] = asyncio.Queue(10)
+
+        self._reader_task: Optional[Task[None]] = None
+        self._writer_task: Optional[Task[None]] = None
 
     async def connect(self) -> None:
         """Connect to the Zappy server"""
@@ -32,6 +38,9 @@ class NetworkManager:
             )
             self._connected = True
 
+            self._reader_task = asyncio.create_task(self._background_reader())
+            self._writer_task = asyncio.create_task(self._background_writer())
+
         except Exception as e:
             raise ConnectionError(
                 f"Failed to connect to {self.hostname}:{self.port}: {e}"
@@ -39,92 +48,137 @@ class NetworkManager:
 
     async def disconnect(self) -> None:
         """Disconnect from the Zappy server"""
+        self._connected = False
+
+        if self._reader_task:
+            self._reader_task.cancel()
+            try:
+                await self._reader_task
+            except asyncio.CancelledError:
+                pass
+
+        if self._writer_task:
+            self._writer_task.cancel()
+            try:
+                await self._writer_task
+            except asyncio.CancelledError:
+                pass
+
         if self.writer:
             self.writer.close()
             await self.writer.wait_closed()
-        self._connected = False
+
         self.reader = None
+        self._reader_task = None
         self.writer = None
+        self._writer_task = None
 
-    async def send(self, message: str):
-        """Send a message to the server"""
-        if not self._connected or not self.writer:
-            raise ConnectionError(
-                "Not connected to the server"
-            )
+    async def _background_reader(self) -> None:
+        """Background task that continuously reads from the socket"""
+        buffer = ""
 
-        if not message.endswith('\n'):
-            message += '\n'
+        while self._connected:
+            try:
+                if not self.reader:
+                    break
 
-        self.writer.write(message.encode("ascii"))
-        await self.writer.drain()
-        return True
+                data = await self.reader.read(4096)
 
-    async def receive(self, timeout: Optional[float] = None) -> Optional[str]:
+                if not data:
+                    self._connected = False
+                    break
+
+                buffer += data.decode("ascii")
+
+                while '\n' in buffer:
+                    line, buffer = buffer.split("\n", 1)
+                    if line.strip():
+                        await self._incoming.put(line.strip())
+            except asyncio.CancelledError:
+                print("Reader task cancelled")
+                break
+            except Exception as e:
+                print(f"Error in background reader: {e}", file=stderr)
+                self._connected = False
+                break
+
+    async def _background_writer(self) -> None:
+        """Background task that continuously writes to the socket"""
+        while self._connected:
+            try:
+                message: str = await self._outgoing.get()
+
+                if not self.writer:
+                    break
+
+                if not message.endswith("\n"):
+                    message += '\n'
+
+                self.writer.write(message.encode("ascii"))
+                await self.writer.drain()
+            except asyncio.CancelledError:
+                print("Writer task cancelled")
+                break
+            except Exception as e:
+                print(f"Error in background writer: {e}", file=stderr)
+                self._connected = False
+                break
+
+    def send(self, message: str) -> bool:
+        """Queue a message to be sent"""
+        if not self._connected:
+            raise ConnectionError("Not connected to the server")
+
+        try:
+            self._outgoing.put_nowait(message)
+            return True
+        except asyncio.QueueFull:
+            print("Send failed: message queue is full")
+            return False
+        except asyncio.QueueShutDown:
+            print("The send queue was shut down", file=stderr)
+            self._connected = False
+            return False
+
+    async def receive(self, blocking: bool = True) -> Optional[str]:
         """Receive a single message from the server"""
-        if not self._connected or not self.reader:
-            if timeout is None:
+        if not self._connected:
+            if blocking:
                 raise ConnectionError(
                     "Not connected to the server"
                     )
+            print("Not connected to the server")
             return None
 
-        if '\n' in self._receive_buffer:
-            line, self._receive_buffer = self._receive_buffer.split("\n", 1)
-            return line.strip()
-
         try:
-            if timeout is not None:
-                data = await asyncio.wait_for(
-                    self.reader.read(4096),
-                    timeout=timeout
-                )
+            if blocking:
+                return await self._incoming.get()
             else:
-                data = await self.reader.read(4096)
+                return self._incoming.get_nowait()
+        except asyncio.QueueEmpty:
+            return None
+        except asyncio.QueueShutDown:
+            self._connected = False
+            if blocking:
+                raise ConnectionError(
+                    "There is no more message to read " \
+                    "(the receive queue was shut down)"
+                )
+            print("There is no more message to read " \
+                  "(the receive queue was shut down)", file=stderr)
+            return None
 
-            if not data:
-                self._connected = False
-                if timeout is None:
-                    raise ConnectionError("Connection closed by the server")
-                return None
-            self._receive_buffer += data.decode("ascii")
-
-            if '\n' in self._receive_buffer:
-                line, self._receive_buffer = self._receive_buffer.split("\n", 1)
-                return line.strip()
-
-            if timeout is None:
-                return await self.receive(None)
-        except asyncio.TimeoutError:
-            pass
-        return None
-
-    async def receive_all(self) -> list[str]:
+    def receive_all(self) -> list[str]:
         """Receive all pending messages (do not block)"""
         messages: list[str] = []
 
-        while '\n' in self._receive_buffer:
-            line, self._receive_buffer = self._receive_buffer.split("\n", 1)
-            if line.strip():
-                messages.append(line.strip())
-
-        if not self._connected or not self.reader:
-            return messages
-        try:
-            data = await asyncio.wait_for(self.reader.read(4096), 0.001)
-            if not data:
-                self._connected = False
-                return messages
-            self._receive_buffer += data.decode("ascii")
-            while '\n' in self._receive_buffer:
-                line, self._receive_buffer = self._receive_buffer.split("\n", 1)
-                if line.strip():
-                    messages.append(line.strip())
-        except asyncio.TimeoutError:
-            pass
+        while not self._incoming.empty():
+            messages.append(self._incoming.get_nowait())
         return messages
 
+    @property
     def is_connected(self) -> bool:
         """Check if the connection to the server is present"""
-        return self._connected and  \
-            self.writer is not None and not self.writer.is_closing()
+        return (self._connected and
+                self.writer is not None and
+                not self.writer.is_closing())

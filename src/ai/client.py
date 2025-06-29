@@ -5,15 +5,16 @@
 ## client
 ##
 
-from typing import Optional, cast
+from typing import Optional, Any, cast
 from enum import Enum
 import asyncio
+import random
 from sys import stderr
 from collections import deque
 from .network import NetworkManager
-from .utils import Timer, AIUtils, MessageParser, GameConstants
+from .generator import ProcessManager
+from .utils import AIUtils, MessageParser, GameConstants
 from .vision import PlayerVision, TilePos
-import random
 
 class ZappyAi:
     "Main AI client class that manage the game logic"
@@ -33,13 +34,12 @@ class ZappyAi:
 
         self.connexion = NetworkManager(hostname, port)
         self.vision = PlayerVision()
-        self.clock = Timer()
+        self.process_manager = ProcessManager()
 
         self.running: bool = False
-        self.connected: bool = False
+        self.map_size: tuple[int, int] = (0, 0)
         self.pending_response: deque[str] = deque(maxlen=10)
 
-        self.player_id: Optional[int] = None
         self.level: int = 1
         self.inventory: dict[str, int] = {
             "food": 10,
@@ -55,6 +55,7 @@ class ZappyAi:
         self.planned_action: int = 0
         self.look_cooldown: int = 0
         self.inventory_cooldown: int = 0
+        self.exploration_cooldown: int = 0
 
         self.exploration_steps: int = 0
         self.max_steps: int = 5
@@ -75,7 +76,8 @@ class ZappyAi:
         welcome_msg= cast(str, await self.connexion.receive())
         if welcome_msg != "WELCOME":
             raise Exception(f"Expected WELCOME, got: {welcome_msg}")
-        await self.connexion.send(self.team_name)
+        if not self.connexion.send(self.team_name):
+            raise Exception
 
         open_slot_remaining_str = cast(str, await self.connexion.receive())
         if open_slot_remaining_str == "ko":
@@ -86,103 +88,82 @@ class ZappyAi:
             world_size: list[str] = world_size_str.split()
             self.map_size: tuple[int, int] = (int(world_size[0]), int(world_size[1]))
             if open_slots != 0:
-                asyncio.create_task(self._spawn_new_ai())
+                self.process_manager.spawn_ai_process(
+                    self.hostname, self.port, self.team_name
+                )
         except Exception as e:
             raise Exception(f"Welcoming was not respected: {e}")
         print("Ai is now connected !")
-        self.connected = True
-
-    async def _spawn_new_ai(self) -> None:
-        """Spawn a new AI instance"""
-        try:
-            new_ai = ZappyAi(self.hostname, self.port, self.team_name)
-            await new_ai.run()
-        except Exception as e:
-            print(f"Error: {e}", file=stderr)
 
     async def cleanup(self) -> None:
-        """Close Connection and stop the AI"""
-        await self.connexion.disconnect()
-        self.connected = False
+        """Close Connection and stop the AI(s)"""
         self.running = False
+        await self.connexion.disconnect()
+        self.process_manager.shutdown_all()
 
     async def run(self) -> None:
         """Main Ai execution loop"""
-        print(f"AI {self.player_id} starting in team {self.team_name}")
+        print(f"AI starting in team {self.team_name}")
         try:
-            if not self.connected:
+            if not self.connexion.is_connected:
                 await self.connect_to_server()
-            self.running = True
 
-            while self.running:
-                await self._game_loop()
-                await asyncio.sleep(1/120)
+            self.running = True
+            await self._game_loop()
 
         except Exception as e:
             print(f"There was an error in main loop: {e}", file=stderr)
         finally:
             await self.cleanup()
 
-    async def send_command(self, command: str) -> bool:
-        """Send a command to the server"""
-        if len(self.pending_response) >= 10:
-            print("Command queue full, skipping command", file=stderr)
-            return False
-
-        await self.connexion.send(command)
-        self.pending_response.append(command)
-        return True
-
     async def _game_loop(self) -> None:
         """Single iteration of the AI execution loop"""
-        await self._handle_incoming_messages()
-        # if self.clock.lap(False) > 1:
-        #     self.clock.lap()
-        #     self._update_cds()
-        self._update_action_state()
+        message_handler_task =  \
+            asyncio.create_task(self._message_handler_loop())
+        action_planner_task =  \
+            asyncio.create_task(self._action_planner_loop())
 
-        if len(self.pending_response) < 10:
-            if "Look" in self.pending_response:
-                return
-            next_action: Optional[str] = self._plan_next_action()
-            if next_action:
-                print(f"Next action: {next_action}")
-                await self.send_command(next_action)
+        try:
+            await asyncio.gather(
+                message_handler_task,
+                action_planner_task,
+                return_exceptions=True
+            )
+        except Exception as e:
+            print(f"Error in main game loop {e}", file=stderr)
+        finally:
+            message_handler_task.cancel()
+            action_planner_task.cancel()
 
-    def _update_cds(self) -> None:
-        """Update all cooldown timers"""
-        self.look_cooldown = max(0, self.look_cooldown - 1)
-        self.inventory_cooldown = max(0, self.inventory_cooldown - 1)
-        self.lay_cooldown = max(0, self.lay_cooldown - 1)
+    async def _message_handler_loop(self) -> None:
+        """Handle incoming messages"""
+        while self.running:
+            messages = self.connexion.receive_all()
+            if messages:
+                print(f"Received: {messages}")
+            for message in messages:
+                self._process_message(message)
+            # Small sleep to yield control
+            await asyncio.sleep(0.1)
 
-    def _update_action_state(self) -> None:
-        """Update the current state based on resources"""
-        food_count: int = self.inventory["food"]
+    async def _action_planner_loop(self) -> None:
+        """Plan and execute actions"""
+        while self.running:
+            self._update_action_state()
 
-        # self.state = self.ActionState.SURVIVAL
-        if food_count <= self.survival_threshold:
-            self.state = self.ActionState.SURVIVAL
-            return
-        elif food_count >= self.reproduction_threshold:
-            self.state = self.ActionState.REPRODUCTION
-            return
-        elif food_count >= self.resource_threshold:
-            self.state = self.ActionState.RESOURCE_GATHERING
-            return
-        elif random.random() <= 0.3:
-            self.state = self.ActionState.EXPLORATION
-        else:
-            self.state = self.ActionState.SURVIVAL
+            if len(self.pending_response) < 10:
+                if "Look" in self.pending_response:
+                    return
+                next_action: Optional[str] = self._plan_next_action()
+                if next_action:
+                    print(f"Next action: {next_action}")
+                    if self.connexion.send(next_action):
+                        self.pending_response.append(next_action)
+                    else:
+                        print("Failed to execute action", file=stderr)
 
-    async def _handle_incoming_messages(self) -> None:
-        """Check and process all incoming messages from server"""
-        messages: list[str] = await self.connexion.receive_all()
-        if messages:
-            print(f"Received: {messages}")
-
-        for message in messages:
-            self._process_message(message)
-            self._update_cds()
+            # Small sleep to yield control
+            await asyncio.sleep(0.1)
 
     def _process_message(self, message: str) -> None:
         """Process a single message from the server"""
@@ -195,13 +176,12 @@ class ZappyAi:
         elif message.startswith("eject"):
             self._handle_eject(message)
         elif self.pending_response:
+            self._update_cds()
             command: str = self.pending_response.popleft()
             if command == "Look":
                 self.vision.update_vison(message)
-                # self.look_cooldown = 0
             elif command == "Inventory":
                 self.inventory = MessageParser.parse_inventory(message)
-                # self.inventory_cooldown = 0
             else:
                 self._handle_basic(message, command)
         else:
@@ -222,7 +202,9 @@ class ZappyAi:
             if command == "Fork":
                 self.has_layed = True
                 self.lay_cooldown = 100
-                asyncio.create_task(self._spawn_new_ai())
+                self.process_manager.spawn_ai_process(
+                    self.hostname, self.port, self.team_name
+                )
             elif command in ["Forward", "Right", "Left"]:
                 self.exploration_steps += 1
             print(f"Command '{command}' executed successfully")
@@ -234,6 +216,30 @@ class ZappyAi:
                 self.current_plan.insert(0, "Inventory")
                 self.inventory_cooldown = 8
             print(f"Command '{command}' failed")
+
+    def _update_cds(self) -> None:
+        """Update all cooldown timers"""
+        self.look_cooldown = max(0, self.look_cooldown - 1)
+        self.inventory_cooldown = max(0, self.inventory_cooldown - 1)
+        self.lay_cooldown = max(0, self.lay_cooldown - 1)
+        self.exploration_cooldown = max(0, self.exploration_cooldown - 1)
+
+    def _update_action_state(self) -> None:
+        """Update the current state based on resources"""
+        food_count: int = self.inventory["food"]
+
+        # self.state = self.ActionState.SURVIVAL
+        if food_count <= self.survival_threshold:
+            self.state = self.ActionState.SURVIVAL
+            return
+        elif food_count >= self.reproduction_threshold and not self.has_layed:
+            self.state = self.ActionState.REPRODUCTION
+            return
+        elif food_count >= self.resource_threshold:
+            self.state = self.ActionState.RESOURCE_GATHERING
+            return
+        else:
+            self.state = self.ActionState.SURVIVAL
 
     def _plan_next_action(self) -> Optional[str]:
         """Plan the next action to do"""
@@ -260,7 +266,7 @@ class ZappyAi:
             return None
 
 
-    def _plan_survival(self) -> str:
+    def _plan_survival(self) -> Optional[str]:
         """Plan actions focused on survival (finding food)"""
         food_pos = self.vision.find_nearest_resource("food")
 
@@ -284,7 +290,7 @@ class ZappyAi:
         """Plan actions needed for reproduction"""
         return "Fork"
 
-    def _plan_resource_gathering(self) -> str:
+    def _plan_resource_gathering(self) -> Optional[str]:
         """Plan actions to gather resources needed for elevation"""
         requirement = GameConstants.ELEVATION_REQUIREMENTS[self.level]
 
@@ -307,8 +313,11 @@ class ZappyAi:
                         return f"Take {resource_name}"
         return self._plan_exploration()
 
-    def _plan_exploration(self) -> str:
+    def _plan_exploration(self) -> Optional[str]:
         """Plan exloration actions to discover new areas"""
+        if self.exploration_cooldown > 0:
+            return None
+        self.exploration_cooldown = 1
         if self.exploration_steps >= self.max_steps:
             self.exploration_steps = 0
             self.max_steps = random.randint(2, 5)
@@ -340,15 +349,15 @@ class ZappyAi:
     def survival_status(self) -> str:
         """Get current survival status"""
         food_time = AIUtils.time_remaining(self.inventory["food"])
-        return f"food: {self.inventory["food"]}, Time left: {food_time}s, " \
+        return f"food: {self.inventory["food"]}, Time left: {food_time:.1f}s, " \
             f"State: {self.state.name}"
 
-    def get_info(self):
+    def get_info(self) -> dict[str, Any]:
         """Get debug information about the AI state"""
         return {
             "level": self.level,
             "has layed": self.has_layed,
             "state": self.survival_status,
-            "pending_commands": self.pending_response,
-            "current_plan": self.current_plan
+            "pending_commands": list(self.pending_response),
+            "current_plan": self.current_plan.copy()
         }
