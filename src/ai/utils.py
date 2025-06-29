@@ -94,7 +94,7 @@ class MessageParser:
     @staticmethod
     def parse_vision(vision_string: str) -> list[list[str]]:
         """Parse vision string into structured data"""
-        if not vision_string.startswith('[ player'):
+        if not vision_string.startswith('['):
             raise Exception("Unexpected message after Look command")
 
         vision_data: list[list[str]] = []
@@ -111,7 +111,7 @@ class MessageParser:
     @staticmethod
     def parse_inventory(inventory_string: str) -> dict[str, int]:
         """Parse inventory string into structured data"""
-        if not inventory_string.startswith("[ food"):
+        if not inventory_string.startswith("["):
             raise Exception("Unexpected message after Inventory command")
         inventory: dict[str, int] = {}
         items: list[str] = inventory_string.strip("[] ").split(",")
