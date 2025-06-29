@@ -55,7 +55,7 @@ def main() -> int:
             args.hostname, args.port, args.name
         )
 
-        print("AI process started. Press Ctrl+C to shutdown...")
+        print("AI processes started. Press Ctrl+C to shutdown...")
         while True:
             time.sleep(0.1)
 

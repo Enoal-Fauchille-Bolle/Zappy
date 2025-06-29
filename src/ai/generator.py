@@ -6,9 +6,7 @@
 ##
 
 import multiprocessing as mp
-import signal
 import sys
-from typing import Any
 from dataclasses import dataclass
 
 @dataclass
@@ -22,17 +20,20 @@ def run_ai_in_process(hostname: str, port: int, team_name: str) -> None:
     """
     Entry point for Ai processes.
     """
+    ai = None
     try:
-        from ai import ZappyAi
+        from .client import ZappyAi
         import asyncio
 
         ai = ZappyAi(hostname, port, team_name)
         asyncio.run(ai.run())
     except KeyboardInterrupt:
-        print("\nAI shutting down")
+        print(f"AI process {mp.current_process().pid} shutting down")
+        if ai is not None:
+            ai.process_manager.shutdown_all()
         sys.exit(0)
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        print(f"Error in Ai process {mp.current_process().pid}: {e}", file=sys.stderr)
         sys.exit(84)
 
 class ProcessManager:
@@ -44,14 +45,6 @@ class ProcessManager:
 
     def __init__(self) -> None:
         self._processes: dict[int, AIProcessInfo] = {}
-
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-
-    def _signal_handler(self, signum: int, frame: Any) -> None:
-        """Handle shutdown signals"""
-        print(f"Reveived signal {signum}, sutting down...")
-        self.shutdown_all()
 
     def spawn_ai_process(self, hostname: str, port: int,
                                team_name: str) -> int:
@@ -87,10 +80,15 @@ class ProcessManager:
 
         for process_info in self._processes.values():
             if process_info.process.is_alive():
-                process_info.process.terminate()
+                from os import kill
+                from signal import SIGINT
+                kill(process_info.pid, SIGINT)
+                # print(f"Calling terminate on {process_info.pid}")
+                # process_info.process.terminate()
 
         for process_info in self._processes.values():
             process_info.process.join()
+            process_info.process.close()
 
         self._processes.clear()
 

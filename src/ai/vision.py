@@ -6,7 +6,7 @@
 ##
 
 from typing import Optional, TypeAlias, Any
-from ai import GameConstants, MessageParser
+from .utils import GameConstants, MessageParser
 
 Tile: TypeAlias = list[str]
 

@@ -117,53 +117,34 @@ class ZappyAi:
             await self.cleanup()
 
     async def _game_loop(self) -> None:
-        """Single iteration of the AI execution loop"""
-        message_handler_task =  \
-            asyncio.create_task(self._message_handler_loop())
-        action_planner_task =  \
-            asyncio.create_task(self._action_planner_loop())
+        """AI execution loop"""
+        while self.running:
+            self._handle_messages()
+            self._plan_actions()
+            await asyncio.sleep(1/120)
 
-        try:
-            await asyncio.gather(
-                message_handler_task,
-                action_planner_task,
-                return_exceptions=True
-            )
-        except Exception as e:
-            print(f"Error in main game loop {e}", file=stderr)
-        finally:
-            message_handler_task.cancel()
-            action_planner_task.cancel()
-
-    async def _message_handler_loop(self) -> None:
+    def _handle_messages(self) -> None:
         """Handle incoming messages"""
-        while self.running:
-            messages = self.connexion.receive_all()
-            if messages:
-                print(f"Received: {messages}")
-            for message in messages:
-                self._process_message(message)
-            # Small sleep to yield control
-            await asyncio.sleep(0.1)
+        messages = self.connexion.receive_all()
+        if messages:
+            print(f"Received: {messages}")
+        for message in messages:
+            self._process_message(message)
 
-    async def _action_planner_loop(self) -> None:
+    def _plan_actions(self) -> None:
         """Plan and execute actions"""
-        while self.running:
-            self._update_action_state()
+        self._update_action_state()
 
-            if len(self.pending_response) < 10:
-                if "Look" in self.pending_response:
-                    return
-                next_action: Optional[str] = self._plan_next_action()
-                if next_action:
-                    print(f"Next action: {next_action}")
-                    if self.connexion.send(next_action):
-                        self.pending_response.append(next_action)
-                    else:
-                        print("Failed to execute action", file=stderr)
-
-            # Small sleep to yield control
-            await asyncio.sleep(0.1)
+        if len(self.pending_response) < 10:
+            if "Look" in self.pending_response:
+                return
+            next_action: Optional[str] = self._plan_next_action()
+            if next_action:
+                print(f"Next action: {next_action}")
+                if self.connexion.send(next_action):
+                    self.pending_response.append(next_action)
+                else:
+                    print("Failed to execute action", file=stderr)
 
     def _process_message(self, message: str) -> None:
         """Process a single message from the server"""
