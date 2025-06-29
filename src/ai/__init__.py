@@ -8,16 +8,22 @@
 """Zappy AI Package"""
 
 from .client import ZappyAi
-from .network import NetworkManager
 from .generator import ProcessManager, spawn_independent_ai
+from .network import NetworkManager
+from .protocol import TeamProtocol, MessageType, MsgData, ElevationCoordinator, Role
 from .utils import GameConstants, MessageParser, AIUtils
 from .vision import PlayerVision, Tile, TilePos, ResourcePos
 
 __all__ = [
     "ZappyAi",
-    "NetworkManager",
     "ProcessManager",
     "spawn_independent_ai",
+    "NetworkManager",
+    "TeamProtocol",
+    "MessageType",
+    "MsgData",
+    "ElevationCoordinator",
+    "Role",
     "GameConstants",
     "MessageParser",
     "AIUtils",

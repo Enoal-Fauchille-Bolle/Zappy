@@ -5,16 +5,21 @@
 ## client
 ##
 
-from typing import Optional, Any, cast
+from typing import Optional, Any, cast, TypeAlias
 from enum import Enum
 import asyncio
 import random
+import hashlib
+import time
 from sys import stderr
 from collections import deque
 from .network import NetworkManager
 from .generator import ProcessManager
-from .utils import AIUtils, MessageParser, GameConstants
+from .utils import MessageParser, GameConstants, Direction
 from .vision import PlayerVision, TilePos
+from .protocol import TeamProtocol, MessageType, Role, ElevationCoordinator, MsgData
+
+RoleData: TypeAlias = dict[str, Any]
 
 class ZappyAi:
     "Main AI client class that manage the game logic"
@@ -22,10 +27,15 @@ class ZappyAi:
     class ActionState(Enum):
         """"""
         SURVIVAL = 0
-        EXPLORATION = 1
-        RESOURCE_GATHERING = 2
-        REPRODUCTION = 3
-        IDLE = 4
+        RESOURCE_GATHERING = 1
+        REPRODUCTION = 2
+        PREPARING_ELEVATION = 3
+        ELEVATING = 4
+        COORDINATING = 5
+        EXPLORATION = 6
+        ROLE_EXECUTION = 7
+        SYNCHRONIZING = 8
+        IDLE = 10
 
     def __init__(self, hostname: str, port: int, team_name: str) -> None:
         self.hostname = hostname
@@ -41,6 +51,8 @@ class ZappyAi:
         self.pending_response: deque[str] = deque(maxlen=10)
 
         self.level: int = 1
+        self.player_id = int(hashlib.md5(f"{time.time()}{random.random()}"
+                                         .encode()).hexdigest()[:8], 16)
         self.inventory: dict[str, int] = {
             "food": 10,
             "linemate": 0,
@@ -51,23 +63,46 @@ class ZappyAi:
             "thystame": 0
         }
 
+        self.protocol = TeamProtocol(team_name)
+        self.elevator = ElevationCoordinator()
+
+        self.current_role = Role.NO_ROLE
+        self.role_data: RoleData = {}
+
+        self.team_members_data: dict[int, RoleData] = {}
+        self.leader_id: Optional[int] = None
+
+        self.team_resources: dict[str, int] = {
+            "linemate": 0,
+            "deraumere": 0,
+            "sibur": 0,
+            "mendiane": 0,
+            "phiras": 0,
+            "thystame": 0
+        }
+
+        self.state = self.ActionState.IDLE
+
         self.current_plan: list[str] = []
         self.planned_action: int = 0
         self.look_cooldown: int = 0
         self.inventory_cooldown: int = 0
         self.exploration_cooldown: int = 0
+        self.broadcast_cooldown: int = 0
 
         self.exploration_steps: int = 0
         self.max_steps: int = 5
 
-        self.survival_threshold: int = 3
+        self.survival_threshold: int = 5
         self.reproduction_threshold: int = 13
         self.resource_threshold: int = 7
 
         self.has_layed: bool = False
         self.lay_cooldown: int = 0
 
-        self.state = self.ActionState.IDLE
+        self.elevation_target: Optional[int] = None
+        self.meeting_point: Optional[tuple[int, int]] = None
+        self.elevation_time: Optional[int] = None
 
     async def connect_to_server(self) -> None:
         """Connect to the Zappy server"""
@@ -87,13 +122,13 @@ class ZappyAi:
             open_slots = int(open_slot_remaining_str)
             world_size: list[str] = world_size_str.split()
             self.map_size: tuple[int, int] = (int(world_size[0]), int(world_size[1]))
-            if open_slots != 0:
+            if open_slots != 0 and self.current_role != Role.FEEDER:
                 self.process_manager.spawn_ai_process(
                     self.hostname, self.port, self.team_name
                 )
         except Exception as e:
             raise Exception(f"Welcoming was not respected: {e}")
-        print("Ai is now connected !")
+        print(f"Ai {self.player_id} is now connected !")
 
     async def cleanup(self) -> None:
         """Close Connection and stop the AI(s)"""
@@ -170,9 +205,106 @@ class ZappyAi:
 
     def _handle_broadcast(self, message: str) -> None:
         """Read and decrypt team broadcasts, otherwise, discard the information"""
-        encrypted: tuple[int, str] = MessageParser.parse_broadcast(message)
-        print(f"Received {encrypted[1]} from direction {encrypted[0]}")
+        (direction, text) = MessageParser.parse_broadcast(message)
 
+        msg = self.protocol.parse_message(text)
+        if msg:
+            self._handle_message(Direction(direction), msg)
+        else:
+            print(f"Non team broadcast from {Direction(direction)}, {text}")
+
+    def _handle_message(self, direction: Direction, message: MsgData) -> None:
+        """Process a team message based on type"""
+        msg_type = MessageType(message["type"])
+        sender_id: int = message["sender"]
+        data: RoleData = message["data"]
+
+        self.team_members_data[sender_id] = {
+            "level": data.get("level", 1),
+            "role": Role(data.get("role", Role.NO_ROLE.value))
+        }
+
+        if msg_type == MessageType.ROLE_ASSIGNMENT:
+            self._handle_role_assignement(direction, sender_id, data)
+        elif msg_type == MessageType.RESOURCE_SHARE:
+            self._handle_resource_share(sender_id, data)
+        elif msg_type == MessageType.ELEVATION_CALL:
+            self._handle_elevation_call(sender_id, data)
+        elif msg_type == MessageType.LEADER_ELECTION:
+            self._handle_leader_election(sender_id)
+        elif msg_type == MessageType.SYNC_REQUEST:
+            self._handle_sync_request()
+
+    def _handle_role_assignement(self, direction: Direction, send_id: int, data: RoleData) -> None:
+        """Handle role assignement messages"""
+        if direction != Direction.CENTER:
+            return
+
+        new_role = Role(data["new_role"])
+        target_id = data.get("target_id", None)
+
+        if target_id and target_id != self.player_id:
+            return
+        if new_role.value < self.current_role.value and send_id != self.leader_id:
+            return
+
+        self.current_role = new_role
+        self.role_data = data.get("role_data", {})
+
+        print(f"Ai {self.player_id} assigned role: {new_role.name}")
+
+        if new_role == Role.FEEDER:
+            self._execute_feeder_role()
+
+    def _handle_resource_share(self, send_id: int, data: RoleData) -> None:
+        """Update team resource knowledge"""
+        resources: dict[str, int] = data["resources"]
+        for resource, amount in resources.items():
+            self.team_resources[resource] = max(self.team_resources[resource], amount)
+
+    def _handle_elevation_call(self, send_id: int, data: RoleData) -> None:
+        """Handle elevation coordination calls"""
+        level: int = data["targeted_level"]
+        needed_players = data["needed_players"]
+
+        if self.level == level - 1 and self.player_id in needed_players:
+            self.elevation_target = level
+            self.state = self.ActionState.PREPARING_ELEVATION
+
+    def _handle_leader_election(self, send_id: int) -> None:
+        """Handle leader election process"""
+        self.leader_id = send_id
+        print(f"Ai {self.player_id} accepts {send_id} as leader")
+
+    def _handle_sync_request(self) -> None:
+        """Respond to synchronization requests"""
+        if self.broadcast_cooldown > 0:
+            return
+
+        status_data: RoleData = {
+            "level": self.level,
+            "role": self.current_role.value,
+            "resources": {k: v for k, v in self.inventory.items() if k != "food"},
+        }
+
+        msg = self.protocol.create_message(
+            MessageType.STATUS_UPDATE,
+            self.player_id,
+            status_data
+        )
+
+        self.current_plan.append(f"Broadcast {msg}")
+        self.broadcast_cooldown = 10
+
+    def _execute_feeder_role(self) -> None:
+        """Feeder role - drop food and prepare to die"""
+        self.current_plan.clear()
+
+        food_count = self.inventory["food"]
+        for _ in range(food_count):
+            self.current_plan.append("Set food")
+
+        self.state = self.ActionState.IDLE
 
     def _handle_eject(self, message: str) -> None:
         """Update player position after ejection"""
@@ -204,6 +336,89 @@ class ZappyAi:
         self.inventory_cooldown = max(0, self.inventory_cooldown - 1)
         self.lay_cooldown = max(0, self.lay_cooldown - 1)
         self.exploration_cooldown = max(0, self.exploration_cooldown - 1)
+
+    def _check_leader_election(self) -> None:
+        if not self.leader_id:
+            status_data: RoleData = {
+                "level": self.level,
+                "role": self.current_role.value,
+            }
+
+            msg = self.protocol.create_message(
+                MessageType.LEADER_ELECTION,
+                self.player_id,
+                status_data
+            )
+
+            self.current_plan.append(f"Broadcast {msg}")
+            self.leader_id = self.player_id
+            self.current_role = Role.LEADER
+
+    def _coordinate_elevation(self) -> None:
+        """Leader coordinate team elevations"""
+        if self.current_role != Role.LEADER:
+            return
+
+        team_levels: list[int] = [self.level]
+        for member_id, info in self.team_members_data.items():
+            team_levels.append(info["level"])
+
+        target_level = self.elevator.get_next_elevation_target(
+            team_levels
+        )
+        if not target_level:
+            return
+
+        eligible_players = [self.player_id] if self.level == target_level else []
+        for member_id, info in self.team_members_data.items():
+            if info["level"] == target_level - 1:
+                eligible_players.append(member_id)
+        elevation_plan = self.elevator.plan_elevation(
+            target_level,
+            eligible_players,
+            self.team_resources
+        )
+
+        if elevation_plan:
+            elevation_plan["start_time"] = time.time() + 3
+            elevation_data: RoleData = {
+                "level": self.level,
+                "role": self.current_role.value,
+                "targeted_level": target_level,
+                "start_time": elevation_plan["start_time"],
+                "needed_players": elevation_plan["players"],
+                "resources_needed": elevation_plan["resources"]
+            }
+
+            msg = self.protocol.create_message(
+                MessageType.ELEVATION_CALL,
+                self.player_id,
+                elevation_data
+            )
+
+            self.current_plan.append(f"Broadcast {msg}")
+            print(f"Leader {self.player_id} calling elevation for level {target_level}")
+
+    def _spawn_feeder_if_needed(self) -> bool:
+        """Spawn a feeder AI if food is critically low"""
+        if self.inventory["food"] <= 3:
+            self.current_plan.insert(0, "Fork")
+            feeder_data: RoleData = {
+                "level": self.level,
+                "role": self.current_role.value,
+                "new_role": Role.FEEDER.value,
+                "role_data": {"parent_id": self.player_id}
+            }
+
+            msg = self.protocol.create_message(
+                MessageType.ROLE_ASSIGNMENT,
+                self.player_id,
+                feeder_data
+            )
+
+            self.current_plan.insert(1, f"Broadcast {msg}")
+            return True
+        return False
 
     def _update_action_state(self) -> None:
         """Update the current state based on resources"""
@@ -326,19 +541,11 @@ class ZappyAi:
 
         return path
 
-    @property
-    def survival_status(self) -> str:
-        """Get current survival status"""
-        food_time = AIUtils.time_remaining(self.inventory["food"])
-        return f"food: {self.inventory["food"]}, Time left: {food_time:.1f}s, " \
-            f"State: {self.state.name}"
-
     def get_info(self) -> dict[str, Any]:
         """Get debug information about the AI state"""
         return {
             "level": self.level,
             "has layed": self.has_layed,
-            "state": self.survival_status,
             "pending_commands": list(self.pending_response),
             "current_plan": self.current_plan.copy()
         }
