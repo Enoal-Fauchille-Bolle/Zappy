@@ -11,30 +11,20 @@ import json
 import base64
 import time
 import hashlib
-from .utils import GameConstants
 
 MsgData: TypeAlias = dict[str, Any]
-TeamResources: TypeAlias = dict[str, int]
+MsgHeader: TypeAlias = dict[str, str | int | MsgData]
 
 class MessageType(Enum):
     """Types of messages that can be broadcast"""
-    ROLE_ASSIGNMENT = "ROLE"
-    RESOURCE_SHARE = "RSRC"
-    ELEVATION_CALL = "ELEV"
-    STATUS_UPDATE = "STAT"
-    LEADER_ELECTION = "LEAD"
-    DEATH_NOTICE = "DEAD"
-    SYNC_REQUEST = "SYNC"
-
-class Role(Enum):
-    """AI roles with tier levels (higher value = higher priority)"""
-    NO_ROLE = 0
-    FEEDER = 1          # Drops food and dies
-    GATHERER = 2        # Collects resources
-    BREEDER = 3         # Focuses on reproduction
-    RESOURCE_SCOUT = 4  # Scouts for resources
-    COORDINATOR = 5     # Helps coordinate elevations
-    LEADER = 6          # Central coordinator
+    READY_FOR_ELEVATION = "ready_elevation"
+    LOCATION_BEACON = "location_beacon"
+    ARRIVED_AT_LOCATION = "arrived"
+    START_ELEVATION = "start_elevation"
+    ASSIGN_FEEDER = "assign_feeder"
+    FOOD_DROPPED = "food_dropped"
+    ELEVATION_SUCCESS = "elevation_success"
+    SEARCHING_RESOURCES = "searching"
 
 class TeamProtocol:
     """Handles team communication and message encryption"""
@@ -89,9 +79,9 @@ class TeamProtocol:
         return False
 
     def create_message(self, msg_type: MessageType, sender_id: int,
-                      data: dict[str, Any]) -> str:
+                      data: MsgData) -> str:
         """Create an encrypted team message"""
-        message: MsgData = {
+        message: MsgHeader = {
             "type": msg_type.value,
             "sender": sender_id,
             "id": self._generate_message_id(),
@@ -125,79 +115,3 @@ class TeamProtocol:
             return message
         except:
             return None
-
-class ElevationCoordinator:
-    """Manages elevation requirements and coordination"""
-
-    def __init__(self):
-        self.elevation_in_progress: dict[int, dict[str, Any]] = {}
-        self.resource_reservations: dict[str, int] = {
-            "linemate": 0,
-            "deraumere": 0,
-            "sibur": 0,
-            "mendiane": 0,
-            "phiras": 0,
-            "thystame": 0
-        }
-        self.player_commitments: dict[int, list[int]] = {}  # level -> [player_ids]
-
-    def plan_elevation(self, level: int, available_players: list[int],
-                      team_resources: TeamResources) -> Optional[dict[str, Any]]:
-        """Plan an elevation if resources and players are available"""
-
-        requirements = GameConstants.ELEVATION_REQUIREMENTS[level - 1]
-        needed_players = requirements["players"]
-
-        # Check if we have enough players
-        if len(available_players) < needed_players:
-            return None
-
-        # Check resources (considering reservations)
-        for resource, needed in requirements.items():
-            if resource == "players":
-                continue
-            available = team_resources.get(resource, 0) - self.resource_reservations.get(resource, 0)
-            if available < needed:
-                return None
-
-        # Create elevation plan
-        plan: dict[str, Any] = {
-            "level": level,
-            "players": available_players,
-            "resources": {r: requirements[r] for r in requirements if r != "players"},
-            "start_time": None
-        }
-
-        # Reserve resources
-        for resource, needed in plan["resources"].items():
-            self.resource_reservations[resource] += needed
-
-        # Track player commitments
-        self.player_commitments[level] = plan["players"]
-
-        return plan
-
-    def cancel_elevation(self, level: int) -> None:
-        """Cancel an elevation and free resources"""
-        if level in self.elevation_in_progress:
-            plan = self.elevation_in_progress[level]
-            # Free reserved resources
-            for resource, amount in plan["resources"].items():
-                self.resource_reservations[resource] -= amount
-
-            del self.elevation_in_progress[level]
-            if level in self.player_commitments:
-                del self.player_commitments[level]
-
-    def get_next_elevation_target(self, team_levels: list[int]) -> Optional[int]:
-        """Determine which level to target next for elevation"""
-        level_counts = {i: 0 for i in range(1, 9)}
-        for level in team_levels:
-            level_counts[level] += 1
-
-        # Priority: Get players to level 8
-        for target_level in range(2, 9):
-            if level_counts[target_level - 1] >= GameConstants.ELEVATION_REQUIREMENTS[target_level - 1]["players"]:
-                return target_level
-
-        return None
